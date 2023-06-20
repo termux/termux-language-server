@@ -1,0 +1,12 @@
+r"""{{ name.replace("_", " ").strip().capitalize() }}.
+
+{% for p in params -%}
+:param {{ p.argument }}:
+{% if p.annotation -%}
+:type {{ p.argument }}: {{ p.annotation.strip('"') }}
+{% endif -%}
+{% endfor -%}
+{% if return_type -%}
+:rtype: {{ return_type }}
+{% endif -%}
+"""

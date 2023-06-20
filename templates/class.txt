@@ -1,0 +1,2 @@
+r"""{{ name.replace("_", " ").strip().capitalize() }}."""
+
