@@ -1,0 +1,108 @@
+[build-system]
+# FIXME: setuptools-generate stop setuptools_scm working
+requires = [
+  "setuptools_scm[toml] >= 6.2",
+  # "setuptools-generate >= 0.0.6"
+]
+build-backend = "setuptools.build_meta"
+
+# https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+[project]
+name = "termux-language-server"
+description = "termux language server"
+readme = "README.md"
+requires-python = ">= 3.7"
+keywords = ["termux", "language server"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Operating System :: Unix",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version", "dependencies", "optional-dependencies"]
+
+[[project.authors]]
+name = "Wu Zhenyu"
+email = "wuzhenyu@ustc.edu"
+
+[project.license]
+text = "GPL v3"
+
+[project.urls]
+Homepage = "https://termux-language-server.readthedocs.io"
+Download = "https://github.com/Freed-Wu/termux-language-server/releases"
+"Bug Report" = "https://github.com/Freed-Wu/termux-language-server/issues"
+Source = "https://github.com/Freed-Wu/termux-language-server"
+
+[project.scripts]
+termux-language-server = "termux_language_server.__main__:main"
+
+[tool.setuptools.package-data]
+termux_language_server = ["py.typed", "assets/**"]
+
+# [tool.setuptools.data-files]
+# "share/man/man1" = ["sdist/termux-language-server.1"]
+# "share/bash-completion/completions" = ["sdist/termux-language-server"]
+# "share/zsh/site-functions" = ["sdist/_termux-language-server"]
+
+[tool.setuptools.dynamic.dependencies]
+file = "requirements.txt"
+
+# begin: scripts/update-pyproject.toml.pl
+[tool.setuptools.dynamic.optional-dependencies.dev]
+file = "requirements/dev.txt"
+
+[tool.setuptools.dynamic.optional-dependencies.web]
+file = "requirements/web.txt"
+# end: scripts/update-pyproject.toml.pl
+
+[tool.setuptools_scm]
+write_to = "src/termux_language_server/_version.py"
+
+[tool.setuptools-generate]
+write-to = "src/termux_language_server/_metainfo.py"
+
+[tool.mdformat]
+number = true
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+line_length = 79
+profile = "black"
+
+# https://github.com/PyCQA/pydocstyle/issues/418
+[tool.pydocstyle]
+add_ignore = "D205, D400"
+
+[tool.doq]
+template_path = "templates"
+
+[tool.coverage.report]
+exclude_lines = [
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+  "\\s*import tomli as tomllib",
+]
+
+[tool.bandit.assert_used]
+skips = ["*_test.py", "test_*.py"]
+
+[tool.cibuildwheel]
+archs = ["all"]
+before-test = "pip install pytest"
+test-command = "pytest {project}"
