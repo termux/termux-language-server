@@ -1,9 +1,5 @@
 [build-system]
-# FIXME: setuptools-generate stop setuptools_scm working
-requires = [
-  "setuptools_scm[toml] >= 6.2",
-  # "setuptools-generate >= 0.0.6"
-]
+requires = ["setuptools_scm[toml] >= 6.2", "setuptools-generate >= 0.0.6"]
 build-backend = "setuptools.build_meta"
 
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
@@ -53,10 +49,10 @@ termux-language-server = "termux_language_server.__main__:main"
 [tool.setuptools.package-data]
 termux_language_server = ["py.typed", "assets/**"]
 
-# [tool.setuptools.data-files]
-# "share/man/man1" = ["sdist/termux-language-server.1"]
-# "share/bash-completion/completions" = ["sdist/termux-language-server"]
-# "share/zsh/site-functions" = ["sdist/_termux-language-server"]
+[tool.setuptools.data-files]
+"share/man/man1" = ["sdist/termux-language-server.1"]
+"share/bash-completion/completions" = ["sdist/termux-language-server"]
+"share/zsh/site-functions" = ["sdist/_termux-language-server"]
 
 [tool.setuptools.dynamic.dependencies]
 file = "requirements.txt"
