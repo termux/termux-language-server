@@ -45,6 +45,7 @@ jobs:
         run: |
           pytest --cov
       - uses: codecov/codecov-action@v3
+
   build:
     needs: test
     strategy:
@@ -85,12 +86,25 @@ jobs:
           # body_path: build/CHANGELOG.md
           files: |
             dist/*
-  deploy:
+
+  deploy-aur:
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: Freed-Wu/update-aur-package@v1.0.11
         with:
-          package_name: python-termux-language-server
+          package_name: termux-language-server
           ssh_private_key: ${{secrets.AUR_SSH_PRIVATE_KEY}}
+
+  deploy-nur:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Trigger Workflow
+        run: >
+          curl -X POST -d '{"ref":"main"}'
+          -H "Accept: application/vnd.github.v3+json"
+          -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}"
+          https://api.github.com/repos/Freed-Wu/nur-packages/actions/workflows/version.yml/dispatches
