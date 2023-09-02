@@ -1,6 +1,12 @@
 # Requirements
 
-```{eval-sh}
-cd ..
-scripts/generate-requirements.md.pl requirements/*.txt
+```{requirements} ../../requirements.txt
+---
+title: Mandatory Requirements
+---
+```
+
+```{requirements} ../../requirements/*.txt
+---
+---
 ```

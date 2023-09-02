@@ -3,3 +3,4 @@
 -e .
 myst-parser
 sphinxcontrib-eval
+sphinxcontrib-requirements-txt

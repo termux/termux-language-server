@@ -23,7 +23,7 @@ repos:
       - id: check-toml
       - id: check-json
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.1
+    rev: v1.5.4
     hooks:
       - id: remove-crlf
   - repo: https://github.com/codespell-project/codespell
@@ -74,11 +74,11 @@ repos:
         additional_dependencies:
           - markdown-it-texmath@0.9.1
   - repo: https://github.com/perltidy/perltidy
-    rev: "20230309.04"
+    rev: "20230701.02"
     hooks:
       - id: perltidy
   - repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 23.7.0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/isort
@@ -92,7 +92,7 @@ repos:
         additional_dependencies:
           - tomli
   - repo: https://github.com/kumaraditya303/mirrors-pyright
-    rev: v1.1.316
+    rev: v1.1.322
     hooks:
       - id: pyright
   - repo: https://github.com/PyCQA/bandit
