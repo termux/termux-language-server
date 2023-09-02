@@ -3,7 +3,7 @@
 ## [AUR](https://aur.archlinux.org/packages/termux-language-server)
 
 ```sh
-yay -S python-termux-language-server
+yay -S termux-language-server
 ```
 
 ## [NUR](https://nur.nix-community.org/repos/Freed-Wu)
