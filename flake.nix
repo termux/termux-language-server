@@ -1,7 +1,7 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.python-setuptools-generate.url = "github:Freed-Wu/setuptools-generate";
+  inputs.python-setuptools-generate.url = "github:termux/setuptools-generate";
   outputs = { self, nixpkgs, flake-utils, python-setuptools-generate }:
     flake-utils.lib.eachDefaultSystem
       (system:

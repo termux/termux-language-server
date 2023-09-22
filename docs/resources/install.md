@@ -6,7 +6,7 @@
 yay -S termux-language-server
 ```
 
-## [NUR](https://nur.nix-community.org/repos/Freed-Wu)
+## [NUR](https://nur.nix-community.org/repos/termux)
 
 ```nix
 { config, pkgs, ... }:
@@ -25,7 +25,7 @@ yay -S termux-language-server
       (
         python3.withPackages (
           p: with p; [
-            nur.repos.Freed-Wu.termux-language-server
+            nur.repos.termux.termux-language-server
           ]
         )
       )
@@ -35,13 +35,13 @@ yay -S termux-language-server
 ## [Nix](https://nixos.org)
 
 ```sh
-nix shell github:Freed-Wu/termux-language-server
+nix shell github:termux/termux-language-server
 ```
 
 Run without installation:
 
 ```sh
-nix run github:Freed-Wu/termux-language-server -- --help
+nix run github:termux/termux-language-server -- --help
 ```
 
 ## [PYPI](https://pypi.org/project/termux-language-server)
