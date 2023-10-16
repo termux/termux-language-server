@@ -3,7 +3,7 @@ exclude: (^templates/.*|.*\.json$|^tests/syntax_test_.*)
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-added-large-files
       - id: fix-byte-order-marker
@@ -27,7 +27,7 @@ repos:
     hooks:
       - id: remove-crlf
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.5
+    rev: v2.2.6
     hooks:
       - id: codespell
         additional_dependencies:
@@ -47,7 +47,7 @@ repos:
     hooks:
       - id: check-mailmap
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.6.25
+    rev: v1.6.26
     hooks:
       - id: actionlint
   - repo: https://github.com/adrienverge/yamllint
@@ -68,13 +68,13 @@ repos:
           - mdformat-black
           - mdformat-config
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.9.2
+    rev: v0.10.0
     hooks:
       - id: markdownlint-cli2
         additional_dependencies:
-          - markdown-it-texmath@0.9.1
+          - markdown-it-texmath
   - repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 23.9.1
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/isort
@@ -88,7 +88,7 @@ repos:
         additional_dependencies:
           - tomli
   - repo: https://github.com/kumaraditya303/mirrors-pyright
-    rev: v1.1.325
+    rev: v1.1.329
     hooks:
       - id: pyright
   - repo: https://github.com/PyCQA/bandit
