@@ -1,5 +1,5 @@
-r"""Test server"""
-from termux_language_server.server import get_document
+r"""Test documents"""
+from termux_language_server.documents import get_document
 
 
 class Test:

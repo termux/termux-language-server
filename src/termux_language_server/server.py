@@ -1,10 +1,8 @@
 r"""Server
 ==========
 """
-import json
-import os
 import re
-from typing import Any, Literal, Tuple
+from typing import Any
 
 from lsprotocol.types import (
     INITIALIZE,
@@ -22,64 +20,9 @@ from lsprotocol.types import (
     Range,
     TextDocumentPositionParams,
 )
-from platformdirs import user_cache_dir
 from pygls.server import LanguageServer
 
-
-def check_extension(uri: str) -> Literal["build.sh", "subpackage.sh", ""]:
-    r"""Check extension.
-
-    :param uri:
-    :type uri: str
-    :rtype: Literal["build.sh", "subpackage.sh", ""]
-    """
-    if os.path.basename(uri) == "build.sh":
-        return "build.sh"
-    if os.path.basename(uri).endswith(".subpackage.sh"):
-        return "subpackage.sh"
-    return ""
-
-
-def get_document(
-    method: Literal["builtin", "cache", "web"] = "builtin"
-) -> dict[str, tuple[str, str]]:
-    r"""Get document. ``builtin`` will use builtin termux.json. ``cache``
-    will generate a cache from
-    `<https://github.com/termux/termux-packages/wiki/Creating-new-package>`_. ``web`` is same as
-    ``cache`` except it doesn't generate cache. We use ``builtin`` as default.
-    If you want to get the latest result from
-    `<https://github.com/termux/termux-packages/wiki/Creating-new-package>`_, you need to
-    install `beautifulsoup4 <https://pypi.org/project/beautifulsoup4>` by
-    ``pip install 'termux-language-server[web]'``.
-
-    :param method:
-    :type method: Literal["builtin", "cache", "web"]
-    :rtype: dict[str, tuple[str, str]]
-    """
-    if method == "builtin":
-        file = os.path.join(
-            os.path.join(
-                os.path.join(os.path.dirname(__file__), "assets"), "json"
-            ),
-            "termux.json",
-        )
-        with open(file, "r") as f:
-            document = json.load(f)
-    elif method == "cache":
-        from .api import init_document
-
-        if not os.path.exists(user_cache_dir("termux.json")):
-            document = init_document()
-            with open(user_cache_dir("termux.json"), "w") as f:
-                json.dump(document, f)
-        else:
-            with open(user_cache_dir("termux.json"), "r") as f:
-                document = json.load(f)
-    else:
-        from .api import init_document
-
-        document = init_document()
-    return document
+from .documents import get_document, get_filetype
 
 
 class TermuxLanguageServer(LanguageServer):
@@ -115,7 +58,7 @@ class TermuxLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: Hover | None
             """
-            if not check_extension(params.text_document.uri):
+            if get_filetype(params.text_document.uri) == "":
                 return None
             word = self._cursor_word(
                 params.text_document.uri, params.position, True
@@ -126,10 +69,8 @@ class TermuxLanguageServer(LanguageServer):
             if not doc:
                 return None
             return Hover(
-                contents=MarkupContent(
-                    kind=MarkupKind.PlainText, value=doc[0]
-                ),
-                range=word[1],
+                MarkupContent(MarkupKind.PlainText, doc[0]),
+                word[1],
             )
 
         @self.feature(TEXT_DOCUMENT_COMPLETION)
@@ -140,7 +81,8 @@ class TermuxLanguageServer(LanguageServer):
             :type params: CompletionParams
             :rtype: CompletionList
             """
-            if not check_extension(params.text_document.uri):
+            filetype = get_filetype(params.text_document.uri)
+            if filetype == "":
                 return CompletionList(is_incomplete=False, items=[])
             word = self._cursor_word(
                 params.text_document.uri, params.position, False
@@ -148,7 +90,7 @@ class TermuxLanguageServer(LanguageServer):
             token = "" if word is None else word[0]
             items = [
                 CompletionItem(
-                    label=x,
+                    x,
                     kind=CompletionItemKind.Variable
                     if x.isupper()
                     else CompletionItemKind.Function,
@@ -156,9 +98,7 @@ class TermuxLanguageServer(LanguageServer):
                     insert_text=x,
                 )
                 for x in self.document
-                if x.startswith(token)
-                and self.document[x][1]
-                in check_extension(params.text_document.uri)
+                if x.startswith(token) and self.document[x][1] in filetype
             ]
             return CompletionList(is_incomplete=False, items=items)
 
@@ -171,37 +111,41 @@ class TermuxLanguageServer(LanguageServer):
         :type position: Position
         :rtype: str
         """
-        doc = self.workspace.get_document(uri)
-        content = doc.source
-        line = content.split("\n")[position.line]
-        return str(line)
+        document = self.workspace.get_document(uri)
+        return document.source.splitlines()[position.line]
 
     def _cursor_word(
-        self, uri: str, position: Position, include_all: bool = True
-    ) -> Tuple[str, Range] | None:
-        r"""Cursor word.
+        self,
+        uri: str,
+        position: Position,
+        include_all: bool = True,
+        regex: str = r"\w+",
+    ) -> tuple[str, Range]:
+        """Cursor word.
 
+        :param self:
         :param uri:
         :type uri: str
         :param position:
         :type position: Position
         :param include_all:
         :type include_all: bool
-        :rtype: Tuple[str, Range] | None
+        :param regex:
+        :type regex: str
+        :rtype: tuple[str, Range]
         """
         line = self._cursor_line(uri, position)
-        cursor = position.character
-        for m in re.finditer(r"\w+", line):
-            end = m.end() if include_all else cursor
-            if m.start() <= cursor <= m.end():
-                word = (
+        for m in re.finditer(regex, line):
+            if m.start() <= position.character <= m.end():
+                end = m.end() if include_all else position.character
+                return (
                     line[m.start() : end],
                     Range(
-                        start=Position(
-                            line=position.line, character=m.start()
-                        ),
-                        end=Position(line=position.line, character=end),
+                        Position(position.line, m.start()),
+                        Position(position.line, end),
                     ),
                 )
-                return word
-        return None
+        return (
+            "",
+            Range(Position(position.line, 0), Position(position.line, 0)),
+        )

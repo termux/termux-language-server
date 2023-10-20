@@ -43,12 +43,27 @@ Language server for
 and
 [`*.subpackage.sh`](https://github.com/termux/termux-packages/wiki/Creating-new-package#writing-a-subpackage-script).
 
-`build.sh` is a subtype of bash. See
+`build.sh` is a subtype of bash.
+This language server only provides extra features for `build.sh` which
 [bash-language-server](https://github.com/bash-lsp/bash-language-server)
-to get support of bash language server.
+doesn't support:
 
 - [x] document hover
 - [x] completion
+- [ ] diagnostic
+  - [ ] detect if required variables exist. Such as: `TERMUX_PKG_VERSION`
+  - [ ] detect variable type. Such as: `TERMUX_PKG_DEPENDS` shouldn't be a function
+  - [ ] detect variable value. Such as: `TERMUX_PKG_AUTO_UPDATE` should be
+    `true` or `false`
+- [ ] format: sort some variables
+- [ ] document link: jump to
+  <https://github.com/termux/termux-packages/tree/master/packages/package_name/build.sh>
+
+Other features:
+
+- [ ] pre-commit-hooks
+  - [ ] linter
+  - [ ] formatter
 
 ![document hover](https://github.com/termux/termux-language-server/assets/32936898/5dfbe6d1-6bff-4ffd-bc8e-ad2c2895af52)
 
