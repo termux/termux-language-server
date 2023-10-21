@@ -48,24 +48,32 @@ This language server only provides extra features for `build.sh` which
 [bash-language-server](https://github.com/bash-lsp/bash-language-server)
 doesn't support:
 
-- [x] document hover
-- [x] completion
-- [ ] diagnostic
+- [ ] [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic):
   - [ ] detect if required variables exist. Such as: `TERMUX_PKG_VERSION`
   - [ ] detect variable type. Such as: `TERMUX_PKG_DEPENDS` shouldn't be a function
   - [ ] detect variable value. Such as: `TERMUX_PKG_AUTO_UPDATE` should be
     `true` or `false`
-- [ ] format: sort some variables
-- [ ] document link: jump to
+- [ ] [Document Formatting](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting):
+  sort some variables
+- [ ] [Document Link](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_documentLink):
+  jump to
   <https://github.com/termux/termux-packages/tree/master/packages/package_name/build.sh>
+- [x] [Hover](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_hover)
+- [x] [Completion](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_completion):
 
 Other features:
 
-- [ ] pre-commit-hooks
+- [ ] [pre-commit-hooks](https://pre-commit.com/)
   - [ ] linter
   - [ ] formatter
 
+## Screenshots
+
+### Hover
+
 ![document hover](https://github.com/termux/termux-language-server/assets/32936898/5dfbe6d1-6bff-4ffd-bc8e-ad2c2895af52)
+
+### Completion
 
 ![completion](https://github.com/termux/termux-language-server/assets/32936898/11f2bafc-cb3b-4559-9c3e-6df474e819bd)
 
