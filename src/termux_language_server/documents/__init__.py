@@ -10,7 +10,9 @@ from platformdirs import user_cache_dir
 
 def get_document(
     method: Literal["builtin", "cache", "web"] = "builtin"
-) -> tuple[dict[str, tuple[str, str]], dict[str, list[str]]]:
+) -> tuple[
+    dict[str, tuple[str, str]], dict[str, set[str]], dict[str, set[str]]
+]:
     r"""Get document. ``builtin`` will use builtin termux.json. ``cache``
     will generate a cache from
     `<https://github.com/termux/termux-packages/wiki/Creating-new-package>`_. ``web`` is same as
@@ -22,7 +24,7 @@ def get_document(
 
     :param method:
     :type method: Literal["builtin", "cache", "web"]
-    :rtype: tuple[dict[str, tuple[str, str]], dict[str, list[str]]]
+    :rtype: tuple[dict[str, tuple[str, str]], dict[str, set[str]], dict[str, set[str]]]
     """
     if method == "builtin":
         file = os.path.join(
@@ -50,7 +52,11 @@ def get_document(
         from .builtin import init_document
 
         document = init_document()
-    return document
+    return (
+        document[0],
+        {k: set(v) for k, v in document[1].items()},
+        {k: set(v) for k, v in document[2].items()},
+    )
 
 
 def get_filetype(uri: str) -> Literal["build.sh", "subpackage.sh", ""]:

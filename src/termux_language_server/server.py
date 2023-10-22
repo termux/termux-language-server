@@ -9,12 +9,17 @@ from lsprotocol.types import (
     TEXT_DOCUMENT_COMPLETION,
     TEXT_DOCUMENT_DID_CHANGE,
     TEXT_DOCUMENT_DID_OPEN,
+    TEXT_DOCUMENT_DOCUMENT_LINK,
+    TEXT_DOCUMENT_FORMATTING,
     TEXT_DOCUMENT_HOVER,
     CompletionItem,
     CompletionItemKind,
     CompletionList,
     CompletionParams,
     DidChangeTextDocumentParams,
+    DocumentFormattingParams,
+    DocumentLink,
+    DocumentLinkParams,
     Hover,
     InitializeParams,
     MarkupContent,
@@ -22,13 +27,20 @@ from lsprotocol.types import (
     Position,
     Range,
     TextDocumentPositionParams,
+    TextEdit,
 )
 from pygls.server import LanguageServer
 
 from .documents import get_document, get_filetype
+from .finders import (
+    InvalidNodeFinder,
+    PackageFinder,
+    RequireNodesFinder,
+    UnsortedNodesFinder,
+)
 from .parser import parse
 from .tree_sitter_lsp.diagnose import get_diagnostics
-from .utils import DIAGNOSTICS_FINDERS
+from .utils import DIAGNOSTICS_FINDERS, get_keywords
 
 
 class TermuxLanguageServer(LanguageServer):
@@ -43,7 +55,9 @@ class TermuxLanguageServer(LanguageServer):
         """
         super().__init__(*args)
         self.document = {}
+        self.keywords = {}
         self.required = {}
+        self.csvs = {}
         self.trees = {}
 
         @self.feature(INITIALIZE)
@@ -56,7 +70,8 @@ class TermuxLanguageServer(LanguageServer):
             """
             opts = params.initialization_options
             method = getattr(opts, "method", "builtin")
-            self.document, self.required = get_document(method)  # type: ignore
+            self.document, self.required, self.csvs = get_document(method)  # type: ignore
+            self.keywords = get_keywords(self.document)
 
         @self.feature(TEXT_DOCUMENT_DID_OPEN)
         @self.feature(TEXT_DOCUMENT_DID_CHANGE)
@@ -67,16 +82,57 @@ class TermuxLanguageServer(LanguageServer):
             :type params: DidChangeTextDocumentParams
             :rtype: None
             """
-            if get_filetype(params.text_document.uri) == "":
+            filetype = get_filetype(params.text_document.uri)
+            if filetype == "":
                 return None
             document = self.workspace.get_document(params.text_document.uri)
             self.trees[document.uri] = parse(document.source.encode())
             diagnostics = get_diagnostics(
-                DIAGNOSTICS_FINDERS,
+                DIAGNOSTICS_FINDERS
+                + [
+                    RequireNodesFinder(self.required[filetype]),
+                    InvalidNodeFinder(set(self.keywords[filetype])),
+                    UnsortedNodesFinder(self.keywords[filetype]),
+                ],
                 document.uri,
                 self.trees[document.uri],
             )
             self.publish_diagnostics(params.text_document.uri, diagnostics)
+
+        @self.feature(TEXT_DOCUMENT_FORMATTING)
+        def format(params: DocumentFormattingParams) -> list[TextEdit]:
+            r"""Format.
+
+            :param params:
+            :type params: DocumentFormattingParams
+            :rtype: list[TextEdit]
+            """
+            filetype = get_filetype(params.text_document.uri)
+            if filetype == "":
+                return []
+            document = self.workspace.get_document(params.text_document.uri)
+            finder = UnsortedNodesFinder(self.keywords[filetype])
+            return finder.get_text_edits(
+                document.uri, self.trees[document.uri]
+            )
+
+        @self.feature(TEXT_DOCUMENT_DOCUMENT_LINK)
+        def document_link(params: DocumentLinkParams) -> list[DocumentLink]:
+            r"""Get document links.
+
+            :param params:
+            :type params: DocumentLinkParams
+            :rtype: list[DocumentLink]
+            """
+            filetype = get_filetype(params.text_document.uri)
+            if filetype == "":
+                return []
+            document = self.workspace.get_document(params.text_document.uri)
+            return PackageFinder(self.csvs[filetype]).get_document_links(
+                document.uri,
+                self.trees[document.uri],
+                "https://github.com/termux/termux-packages/tree/master/packages/{{name}}/build.sh",
+            )
 
         @self.feature(TEXT_DOCUMENT_HOVER)
         def hover(params: TextDocumentPositionParams) -> Hover | None:

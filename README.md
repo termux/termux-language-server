@@ -48,14 +48,15 @@ This language server only provides extra features for `build.sh` which
 [bash-language-server](https://github.com/bash-lsp/bash-language-server)
 doesn't support:
 
-- [ ] [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic):
-  - [ ] detect if required variables exist. Such as: `TERMUX_PKG_VERSION`
-  - [ ] detect variable type. Such as: `TERMUX_PKG_DEPENDS` shouldn't be a function
-  - [ ] detect variable value. Such as: `TERMUX_PKG_AUTO_UPDATE` should be
+- [x] [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic):
+  - [x] required variables. Such as: `TERMUX_PKG_VERSION`
+  - [x] variable type. Such as: `TERMUX_PKG_DEPENDS` shouldn't be a function
+  - [x] [variable order](https://github.com/termux/termux-packages/wiki/Creating-new-package#table-of-available-package-control-fields)
+  - [ ] variable value. Such as: `TERMUX_PKG_AUTO_UPDATE` should be
     `true` or `false`
-- [ ] [Document Formatting](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting):
+- [x] [Document Formatting](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting):
   sort some variables
-- [ ] [Document Link](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_documentLink):
+- [x] [Document Link](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_documentLink):
   jump to
   <https://github.com/termux/termux-packages/tree/master/packages/package_name/build.sh>
 - [x] [Hover](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_hover)
@@ -63,9 +64,9 @@ doesn't support:
 
 Other features:
 
-- [ ] [pre-commit-hooks](https://pre-commit.com/)
-  - [ ] linter
-  - [ ] formatter
+- [x] [pre-commit-hooks](https://pre-commit.com/)
+  - [x] linter
+  - [x] formatter
 
 ## Screenshots
 

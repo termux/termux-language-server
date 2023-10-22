@@ -11,4 +11,6 @@ class Test:
 
         :rtype: None
         """
-        assert len(get_document().get("TERMUX_PKG_NAME", "")[0].splitlines())
+        assert len(
+            get_document()[0].get("TERMUX_PKG_NAME", "")[0].splitlines()
+        )

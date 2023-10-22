@@ -73,8 +73,7 @@ def format(
         with open(path, "rb") as f:
             src = f.read()
         tree = parse(src)
-        finder.find_all(path, tree)
-        text_edits = finder.get_text_edits()
+        text_edits = finder.get_text_edits(path, tree)
         src = apply_text_edits(text_edits, src.decode())
         with open(path, "w") as f:
             f.write(src)

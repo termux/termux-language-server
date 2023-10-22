@@ -1,6 +1,7 @@
 r"""Builtin
 ===========
 """
+from copy import deepcopy
 from urllib import request
 
 from bs4 import BeautifulSoup, FeatureNotFound
@@ -29,13 +30,20 @@ def get_soup(uri: str) -> BeautifulSoup:
     return soup
 
 
-def init_document() -> tuple[dict[str, tuple[str, str]], dict[str, list[str]]]:
+def init_document() -> (
+    tuple[
+        dict[str, tuple[str, str]], dict[str, list[str]], dict[str, list[str]]
+    ]
+):
     r"""Init document.
 
-    :rtype: tuple[dict[str, tuple[str, str]], dict[str, list[str]]]
+    :rtype: (
+        tuple[dict[str, tuple[str, str]], dict[str, list[str]], dict[str, list[str]]]
+    )
     """
     items = {}
     required = {"build.sh": [], "subpackage.sh": []}
+    csvs = deepcopy(required)
     variable_table, function_table = get_soup(URIS["update"]).find_all("table")
     for tr in (
         get_soup(URIS["function"]).find_all("tr")[1:]
@@ -53,6 +61,8 @@ def init_document() -> tuple[dict[str, tuple[str, str]], dict[str, list[str]]]:
         tds = tr.find_all("td")
         if tds[2].text == "yes":
             required["build.sh"] += [tds[1].text]
+        if tds[3].text.startswith("Comma-separated list of "):
+            csvs["build.sh"] += [tds[1].text]
         items[tds[1].text] = (
             tds[3].text,
             "build.sh",
@@ -61,6 +71,8 @@ def init_document() -> tuple[dict[str, tuple[str, str]], dict[str, list[str]]]:
         tds = tr.find_all("td")
         if tds[2].text == "yes":
             required["subpackage.sh"] += [tds[1].text]
+        if tds[3].text.startswith("Comma-separated list of "):
+            csvs["subpackage.sh"] += [tds[1].text]
         items[tds[1].text] = (
             tds[3].text,
             "subpackage.sh",
@@ -70,6 +82,9 @@ def init_document() -> tuple[dict[str, tuple[str, str]], dict[str, list[str]]]:
         if tds[2].text == "yes":
             required["build.sh"] += [tds[1].text]
             required["subpackage.sh"] += [tds[1].text]
+        if tds[3].text.startswith("Comma-separated list of "):
+            csvs["build.sh"] += [tds[1].text]
+            csvs["subpackage.sh"] += [tds[1].text]
         items[tds[1].text] = (
             tds[3].text,
             "",
@@ -79,4 +94,4 @@ def init_document() -> tuple[dict[str, tuple[str, str]], dict[str, list[str]]]:
             li.text.partition("-")[2].strip().replace("\n", " "),
             "",
         )
-    return items, required
+    return items, required, csvs

@@ -416,10 +416,45 @@ class Finder:
         """
         return [self.uni2diagnostic(uni) for uni in unis]
 
-    def get_text_edits(self) -> list[TextEdit]:
+    def get_diagnostics(self, uri: str, tree: Tree) -> list[Diagnostic]:
+        r"""Get diagnostics.
+
+        :param self:
+        :param uri:
+        :type uri: str
+        :param tree:
+        :type tree: Tree
+        :rtype: list[Diagnostic]
+        """
+        return self.unis2diagnostics(self.find_all(uri, tree))
+
+    def get_text_edits(self, uri: str, tree: Tree) -> list[TextEdit]:
         r"""Get text edits.
 
         :param self:
+        :param uri:
+        :type uri: str
+        :param tree:
+        :type tree: Tree
         :rtype: list[TextEdit]
         """
-        raise NotImplementedError
+        self.find_all(uri, tree)
+        return []
+
+    def get_document_links(
+        self, uri: str, tree: Tree, template: str
+    ) -> list[DocumentLink]:
+        r"""Get document links.
+
+        :param uri:
+        :type uri: str
+        :param tree:
+        :type tree: Tree
+        :param template:
+        :type template: str
+        :rtype: list[DocumentLink]
+        """
+        self.find_all(uri, tree)
+        return [
+            uni.get_document_link(template) for uni in self.find_all(uri, tree)
+        ]
