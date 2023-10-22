@@ -57,14 +57,14 @@ def apply_text_edits(text_edits: list[TextEdit], source: str) -> str:
 
 
 def format(
-    paths: list[str], finder: Finder, parse: Callable[[bytes], Tree]
+    paths: list[str], finders: list[Finder], parse: Callable[[bytes], Tree]
 ) -> None:
     r"""Format.
 
     :param paths:
     :type paths: list[str]
-    :param finder:
-    :type finder: Finder
+    :param finders:
+    :type finders: list[Finder]
     :param parse:
     :type parse: Callable[[bytes], Tree]
     :rtype: None
@@ -73,7 +73,31 @@ def format(
         with open(path, "rb") as f:
             src = f.read()
         tree = parse(src)
-        text_edits = finder.get_text_edits(path, tree)
+        text_edits = [
+            text_edit
+            for finder in finders
+            for text_edit in finder.get_text_edits(path, tree)
+        ]
         src = apply_text_edits(text_edits, src.decode())
         with open(path, "w") as f:
             f.write(src)
+
+
+def get_text_edits(
+    finders: list[Finder], uri: str, tree: Tree
+) -> list[TextEdit]:
+    r"""Get text edits.
+
+    :param finders:
+    :type finders: list[Finder]
+    :param uri:
+    :type uri: str
+    :param tree:
+    :type tree: Tree
+    :rtype: list[TextEdit]
+    """
+    return [
+        text_edit
+        for finder in finders
+        for text_edit in finder.get_text_edits(uri, tree)
+    ]
