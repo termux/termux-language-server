@@ -10,7 +10,7 @@ from platformdirs import user_cache_dir
 
 def get_document(
     method: Literal["builtin", "cache", "web"] = "builtin"
-) -> dict[str, tuple[str, str]]:
+) -> tuple[dict[str, tuple[str, str]], dict[str, list[str]]]:
     r"""Get document. ``builtin`` will use builtin termux.json. ``cache``
     will generate a cache from
     `<https://github.com/termux/termux-packages/wiki/Creating-new-package>`_. ``web`` is same as
@@ -22,7 +22,7 @@ def get_document(
 
     :param method:
     :type method: Literal["builtin", "cache", "web"]
-    :rtype: dict[str, tuple[str, str]]
+    :rtype: tuple[dict[str, tuple[str, str]], dict[str, list[str]]]
     """
     if method == "builtin":
         file = os.path.join(

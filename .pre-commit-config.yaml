@@ -1,5 +1,5 @@
 ---
-exclude: (^templates/.*|.*\.json$|^tests/syntax_test_.*)
+exclude: (^templates/.*|.*\.json$)
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -99,10 +99,19 @@ repos:
           - -cpyproject.toml
         additional_dependencies:
           - tomli
-  - repo: https://github.com/nix-community/nixpkgs-fmt
-    rev: v1.3.0
+  - repo: https://github.com/cmake-lint/cmake-lint
+    rev: 1.4.2
     hooks:
-      - id: nixpkgs-fmt
+      - id: cmakelint
+  - repo: https://github.com/cheshirekow/cmake-format-precommit
+    rev: v0.6.13
+    hooks:
+      - id: cmake-format
+        additional_dependencies:
+          - pyyaml
+      - id: cmake-lint
+        additional_dependencies:
+          - pyyaml
 
 ci:
   skip:

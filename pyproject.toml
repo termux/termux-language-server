@@ -1,13 +1,14 @@
 [build-system]
-requires = ["setuptools_scm[toml] >= 6.2", "setuptools-generate >= 0.0.6"]
-build-backend = "setuptools.build_meta"
+requires = ["scikit-build-core"]
+build-backend = "scikit_build_core.build"
 
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 [project]
 name = "termux-language-server"
 description = "termux language server"
 readme = "README.md"
-requires-python = ">= 3.7"
+# type_a | type_b
+requires-python = ">= 3.10"
 keywords = ["termux", "language server"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -20,15 +21,20 @@ classifiers = [
   "Operating System :: MacOS",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dynamic = ["version", "dependencies", "optional-dependencies"]
+# dynamic = ["version", "dependencies", "optional-dependencies"]
+# https://github.com/pypa/twine/issues/753
+dynamic = ["version"]
+dependencies = ["platformdirs", "pygls", "tree-sitter"]
+
+[project.optional-dependencies]
+dev = ["pytest-cov"]
+web = ["beautifulsoup4"]
 
 [[project.authors]]
 name = "Wu Zhenyu"
@@ -46,13 +52,18 @@ Source = "https://github.com/termux/termux-language-server"
 [project.scripts]
 termux-language-server = "termux_language_server.__main__:main"
 
-[tool.setuptools.package-data]
-termux_language_server = ["py.typed", "assets/**"]
+[tool.scikit-build]
+experimental = true
 
-[tool.setuptools.data-files]
-"share/man/man1" = ["sdist/termux-language-server.1"]
-"share/bash-completion/completions" = ["sdist/termux-language-server"]
-"share/zsh/site-functions" = ["sdist/_termux-language-server"]
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.setuptools_scm"
+
+[tool.scikit-build.sdist]
+include = ["src/termux_language_server/_version.py"]
+
+[[tool.scikit-build.generate]]
+path = "termux_language_server/_metainfo.py"
+template-path = "templates/metainfo.py"
 
 [tool.setuptools.dynamic.dependencies]
 file = "requirements.txt"
@@ -67,9 +78,6 @@ file = "requirements/web.txt"
 
 [tool.setuptools_scm]
 write_to = "src/termux_language_server/_version.py"
-
-[tool.setuptools-generate]
-write-to = "src/termux_language_server/_metainfo.py"
 
 [tool.mdformat]
 number = true
@@ -100,5 +108,6 @@ skips = ["*_test.py", "*/test_*.py"]
 
 [tool.cibuildwheel]
 archs = ["all"]
-before-test = "pip install pytest"
+skip = "*37-* *38-* *39-*"
+before-test = "pip install -rrequirements.txt -rrequirements/dev.txt"
 test-command = "pytest {project}"
