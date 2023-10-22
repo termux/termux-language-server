@@ -188,21 +188,39 @@ class UnsortedNodesFinder(UnFixedOrderFinder):
         return []
 
 
-class PackageFinder(Finder):
-    r"""Packagefinder."""
+class UnsortedPackageFinder(Finder):
+    r"""Unsortedpackagefinder."""
 
-    def __init__(self, csvs: set[str]) -> None:
+    def __init__(
+        self,
+        csvs: set[str],
+        message: str = "{{uni.get_text()}}: unsorted",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
+    ) -> None:
         r"""Init.
 
         :param csvs:
         :type csvs: set[str]
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
         :rtype: None
         """
-        super().__init__()
-        self.csvs = csvs - {"TERMUX_PKG_BLACKLISTED_ARCHES"}
+        super().__init__(message, severity)
+        self.csvs = csvs
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.
+
+        :param uni:
+        :type uni: UNI
+        :rtype: bool
+        """
+        return self.is_csv(uni) and self.sort(uni.get_text()) != uni.get_text()
+
+    def is_csv(self, uni: UNI) -> bool:
+        r"""Is csv.
 
         :param uni:
         :type uni: UNI
@@ -214,8 +232,63 @@ class PackageFinder(Finder):
         return (
             parent.type == "variable_assignment"
             and uni.node == parent.children[-1]
+            and (uni.node.type == "word" or uni.node.type == "string")
             and UNI.node2text(parent.children[0]) in self.csvs
         )
+
+    @staticmethod
+    def sort(text: str) -> str:
+        r"""Sort.
+
+        :param text:
+        :type text: str
+        :rtype: str
+        """
+        return (
+            '"'
+            + ", ".join(
+                sorted(word.strip() for word in text.strip('"').split(","))
+            )
+            + '"'
+        )
+
+    def get_text_edits(self, uri: str, tree: Tree) -> list[TextEdit]:
+        r"""Get text edits. Only return two to avoid `Overlapping edit`
+
+        :param self:
+        :param uri:
+        :type uri: str
+        :param tree:
+        :type tree: Tree
+        :rtype: list[TextEdit]
+        """
+        text_edits = [
+            TextEdit(uni.get_range(), self.sort(uni.get_text()))
+            for uni in self.find_all(uri, tree)
+        ]
+        return text_edits
+
+
+class PackageFinder(UnsortedPackageFinder):
+    r"""Packagefinder."""
+
+    def __init__(self, csvs: set[str]) -> None:
+        r"""Init.
+
+        :param csvs:
+        :type csvs: set[str]
+        :rtype: None
+        """
+        super().__init__(csvs - {"TERMUX_PKG_BLACKLISTED_ARCHES"})
+
+    def __call__(self, uni: UNI) -> bool:
+        r"""Call.
+
+        :param uni:
+        :type uni: UNI
+        :rtype: bool
+        """
+        return self.is_csv(uni)
 
     def get_document_links(
         self, uri: str, tree: Tree, template: str

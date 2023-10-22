@@ -6,7 +6,12 @@ from typing import Callable, Literal
 from tree_sitter import Tree
 
 from .documents import get_document, get_filetype
-from .finders import InvalidNodeFinder, RequireNodesFinder, UnsortedNodesFinder
+from .finders import (
+    InvalidNodeFinder,
+    RequireNodesFinder,
+    UnsortedNodesFinder,
+    UnsortedPackageFinder,
+)
 from .tree_sitter_lsp.diagnose import check as _check
 from .tree_sitter_lsp.finders import ErrorFinder, MissingFinder
 from .tree_sitter_lsp.format import format as _format
@@ -67,7 +72,7 @@ def check(
     :type color: Literal["auto", "always", "never"]
     :rtype: int
     """
-    document, required, _ = get_document()
+    document, required, csvs = get_document()
     keywords = get_keywords(document)
     _paths = get_paths(paths)
     return sum(
@@ -78,6 +83,7 @@ def check(
                 RequireNodesFinder(required[filetype]),
                 InvalidNodeFinder(set(keywords[filetype])),
                 UnsortedNodesFinder(keywords[filetype]),
+                UnsortedPackageFinder(csvs[filetype]),
             ],
             parse,
             color,
@@ -98,12 +104,15 @@ def format(
     :type parse: Callable[[bytes], Tree]
     :rtype: None
     """
-    document, _, _ = get_document()
+    document, _, csvs = get_document()
     keywords = get_keywords(document)
     _paths = get_paths(paths)
     for filetype in ["build.sh", "subpackage.sh"]:
         _format(
             _paths[filetype],
-            UnsortedNodesFinder(keywords[filetype]),
+            [
+                UnsortedNodesFinder(keywords[filetype]),
+                UnsortedPackageFinder(csvs[filetype]),
+            ],
             parse,
         )

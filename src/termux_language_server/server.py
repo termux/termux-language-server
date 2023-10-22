@@ -37,9 +37,11 @@ from .finders import (
     PackageFinder,
     RequireNodesFinder,
     UnsortedNodesFinder,
+    UnsortedPackageFinder,
 )
 from .parser import parse
 from .tree_sitter_lsp.diagnose import get_diagnostics
+from .tree_sitter_lsp.format import get_text_edits
 from .utils import DIAGNOSTICS_FINDERS, get_keywords
 
 
@@ -93,6 +95,7 @@ class TermuxLanguageServer(LanguageServer):
                     RequireNodesFinder(self.required[filetype]),
                     InvalidNodeFinder(set(self.keywords[filetype])),
                     UnsortedNodesFinder(self.keywords[filetype]),
+                    UnsortedPackageFinder(self.csvs[filetype]),
                 ],
                 document.uri,
                 self.trees[document.uri],
@@ -111,9 +114,13 @@ class TermuxLanguageServer(LanguageServer):
             if filetype == "":
                 return []
             document = self.workspace.get_document(params.text_document.uri)
-            finder = UnsortedNodesFinder(self.keywords[filetype])
-            return finder.get_text_edits(
-                document.uri, self.trees[document.uri]
+            return get_text_edits(
+                [
+                    UnsortedNodesFinder(self.keywords[filetype]),
+                    UnsortedPackageFinder(self.csvs[filetype]),
+                ],
+                document.uri,
+                self.trees[document.uri],
             )
 
         @self.feature(TEXT_DOCUMENT_DOCUMENT_LINK)
