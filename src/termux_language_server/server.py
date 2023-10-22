@@ -33,11 +33,11 @@ from pygls.server import LanguageServer
 
 from .documents import get_document, get_filetype
 from .finders import (
-    InvalidNodeFinder,
-    PackageFinder,
-    RequireNodesFinder,
-    UnsortedNodesFinder,
-    UnsortedPackageFinder,
+    CSVFinder,
+    InvalidKeywordFinder,
+    RequiredKeywordFinder,
+    UnsortedCSVFinder,
+    UnsortedKeywordFinder,
 )
 from .parser import parse
 from .tree_sitter_lsp.diagnose import get_diagnostics
@@ -92,10 +92,10 @@ class TermuxLanguageServer(LanguageServer):
             diagnostics = get_diagnostics(
                 DIAGNOSTICS_FINDERS
                 + [
-                    RequireNodesFinder(self.required[filetype]),
-                    InvalidNodeFinder(set(self.keywords[filetype])),
-                    UnsortedNodesFinder(self.keywords[filetype]),
-                    UnsortedPackageFinder(self.csvs[filetype]),
+                    RequiredKeywordFinder(self.required[filetype]),
+                    InvalidKeywordFinder(set(self.keywords[filetype])),
+                    UnsortedKeywordFinder(self.keywords[filetype]),
+                    UnsortedCSVFinder(self.csvs[filetype]),
                 ],
                 document.uri,
                 self.trees[document.uri],
@@ -116,8 +116,8 @@ class TermuxLanguageServer(LanguageServer):
             document = self.workspace.get_document(params.text_document.uri)
             return get_text_edits(
                 [
-                    UnsortedNodesFinder(self.keywords[filetype]),
-                    UnsortedPackageFinder(self.csvs[filetype]),
+                    UnsortedKeywordFinder(self.keywords[filetype]),
+                    UnsortedCSVFinder(self.csvs[filetype]),
                 ],
                 document.uri,
                 self.trees[document.uri],
@@ -135,7 +135,7 @@ class TermuxLanguageServer(LanguageServer):
             if filetype == "":
                 return []
             document = self.workspace.get_document(params.text_document.uri)
-            return PackageFinder(self.csvs[filetype]).get_document_links(
+            return CSVFinder(self.csvs[filetype]).get_document_links(
                 document.uri,
                 self.trees[document.uri],
                 "https://github.com/termux/termux-packages/tree/master/packages/{{name}}/build.sh",

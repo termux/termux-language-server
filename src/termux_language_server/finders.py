@@ -18,8 +18,8 @@ from .tree_sitter_lsp import UNI, Finder
 from .tree_sitter_lsp.finders import RequiresFinder, UnFixedOrderFinder
 
 
-class InvalidNodeFinder(Finder):
-    r"""Invalidnodefinder."""
+class InvalidKeywordFinder(Finder):
+    r"""Invalidkeywordfinder."""
 
     def __init__(
         self,
@@ -41,8 +41,8 @@ class InvalidNodeFinder(Finder):
         self.names = names
 
     @staticmethod
-    def is_correct_uni_without_expansion(uni: UNI) -> bool:
-        r"""Is correct uni without expansion.
+    def is_correct_declaration(uni: UNI) -> bool:
+        r"""Is correct declaration.
 
         :param uni:
         :type uni: UNI
@@ -82,8 +82,8 @@ class InvalidNodeFinder(Finder):
         return False
 
     @staticmethod
-    def is_correct_uni(uni: UNI) -> bool:
-        r"""Is correct uni.
+    def is_correct(uni: UNI) -> bool:
+        r"""Is correct.
 
         :param uni:
         :type uni: UNI
@@ -94,7 +94,7 @@ class InvalidNodeFinder(Finder):
         if parent is None:
             return False
         return (
-            InvalidNodeFinder.is_correct_uni_without_expansion(uni)
+            InvalidKeywordFinder.is_correct_declaration(uni)
             or text.isupper()
             and parent.type == "expansion"
             or text.islower()
@@ -110,7 +110,7 @@ class InvalidNodeFinder(Finder):
         """
         text = uni.get_text()
         return text in self.names and (
-            not self.is_correct_uni(uni) or self.is_array(uni)
+            not self.is_correct(uni) or self.is_array(uni)
         )
 
     def uni2diagnostic(self, uni: UNI) -> Diagnostic:
@@ -129,8 +129,8 @@ class InvalidNodeFinder(Finder):
         return uni.get_diagnostic(self.message, self.severity, type=_type)
 
 
-class RequireNodesFinder(RequiresFinder):
-    r"""Requirenodesfinder."""
+class RequiredKeywordFinder(RequiresFinder):
+    r"""Requiredkeywordfinder."""
 
     def filter(self, uni: UNI, require: str) -> bool:
         r"""Filter.
@@ -142,14 +142,13 @@ class RequireNodesFinder(RequiresFinder):
         :rtype: bool
         """
         text = uni.get_text()
-        return (
-            text == require
-            and InvalidNodeFinder.is_correct_uni_without_expansion(uni)
+        return text == require and InvalidKeywordFinder.is_correct_declaration(
+            uni
         )
 
 
-class UnsortedNodesFinder(UnFixedOrderFinder):
-    r"""Unsortednodesfinder."""
+class UnsortedKeywordFinder(UnFixedOrderFinder):
+    r"""Unsortedkeywordfinder."""
 
     def filter(self, uni: UNI) -> bool:
         r"""Filter.
@@ -161,7 +160,7 @@ class UnsortedNodesFinder(UnFixedOrderFinder):
         text = uni.get_text()
         return (
             text in self.order
-            and InvalidNodeFinder.is_correct_uni_without_expansion(uni)
+            and InvalidKeywordFinder.is_correct_declaration(uni)
         )
 
     def get_text_edits(self, uri: str, tree: Tree) -> list[TextEdit]:
@@ -188,8 +187,8 @@ class UnsortedNodesFinder(UnFixedOrderFinder):
         return []
 
 
-class UnsortedPackageFinder(Finder):
-    r"""Unsortedpackagefinder."""
+class UnsortedCSVFinder(Finder):
+    r"""Unsorted comma separated value finder."""
 
     def __init__(
         self,
@@ -269,8 +268,8 @@ class UnsortedPackageFinder(Finder):
         return text_edits
 
 
-class PackageFinder(UnsortedPackageFinder):
-    r"""Packagefinder."""
+class CSVFinder(UnsortedCSVFinder):
+    r"""Comma separated value finder."""
 
     def __init__(self, csvs: set[str]) -> None:
         r"""Init.

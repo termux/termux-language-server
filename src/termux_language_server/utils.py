@@ -7,10 +7,10 @@ from tree_sitter import Tree
 
 from .documents import get_document, get_filetype
 from .finders import (
-    InvalidNodeFinder,
-    RequireNodesFinder,
-    UnsortedNodesFinder,
-    UnsortedPackageFinder,
+    InvalidKeywordFinder,
+    RequiredKeywordFinder,
+    UnsortedCSVFinder,
+    UnsortedKeywordFinder,
 )
 from .tree_sitter_lsp.diagnose import check as _check
 from .tree_sitter_lsp.finders import ErrorFinder, MissingFinder
@@ -80,10 +80,10 @@ def check(
             _paths[filetype],
             DIAGNOSTICS_FINDERS
             + [
-                RequireNodesFinder(required[filetype]),
-                InvalidNodeFinder(set(keywords[filetype])),
-                UnsortedNodesFinder(keywords[filetype]),
-                UnsortedPackageFinder(csvs[filetype]),
+                RequiredKeywordFinder(required[filetype]),
+                InvalidKeywordFinder(set(keywords[filetype])),
+                UnsortedKeywordFinder(keywords[filetype]),
+                UnsortedCSVFinder(csvs[filetype]),
             ],
             parse,
             color,
@@ -111,8 +111,8 @@ def format(
         _format(
             _paths[filetype],
             [
-                UnsortedNodesFinder(keywords[filetype]),
-                UnsortedPackageFinder(csvs[filetype]),
+                UnsortedKeywordFinder(keywords[filetype]),
+                UnsortedCSVFinder(csvs[filetype]),
             ],
             parse,
         )
