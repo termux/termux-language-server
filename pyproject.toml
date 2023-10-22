@@ -30,7 +30,7 @@ classifiers = [
 # dynamic = ["version", "dependencies", "optional-dependencies"]
 # https://github.com/pypa/twine/issues/753
 dynamic = ["version"]
-dependencies = ["platformdirs", "pygls", "tree-sitter"]
+dependencies = ["colorama", "jinja2", "platformdirs", "pygls", "tree-sitter"]
 
 [project.optional-dependencies]
 dev = ["pytest-cov"]
