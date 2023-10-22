@@ -26,7 +26,7 @@ def get_diagnostics(
     return [
         diagnostic
         for finder in finders
-        for diagnostic in finder.unis2diagnostics(finder.find_all(uri, tree))
+        for diagnostic in finder.get_diagnostics(uri, tree)
     ]
 
 

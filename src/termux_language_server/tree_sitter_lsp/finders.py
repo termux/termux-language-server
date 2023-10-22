@@ -2,7 +2,10 @@ r"""Finders
 ===========
 """
 import os
+from copy import deepcopy
+from typing import Any
 
+from jinja2 import Template
 from lsprotocol.types import (
     Diagnostic,
     DiagnosticSeverity,
@@ -11,7 +14,7 @@ from lsprotocol.types import (
     Range,
     TextEdit,
 )
-from tree_sitter import Node
+from tree_sitter import Node, Tree
 
 from . import UNI, Finder
 
@@ -197,19 +200,24 @@ class RepeatedFinder(Finder):
                 locations += [uni_.get_location()]
         return locations
 
-    def get_text_edits(self) -> list[TextEdit]:
-        r"""Get text edits.
+    def get_text_edits(self, uri: str, tree: Tree) -> list[TextEdit]:
+        r"""Get text edits. Only return two to avoid `Overlapping edit`
 
+        :param self:
+        :param uri:
+        :type uri: str
+        :param tree:
+        :type tree: Tree
         :rtype: list[TextEdit]
         """
-        edits = []
+        self.find_all(uri, tree)
         for uni, _uni in self.uni_pairs:
             # swap 2 unis
-            edits += [
+            return [
                 uni.get_text_edit(_uni.get_text()),
                 _uni.get_text_edit(uni.get_text()),
             ]
-        return edits
+        return []
 
     def uni2diagnostic(self, uni: UNI) -> Diagnostic:
         r"""Uni2diagnostic.
@@ -254,6 +262,51 @@ class UnsortedFinder(RepeatedFinder):
         :rtype: bool
         """
         return uni.node.text < _uni.node.text
+
+
+class UnFixedOrderFinder(RepeatedFinder):
+    r"""Unfixedorderfinder."""
+
+    def __init__(
+        self,
+        order: list[Any],
+        message: str = "{{uni.get_text()}}: is unsorted due to {{_uni}}",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
+    ) -> None:
+        r"""Init.
+
+        :param order:
+        :type order: list[Any]
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
+        :rtype: None
+        """
+        super().__init__(message, severity)
+        self.order = order
+
+    def filter(self, uni: UNI) -> bool:
+        r"""Filter.
+
+        :param uni:
+        :type uni: UNI
+        :rtype: bool
+        """
+        return uni.get_text() in self.order
+
+    def compare(self, uni: UNI, _uni: UNI) -> bool:
+        r"""Compare.
+
+        :param uni:
+        :type uni: UNI
+        :param _uni:
+        :type _uni: UNI
+        :rtype: bool
+        """
+        return self.order.index(uni.get_text()) < self.order.index(
+            _uni.get_text()
+        )
 
 
 class TypeFinder(Finder):
@@ -364,3 +417,101 @@ class RangeFinder(Finder):
         """
         node = uni.node
         return self.equal(self.range, node)
+
+
+class RequiresFinder(Finder):
+    r"""Requiresfinder."""
+
+    def __init__(
+        self,
+        requires: set[Any],
+        message: str = "{{require}}: required",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
+    ) -> None:
+        r"""Init.
+
+        :param requires:
+        :type requires: set[Any]
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
+        :rtype: None
+        """
+        self.requires = requires
+        super().__init__(message, severity)
+
+    def reset(self) -> None:
+        r"""Reset.
+
+        :rtype: None
+        """
+        self.unis = []
+        self._requires = deepcopy(self.requires)
+
+    def filter(self, uni: UNI, require: Any) -> bool:
+        r"""Filter.
+
+        :param uni:
+        :type uni: UNI
+        :param require:
+        :type require: Any
+        :rtype: bool
+        """
+        return False
+
+    def __call__(self, uni: UNI) -> bool:
+        r"""Call.
+
+        :param uni:
+        :type uni: UNI
+        :rtype: bool
+        """
+        found = set()
+        for require in self._requires:
+            if self.filter(uni, require):
+                found |= {require}
+        self._requires -= found
+        return False
+
+    def require2message(self, require: Any, **kwargs: Any) -> str:
+        r"""Require2message.
+
+        :param require:
+        :type require: Any
+        :param kwargs:
+        :type kwargs: Any
+        :rtype: str
+        """
+        return Template(self.message).render(
+            uni=self, require=require, **kwargs
+        )
+
+    def get_end(self, tree: Tree) -> int:
+        r"""Get end.
+
+        :param tree:
+        :type tree: Tree
+        :rtype: int
+        """
+        return len(UNI.node2text(tree.root_node).splitlines()[0]) - 1
+
+    def get_diagnostics(self, uri: str, tree: Tree) -> list[Diagnostic]:
+        r"""Get diagnostics.
+
+        :param uri:
+        :type uri: str
+        :param tree:
+        :type tree: Tree
+        :rtype: list[Diagnostic]
+        """
+        self.find_all(uri, tree)
+        end = self.get_end(tree)
+        return [
+            Diagnostic(
+                Range(Position(0, 0), Position(0, end)),
+                self.require2message(i),
+                self.severity,
+            )
+            for i in self._requires
+        ]

@@ -1,9 +1,9 @@
+# shellcheck disable=SC2034
 # https://github.com/termux/termux-packages/pull/17457/files
+TERMUX_PKG_LICENSE=GPL-3.0
 TERMUX_PKG_HOMEPAGE=https://github.com/ggerganov/llama.cpp
 TERMUX_PKG_DESCRIPTION="Port of Facebook's LLaMA model in C/C++"
-TERMUX_PKG_LICENSE=GPL-3.0
 TERMUX_PKG_MAINTAINER=@termux
-TERMUX_PKG_VERSION=0.0.0-b1094
 TERMUX_PKG_SRCURL=https://github.com/ggerganov/llama.cpp/archive/refs/tags/${TERMUX_PKG_VERSION#*-}.tar.gz
 TERMUX_PKG_SHA256=315071e1034846e8ed448008cda35da481f056d6495696cb862ef8b94aaae0f6
 TERMUX_PKG_AUTO_UPDATE=true
@@ -18,7 +18,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 
 # XXX: llama.cpp uses `int64_t`, but on 32-bit Android `size_t` is `int32_t`.
 # XXX: I don't think it will work if we simply casting it.
-TERMUX_PKG_BLACKLISTED_ARCHES="arm, i686"
+TERMUX_PKG_BLACKLISTED_ARCHES=(arm i686)
 
 termux_pkg_auto_update() {
 	local latest_tag
