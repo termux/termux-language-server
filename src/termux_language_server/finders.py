@@ -57,6 +57,7 @@ class InvalidKeywordFinder(Finder):
             and uni.node.type == "variable_name"
             and parent.type == "variable_assignment"
             or text.islower()
+            and uni.node.type == "word"
             and parent.type == "function_definition"
         )
 
@@ -96,9 +97,10 @@ class InvalidKeywordFinder(Finder):
         return (
             InvalidKeywordFinder.is_correct_declaration(uni)
             or text.isupper()
-            and parent.type == "expansion"
+            and uni.node.type == "variable_name"
             or text.islower()
-            and parent.type == "command"
+            and uni.node.type == "word"
+            and parent.type == "command_name"
         )
 
     def __call__(self, uni: UNI) -> bool:
