@@ -7,11 +7,14 @@ from typing import Any
 from lsprotocol.types import (
     INITIALIZE,
     TEXT_DOCUMENT_COMPLETION,
+    TEXT_DOCUMENT_DID_CHANGE,
+    TEXT_DOCUMENT_DID_OPEN,
     TEXT_DOCUMENT_HOVER,
     CompletionItem,
     CompletionItemKind,
     CompletionList,
     CompletionParams,
+    DidChangeTextDocumentParams,
     Hover,
     InitializeParams,
     MarkupContent,
@@ -23,6 +26,9 @@ from lsprotocol.types import (
 from pygls.server import LanguageServer
 
 from .documents import get_document, get_filetype
+from .parser import parse
+from .tree_sitter_lsp.diagnose import get_diagnostics
+from .utils import DIAGNOSTICS_FINDERS
 
 
 class TermuxLanguageServer(LanguageServer):
@@ -37,6 +43,8 @@ class TermuxLanguageServer(LanguageServer):
         """
         super().__init__(*args)
         self.document = {}
+        self.required = {}
+        self.trees = {}
 
         @self.feature(INITIALIZE)
         def initialize(params: InitializeParams) -> None:
@@ -48,7 +56,27 @@ class TermuxLanguageServer(LanguageServer):
             """
             opts = params.initialization_options
             method = getattr(opts, "method", "builtin")
-            self.document = get_document(method)  # type: ignore
+            self.document, self.required = get_document(method)  # type: ignore
+
+        @self.feature(TEXT_DOCUMENT_DID_OPEN)
+        @self.feature(TEXT_DOCUMENT_DID_CHANGE)
+        def did_change(params: DidChangeTextDocumentParams) -> None:
+            r"""Did change.
+
+            :param params:
+            :type params: DidChangeTextDocumentParams
+            :rtype: None
+            """
+            if get_filetype(params.text_document.uri) == "":
+                return None
+            document = self.workspace.get_document(params.text_document.uri)
+            self.trees[document.uri] = parse(document.source.encode())
+            diagnostics = get_diagnostics(
+                DIAGNOSTICS_FINDERS,
+                document.uri,
+                self.trees[document.uri],
+            )
+            self.publish_diagnostics(params.text_document.uri, diagnostics)
 
         @self.feature(TEXT_DOCUMENT_HOVER)
         def hover(params: TextDocumentPositionParams) -> Hover | None:
@@ -83,7 +111,7 @@ class TermuxLanguageServer(LanguageServer):
             """
             filetype = get_filetype(params.text_document.uri)
             if filetype == "":
-                return CompletionList(is_incomplete=False, items=[])
+                return CompletionList(False, [])
             word = self._cursor_word(
                 params.text_document.uri, params.position, False
             )
@@ -100,7 +128,7 @@ class TermuxLanguageServer(LanguageServer):
                 for x in self.document
                 if x.startswith(token) and self.document[x][1] in filetype
             ]
-            return CompletionList(is_incomplete=False, items=items)
+            return CompletionList(False, items)
 
     def _cursor_line(self, uri: str, position: Position) -> str:
         r"""Cursor line.

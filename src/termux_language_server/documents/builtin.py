@@ -29,46 +29,54 @@ def get_soup(uri: str) -> BeautifulSoup:
     return soup
 
 
-def init_document() -> dict[str, tuple[str, str]]:
+def init_document() -> tuple[dict[str, tuple[str, str]], dict[str, list[str]]]:
     r"""Init document.
 
-    :rtype: dict[str, tuple[str, str]]
+    :rtype: tuple[dict[str, tuple[str, str]], dict[str, list[str]]]
     """
     items = {}
-    variable_table, function_table = get_soup(URIS["update"]).findAll("table")
+    required = {"build.sh": [], "subpackage.sh": []}
+    variable_table, function_table = get_soup(URIS["update"]).find_all("table")
     for tr in (
-        get_soup(URIS["function"]).findAll("tr")[1:]
-        + function_table.findAll("tr")[1:]
+        get_soup(URIS["function"]).find_all("tr")[1:]
+        + function_table.find_all("tr")[1:]
     ):
-        tds = tr.findAll("td")
+        tds = tr.find_all("td")
         # overridable means `termux_step_configure() { ... }`
         items[tds[1].text + ("()" if tds[2].text == "yes" else "")] = (
             tds[3].text,
             "",
         )
     soup = get_soup(URIS["variable"])
-    tables = soup.findAll("table")
-    for tr in tables[0].findAll("tr")[1:]:
-        tds = tr.findAll("td")
+    tables = soup.find_all("table")
+    for tr in tables[0].find_all("tr")[1:]:
+        tds = tr.find_all("td")
+        if tds[2].text == "yes":
+            required["build.sh"] += [tds[1].text]
         items[tds[1].text] = (
-            ("Required\n" if tds[2].text == "yes" else "") + tds[3].text,
+            tds[3].text,
             "build.sh",
         )
-    for tr in tables[2].findAll("tr")[1:]:
-        tds = tr.findAll("td")
+    for tr in tables[2].find_all("tr")[1:]:
+        tds = tr.find_all("td")
+        if tds[2].text == "yes":
+            required["subpackage.sh"] += [tds[1].text]
         items[tds[1].text] = (
-            ("Required\n" if tds[2].text == "yes" else "") + tds[3].text,
+            tds[3].text,
             "subpackage.sh",
         )
-    for tr in variable_table.findAll("tr")[1:]:
-        tds = tr.findAll("td")
+    for tr in variable_table.find_all("tr")[1:]:
+        tds = tr.find_all("td")
+        if tds[2].text == "yes":
+            required["build.sh"] += [tds[1].text]
+            required["subpackage.sh"] += [tds[1].text]
         items[tds[1].text] = (
-            ("Required\n" if tds[2].text == "yes" else "") + tds[3].text,
+            tds[3].text,
             "",
         )
-    for li in soup.findAll("ul")[-2].findAll("li"):
+    for li in soup.find_all("ul")[-2].find_all("li"):
         items[li.find("code").text] = (
             li.text.partition("-")[2].strip().replace("\n", " "),
             "",
         )
-    return items
+    return items, required

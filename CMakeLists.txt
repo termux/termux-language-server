@@ -1,0 +1,15 @@
+# https://github.com/tree-sitter/tree-sitter-bash/issues/227
+cmake_minimum_required(VERSION 3.10)
+include(FetchContent)
+FetchContent_Declare(
+  tree-sitter-bash
+  GIT_REPOSITORY "https://github.com/tree-sitter/tree-sitter-bash"
+  GIT_TAG main)
+FetchContent_MakeAvailable(tree-sitter-bash)
+include_directories(${tree-sitter-bash_SOURCE_DIR}/src)
+add_library(parser SHARED ${tree-sitter-bash_SOURCE_DIR}/src/parser.c)
+if(NOT DEFINED SKBUILD_PLATLIB_DIR)
+  set(SKBUILD_PLATLIB_DIR ${CMAKE_SOURCE_DIR}/src)
+endif()
+set(CMAKE_INSTALL_LIBDIR ${SKBUILD_PLATLIB_DIR}/termux_language_server/data/lib)
+install(TARGETS parser RUNTIME)
