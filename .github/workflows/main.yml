@@ -15,47 +15,39 @@ permissions:
   contents: write
 
 env:
+  CMAKE_GENERATOR: Ninja
   PYTHONUTF8: "1"
   python-version: 3.x
   cache: pip
 
 jobs:
-  test:
+  build-wheels-and-test:
     strategy:
       fail-fast: false
       matrix:
         runs-on:
           - ubuntu-latest
-          - macos-latest
-          - windows-latest
-    runs-on: ${{matrix.runs-on}}
+          # Undefined symbols for architecture x86_64:
+          # "_tree_sitter_bash_external_scanner_create"
+          # - macos-latest
+          # error LNK2001: unresolved external symbol
+          # tree_sitter_bash_external_scanner_create
+          # - windows-latest
+    runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: docker/setup-qemu-action@v2.2.0
+        if: runner.os == 'Linux'
+      - uses: pypa/cibuildwheel@v2.14.1
+      - uses: actions/upload-artifact@v3
         with:
-          python-version: ${{env.python-version}}
-          cache: ${{env.cache}}
-          cache-dependency-path: |-
-            requirements.txt
-            requirements/dev.txt
-      - name: Install dependencies
-        run: |
-          pip install -e '.[dev]'
-      - name: Test
-        run: |
-          pytest --cov
-      - uses: codecov/codecov-action@v3
+          path: |
+            wheelhouse/*.whl
 
   build:
-    needs: test
-    strategy:
-      fail-fast: false
-      matrix:
-        runs-on:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
-    runs-on: ${{matrix.runs-on}}
+    needs:
+      - build-wheels-and-test
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -68,24 +60,28 @@ jobs:
       - name: Install dependencies
         run: |
           pip install build
-      - name: Build
+      - name: Build sdist
         run: |
-          pyproject-build
-      - uses: pypa/gh-action-pypi-publish@release/v1
-        if: runner.os == 'Linux' && startsWith(github.ref, 'refs/tags/')
-        with:
-          password: ${{secrets.PYPI_API_TOKEN}}
+          pyproject-build -s
       - uses: actions/upload-artifact@v3
-        if: runner.os == 'Linux' && ! startsWith(github.ref, 'refs/tags/')
+        if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         with:
           path: |
             dist/*
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: dist
       - uses: softprops/action-gh-release@v1
-        if: runner.os == 'Linux' && startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           # body_path: build/CHANGELOG.md
           files: |
             dist/*
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
   deploy-aur:
     needs: build
@@ -94,7 +90,7 @@ jobs:
     steps:
       - uses: Freed-Wu/update-aur-package@v1.0.11
         with:
-          package_name: termux-language-server
+          package_name: autotools-language-server
           ssh_private_key: ${{secrets.AUR_SSH_PRIVATE_KEY}}
 
   deploy-nur:
