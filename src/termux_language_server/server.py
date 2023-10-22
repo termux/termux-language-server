@@ -41,6 +41,7 @@ from .finders import (
 )
 from .parser import parse
 from .tree_sitter_lsp.diagnose import get_diagnostics
+from .tree_sitter_lsp.finders import PositionFinder
 from .tree_sitter_lsp.format import get_text_edits
 from .utils import DIAGNOSTICS_FINDERS, get_keywords
 
@@ -149,19 +150,23 @@ class TermuxLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: Hover | None
             """
-            if get_filetype(params.text_document.uri) == "":
+            filetype = get_filetype(params.text_document.uri)
+            if filetype == "":
                 return None
-            word = self._cursor_word(
-                params.text_document.uri, params.position, True
+            document = self.workspace.get_document(params.text_document.uri)
+            uni = PositionFinder(params.position).find(
+                document.uri, self.trees[document.uri]
             )
-            if not word:
+            if uni is None:
                 return None
-            doc = self.document.get(word[0])
-            if not doc:
+            text = uni.get_text()
+            _range = uni.get_range()
+            result, _filetype = self.document.get(text, ["", ""])
+            if result == "" or _filetype != filetype:
                 return None
             return Hover(
-                MarkupContent(MarkupKind.PlainText, doc[0]),
-                word[1],
+                MarkupContent(MarkupKind.PlainText, result),
+                _range,
             )
 
         @self.feature(TEXT_DOCUMENT_COMPLETION)
