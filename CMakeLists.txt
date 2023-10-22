@@ -1,10 +1,7 @@
 # https://github.com/tree-sitter/tree-sitter-bash/issues/227
 cmake_minimum_required(VERSION 3.10)
 include(FetchContent)
-FetchContent_Declare(
-  tree-sitter-bash
-  GIT_REPOSITORY "https://github.com/tree-sitter/tree-sitter-bash"
-  GIT_TAG main)
+FetchContent_Declare(tree-sitter-bash GIT_REPOSITORY "https://github.com/tree-sitter/tree-sitter-bash")
 FetchContent_MakeAvailable(tree-sitter-bash)
 include_directories(${tree-sitter-bash_SOURCE_DIR}/src)
 add_library(parser SHARED ${tree-sitter-bash_SOURCE_DIR}/src/parser.c)
