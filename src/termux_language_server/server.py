@@ -161,6 +161,21 @@ class TermuxLanguageServer(LanguageServer):
                 return None
             text = uni.get_text()
             _range = uni.get_range()
+            parent = uni.node.parent
+            if parent is None:
+                return None
+            if (
+                uni.node.type == "variable_name"
+                and text.isupper()
+                or uni.node.type == "word"
+                and parent.type
+                in {
+                    "function_definition",
+                    "command_name",
+                }
+                and text.islower()
+            ):
+                return None
             result, _filetype = self.document.get(text, ["", ""])
             if result == "" or _filetype != filetype:
                 return None
