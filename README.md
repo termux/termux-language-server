@@ -70,6 +70,14 @@ Other features:
 
 ## Screenshots
 
+### Diagnostic
+
+![diagnostic](https://github.com/termux/termux-language-server/assets/32936898/598c371f-151d-442f-b782-e504a3d08872)
+
+### Document Link
+
+![document link](https://github.com/termux/termux-language-server/assets/32936898/9149386d-0e19-4f88-9931-dba8a3d960bc)
+
 ### Hover
 
 ![document hover](https://github.com/termux/termux-language-server/assets/32936898/5dfbe6d1-6bff-4ffd-bc8e-ad2c2895af52)
