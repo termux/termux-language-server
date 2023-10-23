@@ -487,15 +487,6 @@ class RequiresFinder(Finder):
             uni=self, require=require, **kwargs
         )
 
-    def get_end(self, tree: Tree) -> int:
-        r"""Get end.
-
-        :param tree:
-        :type tree: Tree
-        :rtype: int
-        """
-        return len(UNI.node2text(tree.root_node).splitlines()[0]) - 1
-
     def get_diagnostics(self, uri: str, tree: Tree) -> list[Diagnostic]:
         r"""Get diagnostics.
 
@@ -506,10 +497,12 @@ class RequiresFinder(Finder):
         :rtype: list[Diagnostic]
         """
         self.find_all(uri, tree)
-        end = self.get_end(tree)
         return [
             Diagnostic(
-                Range(Position(0, 0), Position(0, end)),
+                # If you want to specify a range that contains a line including
+                # the line ending character(s) then use an end position
+                # denoting the start of the next line
+                Range(Position(0, 0), Position(1, 0)),
                 self.require2message(i),
                 self.severity,
             )
