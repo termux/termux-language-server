@@ -5,6 +5,7 @@ from copy import deepcopy
 
 from jinja2 import Template
 from lsprotocol.types import (
+    CompletionItemKind,
     Diagnostic,
     DiagnosticSeverity,
     DocumentLink,
@@ -24,7 +25,7 @@ class InvalidKeywordFinder(Finder):
     def __init__(
         self,
         names: set[str],
-        message: str = "{{uni.get_text()}}: shouldn't be {{type}}",
+        message: str = "{{uni.get_text()}}: should be {{type}}",
         severity: DiagnosticSeverity = DiagnosticSeverity.Error,
     ) -> None:
         r"""Init.
@@ -38,70 +39,90 @@ class InvalidKeywordFinder(Finder):
         :rtype: None
         """
         super().__init__(message, severity)
-        self.names = names
+        self.keywords = {
+            name: CompletionItemKind.Variable
+            if name.isupper()
+            else CompletionItemKind.Function
+            for name in names
+        }
 
     @staticmethod
-    def is_correct_declaration(uni: UNI) -> bool:
+    def get_type(uni: UNI) -> CompletionItemKind:
+        r"""Get type.
+
+        :param uni:
+        :type uni: UNI
+        :rtype: CompletionItemKind
+        """
+        text = uni.get_text()
+        return (
+            CompletionItemKind.Variable
+            if text.isupper()
+            else CompletionItemKind.Function
+        )
+
+    @staticmethod
+    def is_correct_declaration(uni: UNI, _type: CompletionItemKind) -> bool:
         r"""Is correct declaration.
 
         :param uni:
         :type uni: UNI
+        :param _type:
+        :type _type: CompletionItemKind
         :rtype: bool
         """
         parent = uni.node.parent
         if parent is None:
             return False
-        text = uni.get_text()
         return (
-            text.isupper()
+            _type == CompletionItemKind.Variable
             and uni.node.type == "variable_name"
             and parent.type == "variable_assignment"
-            or text.islower()
+            and parent.children[-1].type != "array"
+            or _type == CompletionItemKind.Field
+            and uni.node.type == "variable_name"
+            and parent.type == "variable_assignment"
+            and parent.children[-1].type == "array"
+            or _type == CompletionItemKind.Function
             and uni.node.type == "word"
             and parent.type == "function_definition"
         )
 
     @staticmethod
-    def is_array(uni: UNI) -> bool:
-        r"""Is array.
+    def is_correct_reference(uni: UNI, _type: CompletionItemKind) -> bool:
+        r"""Is correct reference.
 
         :param uni:
         :type uni: UNI
+        :param _type:
+        :type _type: CompletionItemKind
         :rtype: bool
         """
-        text = uni.get_text()
-        parent = uni.node.parent
-        if parent is None:
-            return False
-        if (
-            text.isupper()
-            and uni.node.type == "variable_name"
-            and parent.type == "variable_assignment"
-            and parent.children[-1].type == "array"
-        ):
-            return True
-        return False
-
-    @staticmethod
-    def is_correct(uni: UNI) -> bool:
-        r"""Is correct.
-
-        :param uni:
-        :type uni: UNI
-        :rtype: bool
-        """
-        text = uni.get_text()
         parent = uni.node.parent
         if parent is None:
             return False
         return (
-            InvalidKeywordFinder.is_correct_declaration(uni)
-            or text.isupper()
+            _type in {CompletionItemKind.Variable, CompletionItemKind.Field}
             and uni.node.type == "variable_name"
-            or text.islower()
+            and parent.type in {"expansion", "simple_expansion"}
+            or _type == CompletionItemKind.Function
             and uni.node.type == "word"
             and parent.type == "command_name"
         )
+
+    @staticmethod
+    def is_correct(uni: UNI, _type: CompletionItemKind) -> bool:
+        r"""Is correct.
+
+        :param uni:
+        :type uni: UNI
+        :param _type:
+        :type _type: CompletionItemKind
+        :rtype: bool
+        """
+        return InvalidKeywordFinder.is_correct_declaration(
+            uni, _type
+        ) or InvalidKeywordFinder.is_correct_reference(uni, _type)
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.
@@ -111,9 +132,8 @@ class InvalidKeywordFinder(Finder):
         :rtype: bool
         """
         text = uni.get_text()
-        return text in self.names and (
-            not self.is_correct(uni) or self.is_array(uni)
-        )
+        _type = self.keywords[text]
+        return text in self.keywords and not self.is_correct(uni, _type)
 
     def uni2diagnostic(self, uni: UNI) -> Diagnostic:
         r"""Uni2diagnostic.
@@ -125,10 +145,9 @@ class InvalidKeywordFinder(Finder):
         parent = uni.node.parent
         if parent is None:
             raise TypeError
-        _type = parent.type
-        if self.is_array(uni):
-            _type = "array"
-        return uni.get_diagnostic(self.message, self.severity, type=_type)
+        return uni.get_diagnostic(
+            self.message, self.severity, type=parent.type
+        )
 
 
 class RequiredKeywordFinder(RequiresFinder):
@@ -145,7 +164,7 @@ class RequiredKeywordFinder(RequiresFinder):
         """
         text = uni.get_text()
         return text == require and InvalidKeywordFinder.is_correct_declaration(
-            uni
+            uni, InvalidKeywordFinder.get_type(uni)
         )
 
 
@@ -162,7 +181,9 @@ class UnsortedKeywordFinder(UnFixedOrderFinder):
         text = uni.get_text()
         return (
             text in self.order
-            and InvalidKeywordFinder.is_correct_declaration(uni)
+            and InvalidKeywordFinder.is_correct_declaration(
+                uni, InvalidKeywordFinder.get_type(uni)
+            )
         )
 
     def get_text_edits(self, uri: str, tree: Tree) -> list[TextEdit]:
