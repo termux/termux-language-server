@@ -1,7 +1,6 @@
 r"""Server
 ==========
 """
-import re
 from typing import Any
 
 from lsprotocol.types import (
@@ -25,7 +24,6 @@ from lsprotocol.types import (
     MarkupContent,
     MarkupKind,
     Position,
-    Range,
     TextDocumentPositionParams,
     TextEdit,
 )
@@ -195,68 +193,26 @@ class TermuxLanguageServer(LanguageServer):
             filetype = get_filetype(params.text_document.uri)
             if filetype == "":
                 return CompletionList(False, [])
-            word = self._cursor_word(
-                params.text_document.uri, params.position, False
+            document = self.workspace.get_document(params.text_document.uri)
+            uni = PositionFinder(
+                Position(params.position.line, params.position.character - 1)
+            ).find(document.uri, self.trees[document.uri])
+            if uni is None:
+                return CompletionList(False, [])
+            text = uni.get_text()
+            # v[1] can be "", which both build.sh and subpackage.sh need
+            return CompletionList(
+                False,
+                [
+                    CompletionItem(
+                        k,
+                        kind=CompletionItemKind.Variable
+                        if k.isupper()
+                        else CompletionItemKind.Function,
+                        documentation=v[0],
+                        insert_text=k,
+                    )
+                    for k, v in self.document.items()
+                    if k.startswith(text) and v[1] in filetype
+                ],
             )
-            token = "" if word is None else word[0]
-            items = [
-                CompletionItem(
-                    x,
-                    kind=CompletionItemKind.Variable
-                    if x.isupper()
-                    else CompletionItemKind.Function,
-                    documentation=self.document[x][0],
-                    insert_text=x,
-                )
-                for x in self.document
-                if x.startswith(token) and self.document[x][1] in filetype
-            ]
-            return CompletionList(False, items)
-
-    def _cursor_line(self, uri: str, position: Position) -> str:
-        r"""Cursor line.
-
-        :param uri:
-        :type uri: str
-        :param position:
-        :type position: Position
-        :rtype: str
-        """
-        document = self.workspace.get_document(uri)
-        return document.source.splitlines()[position.line]
-
-    def _cursor_word(
-        self,
-        uri: str,
-        position: Position,
-        include_all: bool = True,
-        regex: str = r"\w+",
-    ) -> tuple[str, Range]:
-        """Cursor word.
-
-        :param self:
-        :param uri:
-        :type uri: str
-        :param position:
-        :type position: Position
-        :param include_all:
-        :type include_all: bool
-        :param regex:
-        :type regex: str
-        :rtype: tuple[str, Range]
-        """
-        line = self._cursor_line(uri, position)
-        for m in re.finditer(regex, line):
-            if m.start() <= position.character <= m.end():
-                end = m.end() if include_all else position.character
-                return (
-                    line[m.start() : end],
-                    Range(
-                        Position(position.line, m.start()),
-                        Position(position.line, end),
-                    ),
-                )
-        return (
-            "",
-            Range(Position(position.line, 0), Position(position.line, 0)),
-        )
