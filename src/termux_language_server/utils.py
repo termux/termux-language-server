@@ -31,10 +31,9 @@ def get_keywords(document: dict[str, tuple[str, str]]) -> dict[str, list[str]]:
     """
     keywords = {"build.sh": [], "subpackage.sh": []}
     for k, v in document.items():
-        if v[1] == "build.sh":
-            keywords["build.sh"] += [k]
-        if v[1] == "subpackage.sh":
-            keywords["subpackage.sh"] += [k]
+        for filetype, words in keywords.items():
+            if v[1] == filetype:
+                words += [k]
     return keywords
 
 
@@ -48,12 +47,9 @@ def get_paths(paths: list[str]) -> dict[str, list[str]]:
     _paths = {"build.sh": [], "subpackage.sh": []}
     for path in paths:
         filetype = get_filetype(path)
-        if filetype == "build.sh":
-            _paths["build.sh"] += [path]
-        elif filetype == "subpackage.sh":
-            _paths["subpackage.sh"] += [path]
-        else:
-            raise NotImplementedError
+        for _filetype, filepaths in _paths.items():
+            if filetype == _filetype:
+                filepaths += [path]
     return _paths
 
 
