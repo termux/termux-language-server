@@ -3,6 +3,7 @@ r"""Tree-sitter LSP
 """
 import os
 from copy import deepcopy
+from dataclasses import dataclass
 from typing import Any
 
 from jinja2 import Template
@@ -22,36 +23,19 @@ from tree_sitter import Node, Tree, TreeCursor
 LEVEL = 5
 
 
+@dataclass
 class UNI:
     r"""Unified node identifier."""
 
-    def __init__(self, uri: str, node: Node) -> None:
-        r"""Init.
+    uri: str
+    node: Node
 
-        :param uri:
-        :type uri: str
-        :param node:
-        :type node: Node
-        :rtype: None
-        """
-        self.uri = uri
-        self.node = node
-
-    def __repr__(self) -> str:
-        r"""Repr.
+    def __str__(self) -> str:
+        r"""Str.
 
         :rtype: str
         """
         return f"{self.get_text()}@{self.uri}:{self.node.start_point[0] + 1}:{self.node.start_point[1] + 1}-{self.node.end_point[0] + 1}:{self.node.end_point[1]}"
-
-    def __eq__(self, that: "UNI") -> bool:
-        r"""Eq.
-
-        :param that:
-        :type that: UNI
-        :rtype: bool
-        """
-        return self.node == that.node
 
     def get_text(self) -> str:
         r"""Get text.
@@ -170,25 +154,18 @@ class UNI:
         return os.path.join(os.path.dirname(path), text)
 
 
+@dataclass
 class Finder:
     r"""Finder."""
 
-    def __init__(
-        self,
-        message: str = "",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
-    ) -> None:
-        r"""Init.
+    message: str = ""
+    severity: DiagnosticSeverity = DiagnosticSeverity.Error
 
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
+    def __post_init__(self) -> None:
+        r"""Post init.
+
         :rtype: None
         """
-        self.level = 0
-        self.message = message
-        self.severity = severity
         self.reset()
 
     def __call__(self, uni: UNI) -> bool:
@@ -330,6 +307,7 @@ class Finder:
 
         :rtype: None
         """
+        self.level = 0
         self.unis = []
 
     def prepare(
