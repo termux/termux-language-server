@@ -39,7 +39,7 @@ def get_schema(
         with open(file, "r") as f:
             document = json.load(f)
     elif method == "cache":
-        from .builtin import init_schema
+        from .termux import init_schema
 
         if not os.path.exists(user_cache_dir(f"{filetype}.json")):
             document = init_schema()[filetype]
@@ -49,7 +49,7 @@ def get_schema(
             with open(user_cache_dir(f"{filetype}.json"), "r") as f:
                 document = json.load(f)
     else:
-        from .builtin import init_schema
+        from .termux import init_schema
 
         document = init_schema()[filetype]
     return document

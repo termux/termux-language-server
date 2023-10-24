@@ -8,6 +8,8 @@
     "TERMUX_PKG_DESCRIPTION",
     "TERMUX_PKG_LICENSE",
     "TERMUX_PKG_VERSION",
+    "TERMUX_PKG_SRCURL",
+    "TERMUX_PKG_SHA256",
     "TERMUX_PKG_AUTO_UPDATE"
   ],
   "properties": {
@@ -337,12 +339,20 @@
       "description": "Link or copy package-specific LICENSE to ./share/doc/$TERMUX_PKG_NAME.",
       "const": 0
     },
+    "termux_step_extract_into_massagedir": {
+      "description": "Extract files modified in $TERMUX_PREFIX.",
+      "const": 0
+    },
     "termux_step_post_massage": {
       "description": "Final hook before creating *.deb file(s).",
       "const": 0
     },
     "termux_step_create_debscripts": {
       "description": "Create maintainer scripts, e.g. pre/post installation hooks.",
+      "const": 0
+    },
+    "termux_pkg_auto_update": {
+      "description": "By default, decide which method (gitlab, github or repology) to use for update, but can be overrided to use custom method (See here).",
       "const": 0
     }
   },
@@ -546,10 +556,6 @@
           "description": "Meson build configuration."
         },
         {
-          "const": "termux_step_extract_into_massagedir",
-          "description": "Extract files modified in $TERMUX_PREFIX."
-        },
-        {
           "const": "termux_step_massage",
           "description": "Strip binaries, remove unneeded files."
         },
@@ -592,10 +598,6 @@
         {
           "const": "termux_repology_api_get_latest_version",
           "description": "Query repology api for latest version."
-        },
-        {
-          "const": "termux_pkg_auto_update",
-          "description": "By default, decide which method (gitlab, github or repology) to use for update, but can be overrided to use custom method (See here)."
         },
         {
           "const": "termux_github_auto_update",

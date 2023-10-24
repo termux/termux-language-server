@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from jinja2 import Template
+from jsonschema import Validator
+from jsonschema.validators import validator_for
 from lsprotocol.types import (
     Diagnostic,
     DiagnosticSeverity,
@@ -18,6 +20,7 @@ from lsprotocol.types import (
 from tree_sitter import Node, Tree
 
 from . import UNI, Finder
+from .schema import Trie
 
 
 @dataclass
@@ -478,4 +481,50 @@ class RequiresFinder(Finder):
                 self.severity,
             )
             for i in self._requires
+        ]
+
+
+@dataclass(init=False)
+class SchemaFinder(Finder):
+    r"""Schemafinder."""
+
+    def __init__(self, schema: dict[str, Any], cls: type[Trie]) -> None:
+        r"""Init.
+
+        :param schema:
+        :type schema: dict[str, Any]
+        :param cls:
+        :type cls: type[Trie]
+        :rtype: None
+        """
+        self.validator = self.schema2validator(schema)
+        self.cls = cls
+
+    @staticmethod
+    def schema2validator(schema: dict[str, Any]) -> Validator:
+        r"""Schema2validator.
+
+        :param schema:
+        :type schema: dict[str, Any]
+        :rtype: Validator
+        """
+        return validator_for(schema)(schema)
+
+    def get_diagnostics(self, _: str, tree: Tree) -> list[Diagnostic]:
+        r"""Get diagnostics.
+
+        :param _:
+        :type _: str
+        :param tree:
+        :type tree: Tree
+        :rtype: list[Diagnostic]
+        """
+        trie = self.cls.from_tree(tree)
+        return [
+            Diagnostic(
+                trie.from_path(error.json_path).range,
+                error.message,
+                DiagnosticSeverity.Error,
+            )
+            for error in self.validator.iter_errors(trie.to_json())
         ]

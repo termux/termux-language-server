@@ -29,9 +29,8 @@ from pygls.server import LanguageServer
 
 from .documents import get_filetype
 from .finders import (
+    BashFinder,
     CSVFinder,
-    InvalidKeywordFinder,
-    RequiredKeywordFinder,
     UnsortedCSVFinder,
     UnsortedKeywordFinder,
 )
@@ -72,8 +71,7 @@ class TermuxLanguageServer(LanguageServer):
             diagnostics = get_diagnostics(
                 DIAGNOSTICS_FINDERS
                 + [
-                    RequiredKeywordFinder(filetype),
-                    InvalidKeywordFinder(filetype),
+                    BashFinder(filetype),
                     UnsortedKeywordFinder(filetype),
                     UnsortedCSVFinder(filetype),
                 ],

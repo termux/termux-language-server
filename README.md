@@ -51,11 +51,11 @@ doesn't support:
 - [x] [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic):
   - [x] required variables. Such as: `TERMUX_PKG_VERSION`
   - [x] variable type. Such as: `TERMUX_PKG_DEPENDS` shouldn't be a function
+  - [x] variable value. Such as: `TERMUX_PKG_AUTO_UPDATE` should be
   - [x] [variable order](https://github.com/termux/termux-packages/wiki/Creating-new-package#table-of-available-package-control-fields)
   - [x] unsorted comma separated value. Such as
     `TERMUX_PKG_RECOMMENDS="python-sentencepiece, python-numpy"`
     should be `TERMUX_PKG_RECOMMENDS="python-numpy, python-sentencepiece"`
-  - [ ] variable value. Such as: `TERMUX_PKG_AUTO_UPDATE` should be
     `true` or `false`
 - [x] [Document Formatting](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting):
   - [x] sort some variables
