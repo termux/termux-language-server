@@ -30,7 +30,15 @@ classifiers = [
 # dynamic = ["version", "dependencies", "optional-dependencies"]
 # https://github.com/pypa/twine/issues/753
 dynamic = ["version"]
-dependencies = ["colorama", "jinja2", "platformdirs", "pygls", "tree-sitter"]
+dependencies = [
+  "colorama",
+  "fqdn",
+  "jinja2",
+  "platformdirs",
+  "pygls",
+  "rfc3987",
+  "tree-sitter",
+]
 
 [project.optional-dependencies]
 colorize = ["pygments"]
@@ -112,6 +120,7 @@ skips = ["*_test.py", "*/test_*.py"]
 
 [tool.cibuildwheel]
 archs = ["all"]
-skip = "*37-* *38-* *39-*"
+# jsonschema depends on rpds-py which depends on cargo
+skip = "*37-* *38-* *39-* *-musllinux_*"
 before-test = "pip install -rrequirements.txt -rrequirements/dev.txt"
 test-command = "pytest {project}"
