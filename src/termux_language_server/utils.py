@@ -8,13 +8,11 @@ from typing import Any, Literal
 from . import FILETYPE
 
 
-def get_schema(
-    filetype: FILETYPE,
-) -> dict[str, Any]:
+def get_schema(filetype: FILETYPE) -> dict[str, Any]:
     r"""Get schema.
 
     :param filetype:
-    :type filetype: Literal["build.sh", "subpackage.sh"]
+    :type filetype: FILETYPE
     :rtype: dict[str, Any]
     """
     file = os.path.join(
@@ -29,15 +27,27 @@ def get_schema(
     return document
 
 
-def get_filetype(uri: str) -> Literal["build.sh", "subpackage.sh", ""]:
+def get_filetype(uri: str) -> FILETYPE | Literal[""]:
     r"""Get filetype.
 
     :param uri:
     :type uri: str
-    :rtype: Literal["build.sh", "subpackage.sh", ""]
+    :rtype: FILETYPE | Literal[""]
     """
-    if os.path.basename(uri) == "build.sh":
+    basename = os.path.basename(uri)
+    ext = uri.split(os.path.extsep)[-1]
+    if basename == "build.sh":
         return "build.sh"
-    if os.path.basename(uri).endswith(".subpackage.sh"):
+    if basename.endswith(".subpackage.sh"):
         return "subpackage.sh"
+    if ext == "install":
+        return "install"
+    if basename == "PKGBUILD":
+        return "PKGBUILD"
+    if ext in {"ebuild", "eclass"}:
+        return "ebuild"
+    if basename == "make.conf":
+        return "make.conf"
+    if basename == "color.map":
+        return "color.map"
     return ""

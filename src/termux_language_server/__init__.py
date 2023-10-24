@@ -11,6 +11,14 @@ except ImportError:  # for setuptools-generate
 
 __all__ = ["__version__", "__version_tuple__"]
 
-FILETYPE = Literal["build.sh", "subpackage.sh"]
+FILETYPE = Literal[
+    "build.sh",
+    "subpackage.sh",
+    "PKGBUILD",
+    "install",
+    "ebuild",
+    "make.conf",
+    "color.map",
+]
 PACKAGE_NAME = r"[a-z][a-z0-9-]*"
 CSV = f"{PACKAGE_NAME}(, {PACKAGE_NAME})*"
