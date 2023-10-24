@@ -6,6 +6,7 @@ colorama
 fqdn
 jinja2
 jsonschema
+# get nvim-tree-sitter's parser
 platformdirs
 pygls
 # uri

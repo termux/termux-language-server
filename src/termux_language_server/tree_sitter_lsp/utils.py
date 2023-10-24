@@ -3,7 +3,10 @@ r"""Utils
 
 Some common functions used by formatters and linters.
 """
-from typing import Callable
+import json
+import os
+import sys
+from typing import Any, Callable
 
 from . import Finder
 
@@ -54,3 +57,43 @@ def get_finders(
         else:
             finders += [cls()]
     return finders, finder_classes
+
+
+def pprint(
+    obj: object, filetype: str = "json", *args: Any, **kwargs: Any
+) -> None:
+    r"""Pprint.
+
+    :param obj:
+    :type obj: object
+    :param filetype:
+    :type filetype: str
+    :param args:
+    :type args: Any
+    :param kwargs:
+    :type kwargs: Any
+    :rtype: None
+    """
+    text = json.dumps(obj, *args, **kwargs)
+    TERM = os.getenv("TERM", "xterm")
+    if not sys.stdout.isatty():
+        TERM = "dumb"
+    try:
+        from pygments import highlight
+        from pygments.formatters import get_formatter_by_name
+        from pygments.lexers import get_lexer_by_name
+
+        if TERM.split("-")[-1] == "256color":
+            formatter_name = "terminal256"
+        elif TERM != "dumb":
+            formatter_name = "terminal"
+        else:
+            formatter_name = None
+        if formatter_name:
+            formatter = get_formatter_by_name(formatter_name)
+            lexer = get_lexer_by_name(filetype)
+            print(highlight(text, lexer, formatter), end="")
+    except ImportError:
+        TERM = "dumb"
+    if TERM == "dumb":
+        print(text)
