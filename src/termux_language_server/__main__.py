@@ -31,7 +31,15 @@ def get_parser():
     parser.add_argument("--version", version=VERSION, action="version")
     parser.add_argument(
         "--generate-schema",
-        choices=["build.sh", "subpackage.sh"],
+        choices={
+            "build.sh",
+            "subpackage.sh",
+            "PKGBUILD",
+            "install",
+            "color.map",
+            "make.conf",
+            "ebuild",
+        },
         help="generate schema json",
     )
     parser.add_argument(
@@ -43,18 +51,18 @@ def get_parser():
     parser.add_argument(
         "--check",
         nargs="*",
-        default=[],
+        default={},
         help="check file's errors and warnings",
     )
     parser.add_argument(
         "--format",
         nargs="*",
-        default=[],
+        default={},
         help="format files",
     )
     parser.add_argument(
         "--color",
-        choices=["auto", "always", "never"],
+        choices={"auto", "always", "never"},
         default="auto",
         help="when to display color",
     )
