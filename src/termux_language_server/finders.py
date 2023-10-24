@@ -19,7 +19,12 @@ from . import CSV, FILETYPE
 from .documents import get_schema
 from .schema import BashTrie
 from .tree_sitter_lsp import UNI, Finder
-from .tree_sitter_lsp.finders import SchemaFinder, UnFixedOrderFinder
+from .tree_sitter_lsp.finders import (
+    ErrorFinder,
+    MissingFinder,
+    SchemaFinder,
+    UnFixedOrderFinder,
+)
 
 SCHEMAS = {}
 for filetype in FILETYPE.__args__:  # type: ignore
@@ -336,3 +341,13 @@ class CSVFinder(UnsortedCSVFinder):
                 ]
                 start[1] += len(name) + 1
         return links
+
+
+DIAGNOSTICS_FINDER_CLASSES = [
+    ErrorFinder,
+    MissingFinder,
+    BashFinder,
+    UnsortedKeywordFinder,
+    UnsortedCSVFinder,
+]
+FORMAT_FINDER_CLASSES = [UnsortedKeywordFinder, UnsortedCSVFinder]

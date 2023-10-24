@@ -1,5 +1,9 @@
 r"""Format
 ==========
+
+Wrap
+``Document Formatting <https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting>``_
+to a formatter.
 """
 from typing import Callable
 
@@ -7,6 +11,7 @@ from lsprotocol.types import Position, Range, TextEdit
 from tree_sitter import Tree
 
 from . import Finder
+from .utils import get_finders, get_paths
 
 
 def position_2d_to_1d(source: str, position: Position) -> int:
@@ -56,17 +61,17 @@ def apply_text_edits(text_edits: list[TextEdit], source: str) -> str:
     return source
 
 
-def format(
-    paths: list[str], finders: list[Finder], parse: Callable[[bytes], Tree]
+def format_by_finders(
+    paths: list[str], parse: Callable[[bytes], Tree], finders: list[Finder]
 ) -> None:
-    r"""Format.
+    r"""Format by finders.
 
     :param paths:
     :type paths: list[str]
-    :param finders:
-    :type finders: list[Finder]
     :param parse:
     :type parse: Callable[[bytes], Tree]
+    :param finders:
+    :type finders: list[Finder]
     :rtype: None
     """
     for path in paths:
@@ -83,17 +88,17 @@ def format(
             f.write(src)
 
 
-def get_text_edits(
-    finders: list[Finder], uri: str, tree: Tree
+def get_text_edits_by_finders(
+    uri: str, tree: Tree, finders: list[Finder]
 ) -> list[TextEdit]:
-    r"""Get text edits.
+    r"""Get text edits by finders.
 
-    :param finders:
-    :type finders: list[Finder]
     :param uri:
     :type uri: str
     :param tree:
     :type tree: Tree
+    :param finders:
+    :type finders: list[Finder]
     :rtype: list[TextEdit]
     """
     return [
@@ -101,3 +106,61 @@ def get_text_edits(
         for finder in finders
         for text_edit in finder.get_text_edits(uri, tree)
     ]
+
+
+def get_text_edits(
+    uri: str,
+    tree: Tree,
+    classes: list[type[Finder]] | None = None,
+    filetype: str | None = None,
+) -> list[TextEdit]:
+    r"""Get text edits.
+
+    :param uri:
+    :type uri: str
+    :param tree:
+    :type tree: Tree
+    :param classes:
+    :type classes: list[type[Finder]] | None
+    :param filetype:
+    :type filetype: str | None
+    :rtype: list[TextEdit]
+    """
+    finders, finder_classes = get_finders(classes)
+    if filetype is None:
+        return get_text_edits_by_finders(uri, tree, finders)
+    return [
+        text_edit
+        for text_edit in get_text_edits_by_finders(
+            uri, tree, finders + [cls(filetype) for cls in finder_classes]
+        )
+    ]
+
+
+def format(
+    paths: list[str],
+    parse: Callable[[bytes], Tree],
+    classes: list[type[Finder]] | None = None,
+    get_filetype: Callable[[str], str] | None = None,
+) -> None:
+    r"""Format.
+
+    :param paths:
+    :type paths: list[str]
+    :param parse:
+    :type parse: Callable[[bytes], Tree]
+    :param classes:
+    :type classes: list[type[Finder]] | None
+    :param get_filetype:
+    :type get_filetype: Callable[[str], str] | None
+    :rtype: None
+    """
+    finders, finder_classes = get_finders(classes)
+    if get_filetype is None:
+        return format_by_finders(paths, parse, finders)
+    for filetype, filepaths in get_paths(paths, get_filetype).items():
+        format_by_finders(
+            filepaths,
+            parse,
+            finders + [cls(filetype) for cls in finder_classes],
+        )
