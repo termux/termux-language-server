@@ -27,11 +27,8 @@ jobs:
       matrix:
         runs-on:
           - ubuntu-latest
-          # Undefined symbols for architecture x86_64:
-          # "_tree_sitter_bash_external_scanner_create"
-          # - macos-latest
-          # error LNK2001: unresolved external symbol
-          # tree_sitter_bash_external_scanner_create
+          - macos-latest
+          # OSError: [WinError 193] %1 is not a valid Win32 application
           # - windows-latest
     runs-on: ${{ matrix.runs-on }}
     steps:
