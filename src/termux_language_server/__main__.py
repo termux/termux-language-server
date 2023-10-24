@@ -65,11 +65,16 @@ def main():
 
         get_schema(args.generate_schema, "cache")
         exit()
+    from .documents import get_filetype
+    from .finders import DIAGNOSTICS_FINDER_CLASSES, FORMAT_FINDER_CLASSES
     from .parser import parse
-    from .utils import check_by_filetype, format_by_filetype
+    from .tree_sitter_lsp.diagnose import check
+    from .tree_sitter_lsp.format import format
 
-    format_by_filetype(args.format, parse)
-    result = check_by_filetype(args.check, parse, args.color)
+    format(args.format, parse, FORMAT_FINDER_CLASSES, get_filetype)
+    result = check(
+        args.check, parse, DIAGNOSTICS_FINDER_CLASSES, get_filetype, args.color
+    )
     if args.format or args.check:
         exit(result)
 

@@ -29,16 +29,15 @@ from pygls.server import LanguageServer
 
 from .documents import get_filetype
 from .finders import (
-    BashFinder,
+    DIAGNOSTICS_FINDER_CLASSES,
+    FORMAT_FINDER_CLASSES,
+    SCHEMAS,
     CSVFinder,
-    UnsortedCSVFinder,
-    UnsortedKeywordFinder,
 )
 from .parser import parse
 from .tree_sitter_lsp.diagnose import get_diagnostics
 from .tree_sitter_lsp.finders import PositionFinder
 from .tree_sitter_lsp.format import get_text_edits
-from .utils import DIAGNOSTICS_FINDERS
 
 
 class TermuxLanguageServer(LanguageServer):
@@ -69,14 +68,10 @@ class TermuxLanguageServer(LanguageServer):
             document = self.workspace.get_document(params.text_document.uri)
             self.trees[document.uri] = parse(document.source.encode())
             diagnostics = get_diagnostics(
-                DIAGNOSTICS_FINDERS
-                + [
-                    BashFinder(filetype),
-                    UnsortedKeywordFinder(filetype),
-                    UnsortedCSVFinder(filetype),
-                ],
                 document.uri,
                 self.trees[document.uri],
+                DIAGNOSTICS_FINDER_CLASSES,
+                filetype,
             )
             self.publish_diagnostics(params.text_document.uri, diagnostics)
 
@@ -93,12 +88,10 @@ class TermuxLanguageServer(LanguageServer):
                 return []
             document = self.workspace.get_document(params.text_document.uri)
             return get_text_edits(
-                [
-                    UnsortedKeywordFinder(self.keywords[filetype]),
-                    UnsortedCSVFinder(self.csvs[filetype]),
-                ],
                 document.uri,
                 self.trees[document.uri],
+                FORMAT_FINDER_CLASSES,
+                filetype,
             )
 
         @self.feature(TEXT_DOCUMENT_DOCUMENT_LINK)
@@ -113,7 +106,7 @@ class TermuxLanguageServer(LanguageServer):
             if filetype == "":
                 return []
             document = self.workspace.get_document(params.text_document.uri)
-            return CSVFinder(self.csvs[filetype]).get_document_links(
+            return CSVFinder(filetype).get_document_links(
                 document.uri,
                 self.trees[document.uri],
                 "https://github.com/termux/termux-packages/tree/master/packages/{{name}}/build.sh",
@@ -153,13 +146,15 @@ class TermuxLanguageServer(LanguageServer):
                 and text.islower()
             ):
                 return None
-            result, _filetype = self.document.get(text, ["", ""])
-            if result == "" or _filetype != filetype:
-                return None
-            return Hover(
-                MarkupContent(MarkupKind.PlainText, result),
-                _range,
-            )
+            if description := (
+                SCHEMAS[filetype]["properties"]
+                .get(text, {})
+                .get("description")
+            ):
+                return Hover(
+                    MarkupContent(MarkupKind.PlainText, description),
+                    _range,
+                )
 
         @self.feature(TEXT_DOCUMENT_COMPLETION)
         def completions(params: CompletionParams) -> CompletionList:
@@ -179,19 +174,18 @@ class TermuxLanguageServer(LanguageServer):
             if uni is None:
                 return CompletionList(False, [])
             text = uni.get_text()
-            # v[1] can be "", which both build.sh and subpackage.sh need
             return CompletionList(
                 False,
                 [
                     CompletionItem(
                         k,
                         kind=CompletionItemKind.Variable
-                        if k.isupper()
+                        if v.get("type") == "string"
                         else CompletionItemKind.Function,
-                        documentation=v[0],
+                        documentation=v["description"],
                         insert_text=k,
                     )
-                    for k, v in self.document.items()
-                    if k.startswith(text) and v[1] in filetype
+                    for k, v in SCHEMAS[filetype]["properties"].items()
+                    if k.startswith(text)
                 ],
             )

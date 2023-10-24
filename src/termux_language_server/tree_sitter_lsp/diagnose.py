@@ -1,5 +1,9 @@
 r"""Diagnose
 ============
+
+Wrap
+``Diagnostic <https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic>``_
+to a linter.
 """
 import sys
 from typing import Callable, Literal
@@ -8,25 +12,55 @@ from lsprotocol.types import Diagnostic, DiagnosticSeverity
 from tree_sitter import Tree
 
 from . import Finder
+from .utils import get_finders, get_paths
 
 
-def get_diagnostics(
-    finders: list[Finder], uri: str, tree: Tree
+def get_diagnostics_by_finders(
+    uri: str, tree: Tree, finders: list[Finder]
 ) -> list[Diagnostic]:
-    r"""Get diagnostics.
+    r"""Get diagnostics by finders.
 
-    :param finders:
-    :type finders: list[Finder]
     :param uri:
     :type uri: str
     :param tree:
     :type tree: Tree
+    :param finders:
+    :type finders: list[Finder]
     :rtype: list[Diagnostic]
     """
     return [
         diagnostic
         for finder in finders
         for diagnostic in finder.get_diagnostics(uri, tree)
+    ]
+
+
+def get_diagnostics(
+    uri: str,
+    tree: Tree,
+    classes: list[type[Finder]] | None = None,
+    filetype: str | None = None,
+) -> list[Diagnostic]:
+    r"""Get diagnostics.
+
+    :param uri:
+    :type uri: str
+    :param tree:
+    :type tree: Tree
+    :param classes:
+    :type classes: list[type[Finder]] | None
+    :param filetype:
+    :type filetype: str | None
+    :rtype: list[Diagnostic]
+    """
+    finders, finder_classes = get_finders(classes)
+    if filetype is None:
+        return get_diagnostics_by_finders(uri, tree, finders)
+    return [
+        diagnostic
+        for diagnostic in get_diagnostics_by_finders(
+            uri, tree, finders + [cls(filetype) for cls in finder_classes]
+        )
     ]
 
 
@@ -95,20 +129,20 @@ def diagnostics2linter_messages(
     ]
 
 
-def check(
+def check_by_finders(
     paths: list[str],
-    finders: list[Finder],
     parse: Callable[[bytes], Tree],
+    finders: list[Finder],
     color: Literal["auto", "always", "never"] = "auto",
 ) -> int:
-    r"""Check.
+    r"""Check by finders.
 
     :param paths:
     :type paths: list[str]
-    :param finders:
-    :type finders: list[Finder]
     :param parse:
     :type parse: Callable[[bytes], Tree]
+    :param finders:
+    :type finders: list[Finder]
     :param color:
     :type color: Literal["auto", "always", "never"]
     :rtype: int
@@ -119,8 +153,43 @@ def check(
         with open(path, "rb") as f:
             src = f.read()
         tree = parse(src)
-        diagnostics = get_diagnostics(finders, path, tree)
+        diagnostics = get_diagnostics_by_finders(path, tree, finders)
         count += count_level(diagnostics)
         lines += diagnostics2linter_messages(path, diagnostics, color)
     print("\n".join(lines))
     return count
+
+
+def check(
+    paths: list[str],
+    parse: Callable[[bytes], Tree],
+    classes: list[type[Finder]] | None = None,
+    get_filetype: Callable[[str], str] | None = None,
+    color: Literal["auto", "always", "never"] = "auto",
+) -> int:
+    r"""Check.
+
+    :param paths:
+    :type paths: list[str]
+    :param parse:
+    :type parse: Callable[[bytes], Tree]
+    :param classes:
+    :type classes: list[type[Finder]] | None
+    :param get_filetype:
+    :type get_filetype: Callable[[str], str] | None
+    :param color:
+    :type color: Literal["auto", "always", "never"]
+    :rtype: int
+    """
+    finders, finder_classes = get_finders(classes)
+    if get_filetype is None:
+        return check_by_finders(paths, parse, finders, color)
+    return sum(
+        check_by_finders(
+            filepaths,
+            parse,
+            finders + [cls(filetype) for cls in finder_classes],
+            color,
+        )
+        for filetype, filepaths in get_paths(paths, get_filetype).items()
+    )
