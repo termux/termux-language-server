@@ -1,5 +1,5 @@
-r"""Builtin
-===========
+r"""Termux
+==========
 """
 from typing import Any
 from urllib import request
@@ -140,7 +140,9 @@ def init_schema() -> dict[str, dict[str, Any]]:
     ):
         tds = tr.find_all("td")
         name = tds[1].text
-        is_overrideable = tds[2].text == "yes"
+        # NOTE: capital
+        # use `!=  "no"` to allow some conditional yes
+        is_overrideable = tds[2].text.lower() != "no"
         description = tds[3].text.strip()
         if is_overrideable:
             schemas["build.sh"]["properties"][name] = {

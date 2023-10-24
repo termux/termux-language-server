@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from jinja2 import Template
 from lsprotocol.types import (
     CompletionItemKind,
-    Diagnostic,
     DiagnosticSeverity,
     DocumentLink,
     Position,
@@ -18,8 +17,9 @@ from tree_sitter import Tree
 
 from . import CSV, FILETYPE
 from .documents import get_schema
+from .schema import BashTrie
 from .tree_sitter_lsp import UNI, Finder
-from .tree_sitter_lsp.finders import RequiresFinder, UnFixedOrderFinder
+from .tree_sitter_lsp.finders import SchemaFinder, UnFixedOrderFinder
 
 SCHEMAS = {}
 for filetype in FILETYPE.__args__:  # type: ignore
@@ -27,14 +27,29 @@ for filetype in FILETYPE.__args__:  # type: ignore
 
 
 @dataclass(init=False)
-class InvalidKeywordFinder(Finder):
-    r"""Invalidkeywordfinder."""
+class BashFinder(SchemaFinder):
+    r"""Bashfinder."""
+
+    def __init__(self, filetype: FILETYPE) -> None:
+        r"""Init.
+
+        :param filetype:
+        :type filetype: FILETYPE
+        :rtype: None
+        """
+        self.validator = self.schema2validator(SCHEMAS[filetype])
+        self.cls = BashTrie
+
+
+@dataclass(init=False)
+class UnsortedKeywordFinder(UnFixedOrderFinder):
+    r"""Unsortedkeywordfinder."""
 
     def __init__(
         self,
         filetype: FILETYPE,
-        message: str = "{{uni.get_text()}}: should be {{type}}",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
+        message: str = "{{uni.get_text()}}: is unsorted due to {{_uni}}",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
     ) -> None:
         r"""Init.
 
@@ -46,8 +61,10 @@ class InvalidKeywordFinder(Finder):
         :type severity: DiagnosticSeverity
         :rtype: None
         """
-        super().__init__(message, severity)
-        self.keywords = self.get_keywords(filetype)
+        super().__init__(
+            list(SCHEMAS[filetype]["properties"]), message, severity
+        )
+        self.keywords = UnsortedKeywordFinder.get_keywords(filetype)
 
     @staticmethod
     def get_keywords(filetype) -> dict[str, CompletionItemKind]:
@@ -124,103 +141,9 @@ class InvalidKeywordFinder(Finder):
         :type _type: CompletionItemKind
         :rtype: bool
         """
-        return InvalidKeywordFinder.is_correct_declaration(
+        return UnsortedKeywordFinder.is_correct_declaration(
             uni, _type
-        ) or InvalidKeywordFinder.is_correct_reference(uni, _type)
-
-    def __call__(self, uni: UNI) -> bool:
-        r"""Call.
-
-        :param uni:
-        :type uni: UNI
-        :rtype: bool
-        """
-        text = uni.get_text()
-        return text in self.keywords and not self.is_correct(
-            uni, self.keywords[text]
-        )
-
-    def uni2diagnostic(self, uni: UNI) -> Diagnostic:
-        r"""Uni2diagnostic.
-
-        :param uni:
-        :type uni: UNI
-        :rtype: Diagnostic
-        """
-        parent = uni.node.parent
-        if parent is None:
-            raise TypeError
-        return uni.get_diagnostic(
-            self.message, self.severity, type=parent.type
-        )
-
-
-@dataclass(init=False)
-class RequiredKeywordFinder(RequiresFinder):
-    r"""Requiredkeywordfinder."""
-
-    def __init__(
-        self,
-        filetype: FILETYPE,
-        message: str = "{{require}}: required",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
-    ) -> None:
-        r"""Init.
-
-        :param filetype:
-        :type filetype: FILETYPE
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
-        :rtype: None
-        """
-        super().__init__(set(SCHEMAS[filetype]["required"]), message, severity)
-        self.keywords = InvalidKeywordFinder.get_keywords(filetype)
-
-    def filter(self, uni: UNI, require: str) -> bool:
-        r"""Filter.
-
-        :param uni:
-        :type uni: UNI
-        :param require:
-        :type require: str
-        :rtype: bool
-        """
-        text = uni.get_text()
-        return (
-            text == require
-            and text in self.keywords
-            and InvalidKeywordFinder.is_correct_declaration(
-                uni, self.keywords[text]
-            )
-        )
-
-
-@dataclass(init=False)
-class UnsortedKeywordFinder(UnFixedOrderFinder):
-    r"""Unsortedkeywordfinder."""
-
-    def __init__(
-        self,
-        filetype: FILETYPE,
-        message: str = "{{uni.get_text()}}: is unsorted due to {{_uni}}",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
-    ) -> None:
-        r"""Init.
-
-        :param filetype:
-        :type filetype: FILETYPE
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
-        :rtype: None
-        """
-        super().__init__(
-            list(SCHEMAS[filetype]["properties"]), message, severity
-        )
-        self.keywords = InvalidKeywordFinder.get_keywords(filetype)
+        ) or UnsortedKeywordFinder.is_correct_reference(uni, _type)
 
     def filter(self, uni: UNI) -> bool:
         r"""Filter.
@@ -233,7 +156,7 @@ class UnsortedKeywordFinder(UnFixedOrderFinder):
         return (
             text in self.order
             and text in self.keywords
-            and InvalidKeywordFinder.is_correct_declaration(
+            and UnsortedKeywordFinder.is_correct_declaration(
                 uni, self.keywords[text]
             )
         )

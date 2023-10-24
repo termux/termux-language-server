@@ -6,7 +6,6 @@ TERMUX_PKG_DESCRIPTION="Port of Facebook's LLaMA model in C/C++"
 TERMUX_PKG_MAINTAINER=@termux
 TERMUX_PKG_SRCURL=https://github.com/ggerganov/llama.cpp/archive/refs/tags/${TERMUX_PKG_VERSION#*-}.tar.gz
 TERMUX_PKG_SHA256=315071e1034846e8ed448008cda35da481f056d6495696cb862ef8b94aaae0f6
-TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="libc++, libopenblas, openmpi"
 TERMUX_PKG_RECOMMENDS="python-sentencepiece, python-numpy"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
@@ -15,6 +14,7 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DLLAMA_BLAS=ON
 -DLLAMA_BLAS_VENDOR=OpenBLAS
 "
+TERMUX_PKG_AUTO_UPDATE=true
 
 # XXX: llama.cpp uses `int64_t`, but on 32-bit Android `size_t` is `int32_t`.
 # XXX: I don't think it will work if we simply casting it.

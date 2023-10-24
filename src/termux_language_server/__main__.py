@@ -66,10 +66,10 @@ def main():
         get_schema(args.generate_schema, "cache")
         exit()
     from .parser import parse
-    from .utils import check, format
+    from .utils import check_by_filetype, format_by_filetype
 
-    format(args.format, parse)
-    result = check(args.check, parse, args.color)
+    format_by_filetype(args.format, parse)
+    result = check_by_filetype(args.check, parse, args.color)
     if args.format or args.check:
         exit(result)
 

@@ -5,17 +5,12 @@ from typing import Callable, Literal
 
 from tree_sitter import Tree
 
-from . import FILETYPE
 from .documents import get_filetype
-from .finders import (
-    InvalidKeywordFinder,
-    RequiredKeywordFinder,
-    UnsortedCSVFinder,
-    UnsortedKeywordFinder,
-)
-from .tree_sitter_lsp.diagnose import check as _check
+from .finders import BashFinder, UnsortedCSVFinder, UnsortedKeywordFinder
+from .tree_sitter_lsp.diagnose import check
 from .tree_sitter_lsp.finders import ErrorFinder, MissingFinder
-from .tree_sitter_lsp.format import format as _format
+from .tree_sitter_lsp.format import format
+from .tree_sitter_lsp.utils import get_paths
 
 DIAGNOSTICS_FINDERS = [
     ErrorFinder(),
@@ -23,28 +18,12 @@ DIAGNOSTICS_FINDERS = [
 ]
 
 
-def get_paths(paths: list[str]) -> dict[FILETYPE, list[str]]:
-    r"""Get paths.
-
-    :param paths:
-    :type paths: list[str]
-    :rtype: dict[FILETYPE, list[str]]
-    """
-    _paths = {k: [] for k in FILETYPE.__args__}  # type: ignore
-    for path in paths:
-        filetype = get_filetype(path)
-        for _filetype, filepaths in _paths.items():
-            if filetype == _filetype:
-                filepaths += [path]
-    return _paths
-
-
-def check(
+def check_by_filetype(
     paths: list[str],
     parse: Callable[[bytes], Tree],
     color: Literal["auto", "always", "never"] = "auto",
 ) -> int:
-    r"""Check.
+    r"""Check by filetype.
 
     :param paths:
     :type paths: list[str]
@@ -55,27 +34,26 @@ def check(
     :rtype: int
     """
     return sum(
-        _check(
+        check(
             _paths,
             DIAGNOSTICS_FINDERS
             + [
-                RequiredKeywordFinder(filetype),
-                InvalidKeywordFinder(filetype),
+                BashFinder(filetype),
                 UnsortedKeywordFinder(filetype),
                 UnsortedCSVFinder(filetype),
             ],
             parse,
             color,
         )
-        for filetype, _paths in get_paths(paths).items()
+        for filetype, _paths in get_paths(paths, get_filetype).items()
     )
 
 
-def format(
+def format_by_filetype(
     paths: list[str],
     parse: Callable[[bytes], Tree],
 ) -> None:
-    r"""Format.
+    r"""Format by filetype.
 
     :param paths:
     :type paths: list[str]
@@ -83,8 +61,8 @@ def format(
     :type parse: Callable[[bytes], Tree]
     :rtype: None
     """
-    for filetype, _paths in get_paths(paths).items():
-        _format(
+    for filetype, _paths in get_paths(paths, get_filetype).items():
+        format(
             _paths,
             [
                 UnsortedKeywordFinder(filetype),
