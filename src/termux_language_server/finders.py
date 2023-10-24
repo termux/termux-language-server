@@ -2,6 +2,7 @@ r"""Finders
 ===========
 """
 from copy import deepcopy
+from dataclasses import dataclass
 
 from jinja2 import Template
 from lsprotocol.types import (
@@ -15,23 +16,30 @@ from lsprotocol.types import (
 )
 from tree_sitter import Tree
 
+from . import CSV, FILETYPE
+from .documents import get_schema
 from .tree_sitter_lsp import UNI, Finder
 from .tree_sitter_lsp.finders import RequiresFinder, UnFixedOrderFinder
 
+SCHEMAS = {}
+for filetype in FILETYPE.__args__:  # type: ignore
+    SCHEMAS[filetype] = get_schema(filetype)
 
+
+@dataclass(init=False)
 class InvalidKeywordFinder(Finder):
     r"""Invalidkeywordfinder."""
 
     def __init__(
         self,
-        names: set[str],
+        filetype: FILETYPE,
         message: str = "{{uni.get_text()}}: should be {{type}}",
         severity: DiagnosticSeverity = DiagnosticSeverity.Error,
     ) -> None:
         r"""Init.
 
-        :param names:
-        :type names: set[str]
+        :param filetype:
+        :type filetype: FILETYPE
         :param message:
         :type message: str
         :param severity:
@@ -39,27 +47,23 @@ class InvalidKeywordFinder(Finder):
         :rtype: None
         """
         super().__init__(message, severity)
-        self.keywords = {
-            name: CompletionItemKind.Variable
-            if name.isupper()
-            else CompletionItemKind.Function
-            for name in names
-        }
+        self.keywords = self.get_keywords(filetype)
 
     @staticmethod
-    def get_type(uni: UNI) -> CompletionItemKind:
-        r"""Get type.
+    def get_keywords(filetype) -> dict[str, CompletionItemKind]:
+        r"""Get keywords.
 
-        :param uni:
-        :type uni: UNI
-        :rtype: CompletionItemKind
+        :param filetype:
+        :rtype: dict[str, CompletionItemKind]
         """
-        text = uni.get_text()
-        return (
-            CompletionItemKind.Variable
-            if text.isupper()
-            else CompletionItemKind.Function
-        )
+        return {
+            k: (
+                CompletionItemKind.Function
+                if v.get("const") == 0
+                else CompletionItemKind.Variable
+            )
+            for k, v in SCHEMAS[filetype]["properties"].items()
+        }
 
     @staticmethod
     def is_correct_declaration(uni: UNI, _type: CompletionItemKind) -> bool:
@@ -132,8 +136,9 @@ class InvalidKeywordFinder(Finder):
         :rtype: bool
         """
         text = uni.get_text()
-        _type = self.keywords[text]
-        return text in self.keywords and not self.is_correct(uni, _type)
+        return text in self.keywords and not self.is_correct(
+            uni, self.keywords[text]
+        )
 
     def uni2diagnostic(self, uni: UNI) -> Diagnostic:
         r"""Uni2diagnostic.
@@ -150,8 +155,28 @@ class InvalidKeywordFinder(Finder):
         )
 
 
+@dataclass(init=False)
 class RequiredKeywordFinder(RequiresFinder):
     r"""Requiredkeywordfinder."""
+
+    def __init__(
+        self,
+        filetype: FILETYPE,
+        message: str = "{{require}}: required",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
+    ) -> None:
+        r"""Init.
+
+        :param filetype:
+        :type filetype: FILETYPE
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
+        :rtype: None
+        """
+        super().__init__(set(SCHEMAS[filetype]["required"]), message, severity)
+        self.keywords = InvalidKeywordFinder.get_keywords(filetype)
 
     def filter(self, uni: UNI, require: str) -> bool:
         r"""Filter.
@@ -163,13 +188,39 @@ class RequiredKeywordFinder(RequiresFinder):
         :rtype: bool
         """
         text = uni.get_text()
-        return text == require and InvalidKeywordFinder.is_correct_declaration(
-            uni, InvalidKeywordFinder.get_type(uni)
+        return (
+            text == require
+            and text in self.keywords
+            and InvalidKeywordFinder.is_correct_declaration(
+                uni, self.keywords[text]
+            )
         )
 
 
+@dataclass(init=False)
 class UnsortedKeywordFinder(UnFixedOrderFinder):
     r"""Unsortedkeywordfinder."""
+
+    def __init__(
+        self,
+        filetype: FILETYPE,
+        message: str = "{{uni.get_text()}}: is unsorted due to {{_uni}}",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
+    ) -> None:
+        r"""Init.
+
+        :param filetype:
+        :type filetype: FILETYPE
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
+        :rtype: None
+        """
+        super().__init__(
+            list(SCHEMAS[filetype]["properties"]), message, severity
+        )
+        self.keywords = InvalidKeywordFinder.get_keywords(filetype)
 
     def filter(self, uni: UNI) -> bool:
         r"""Filter.
@@ -181,8 +232,9 @@ class UnsortedKeywordFinder(UnFixedOrderFinder):
         text = uni.get_text()
         return (
             text in self.order
+            and text in self.keywords
             and InvalidKeywordFinder.is_correct_declaration(
-                uni, InvalidKeywordFinder.get_type(uni)
+                uni, self.keywords[text]
             )
         )
 
@@ -210,19 +262,20 @@ class UnsortedKeywordFinder(UnFixedOrderFinder):
         return []
 
 
+@dataclass(init=False)
 class UnsortedCSVFinder(Finder):
     r"""Unsorted comma separated value finder."""
 
     def __init__(
         self,
-        csvs: set[str],
+        filetype: FILETYPE,
         message: str = "{{uni.get_text()}}: unsorted",
         severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
     ) -> None:
         r"""Init.
 
-        :param csvs:
-        :type csvs: set[str]
+        :param filetype:
+        :type filetype: FILETYPE
         :param message:
         :type message: str
         :param severity:
@@ -230,7 +283,21 @@ class UnsortedCSVFinder(Finder):
         :rtype: None
         """
         super().__init__(message, severity)
-        self.csvs = csvs
+        self.csvs = self.get_csvs(filetype)
+
+    @staticmethod
+    def get_csvs(filetype: FILETYPE) -> set[str]:
+        r"""Get csvs.
+
+        :param filetype:
+        :type filetype: FILETYPE
+        :rtype: set[str]
+        """
+        return set(
+            k
+            for k, v in SCHEMAS[filetype]["properties"].items()
+            if v.get("pattern") == CSV
+        )
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.
@@ -291,17 +358,16 @@ class UnsortedCSVFinder(Finder):
         return text_edits
 
 
+@dataclass()
 class CSVFinder(UnsortedCSVFinder):
     r"""Comma separated value finder."""
 
-    def __init__(self, csvs: set[str]) -> None:
-        r"""Init.
+    def __post_init__(self) -> None:
+        r"""Post init.
 
-        :param csvs:
-        :type csvs: set[str]
         :rtype: None
         """
-        super().__init__(csvs - {"TERMUX_PKG_BLACKLISTED_ARCHES"})
+        self.csvs -= {"TERMUX_PKG_BLACKLISTED_ARCHES"}
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.

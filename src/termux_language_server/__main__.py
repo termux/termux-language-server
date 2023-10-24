@@ -30,6 +30,11 @@ def get_parser():
         shtab.add_argument_to(parser)
     parser.add_argument("--version", version=VERSION, action="version")
     parser.add_argument(
+        "--generate-schema",
+        choices=["build.sh", "subpackage.sh"],
+        help="generate schema json",
+    )
+    parser.add_argument(
         "--check",
         nargs="*",
         default=[],
@@ -55,6 +60,11 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
+    if args.generate_schema:
+        from .documents import get_schema
+
+        get_schema(args.generate_schema, "cache")
+        exit()
     from .parser import parse
     from .utils import check, format
 
