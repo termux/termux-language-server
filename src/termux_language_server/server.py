@@ -27,7 +27,6 @@ from lsprotocol.types import (
 )
 from pygls.server import LanguageServer
 
-from .documents import get_filetype
 from .finders import (
     DIAGNOSTICS_FINDER_CLASSES,
     FORMAT_FINDER_CLASSES,
@@ -38,6 +37,7 @@ from .parser import parse
 from .tree_sitter_lsp.diagnose import get_diagnostics
 from .tree_sitter_lsp.finders import PositionFinder
 from .tree_sitter_lsp.format import get_text_edits
+from .utils import get_filetype
 
 
 class TermuxLanguageServer(LanguageServer):

@@ -33,8 +33,9 @@ dynamic = ["version"]
 dependencies = ["colorama", "jinja2", "platformdirs", "pygls", "tree-sitter"]
 
 [project.optional-dependencies]
+colorize = ["pygments"]
 dev = ["pytest-cov"]
-web = ["beautifulsoup4"]
+termux = ["beautifulsoup4"]
 
 [[project.authors]]
 name = "Wu Zhenyu"
@@ -69,11 +70,14 @@ template-path = "templates/metainfo.py"
 file = "requirements.txt"
 
 # begin: scripts/update-pyproject.toml.pl
+[tool.setuptools.dynamic.optional-dependencies.colorize]
+file = "requirements/colorize.txt"
+
 [tool.setuptools.dynamic.optional-dependencies.dev]
 file = "requirements/dev.txt"
 
-[tool.setuptools.dynamic.optional-dependencies.web]
-file = "requirements/web.txt"
+[tool.setuptools.dynamic.optional-dependencies.termux]
+file = "requirements/termux.txt"
 # end: scripts/update-pyproject.toml.pl
 
 [tool.setuptools_scm]

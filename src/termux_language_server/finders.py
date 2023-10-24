@@ -16,7 +16,6 @@ from lsprotocol.types import (
 from tree_sitter import Tree
 
 from . import CSV, FILETYPE
-from .documents import get_schema
 from .schema import BashTrie
 from .tree_sitter_lsp import UNI, Finder
 from .tree_sitter_lsp.finders import (
@@ -25,6 +24,7 @@ from .tree_sitter_lsp.finders import (
     SchemaFinder,
     UnFixedOrderFinder,
 )
+from .utils import get_schema
 
 SCHEMAS = {}
 for filetype in FILETYPE.__args__:  # type: ignore

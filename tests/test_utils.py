@@ -1,5 +1,5 @@
-r"""Test documents"""
-from termux_language_server.documents import get_schema
+r"""Test utils."""
+from termux_language_server.utils import get_schema
 
 
 class Test:
