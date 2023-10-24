@@ -3,28 +3,28 @@ r"""Documents
 """
 import json
 import os
-from typing import Literal
+from typing import Any, Literal
 
 from platformdirs import user_cache_dir
 
+from .. import FILETYPE
 
-def get_document(
-    method: Literal["builtin", "cache", "web"] = "builtin"
-) -> tuple[
-    dict[str, tuple[str, str]], dict[str, set[str]], dict[str, set[str]]
-]:
-    r"""Get document. ``builtin`` will use builtin termux.json. ``cache``
+
+def get_schema(
+    filetype: FILETYPE,
+    method: Literal["builtin", "cache", "web"] = "builtin",
+) -> dict[str, Any]:
+    r"""Get schema. ``builtin`` will use builtin termux.json. ``cache``
     will generate a cache from
-    `<https://github.com/termux/termux-packages/wiki/Creating-new-package>`_. ``web`` is same as
-    ``cache`` except it doesn't generate cache. We use ``builtin`` as default.
-    If you want to get the latest result from
-    `<https://github.com/termux/termux-packages/wiki/Creating-new-package>`_, you need to
-    install `beautifulsoup4 <https://pypi.org/project/beautifulsoup4>` by
-    ``pip install 'termux-language-server[web]'``.
+    `<https://github.com/termux/termux-packages/wiki/Creating-new-package>`_.
+    ``web`` is same as ``cache`` except it doesn't generate cache. We use
+    ``builtin`` as default.
 
+    :param filetype:
+    :type filetype: Literal["build.sh", "subpackage.sh"]
     :param method:
     :type method: Literal["builtin", "cache", "web"]
-    :rtype: tuple[dict[str, tuple[str, str]], dict[str, set[str]], dict[str, set[str]]]
+    :rtype: dict[str, Any]
     """
     if method == "builtin":
         file = os.path.join(
@@ -34,29 +34,25 @@ def get_document(
                 ),
                 "json",
             ),
-            "termux.json",
+            f"{filetype}.json",
         )
         with open(file, "r") as f:
             document = json.load(f)
     elif method == "cache":
-        from .builtin import init_document
+        from .builtin import init_schema
 
-        if not os.path.exists(user_cache_dir("termux.json")):
-            document = init_document()
-            with open(user_cache_dir("termux.json"), "w") as f:
-                json.dump(document, f)
+        if not os.path.exists(user_cache_dir(f"{filetype}.json")):
+            document = init_schema()[filetype]
+            with open(user_cache_dir(f"{filetype}.json"), "w") as f:
+                json.dump(document, f, indent=2)
         else:
-            with open(user_cache_dir("termux.json"), "r") as f:
+            with open(user_cache_dir(f"{filetype}.json"), "r") as f:
                 document = json.load(f)
     else:
-        from .builtin import init_document
+        from .builtin import init_schema
 
-        document = init_document()
-    return (
-        document[0],
-        {k: set(v) for k, v in document[1].items()},
-        {k: set(v) for k, v in document[2].items()},
-    )
+        document = init_schema()[filetype]
+    return document
 
 
 def get_filetype(uri: str) -> Literal["build.sh", "subpackage.sh", ""]:

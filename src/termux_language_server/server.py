@@ -4,7 +4,6 @@ r"""Server
 from typing import Any
 
 from lsprotocol.types import (
-    INITIALIZE,
     TEXT_DOCUMENT_COMPLETION,
     TEXT_DOCUMENT_DID_CHANGE,
     TEXT_DOCUMENT_DID_OPEN,
@@ -20,7 +19,6 @@ from lsprotocol.types import (
     DocumentLink,
     DocumentLinkParams,
     Hover,
-    InitializeParams,
     MarkupContent,
     MarkupKind,
     Position,
@@ -29,7 +27,7 @@ from lsprotocol.types import (
 )
 from pygls.server import LanguageServer
 
-from .documents import get_document, get_filetype
+from .documents import get_filetype
 from .finders import (
     CSVFinder,
     InvalidKeywordFinder,
@@ -41,7 +39,7 @@ from .parser import parse
 from .tree_sitter_lsp.diagnose import get_diagnostics
 from .tree_sitter_lsp.finders import PositionFinder
 from .tree_sitter_lsp.format import get_text_edits
-from .utils import DIAGNOSTICS_FINDERS, get_keywords
+from .utils import DIAGNOSTICS_FINDERS
 
 
 class TermuxLanguageServer(LanguageServer):
@@ -55,24 +53,7 @@ class TermuxLanguageServer(LanguageServer):
         :rtype: None
         """
         super().__init__(*args)
-        self.document = {}
-        self.keywords = {}
-        self.required = {}
-        self.csvs = {}
         self.trees = {}
-
-        @self.feature(INITIALIZE)
-        def initialize(params: InitializeParams) -> None:
-            r"""Initialize.
-
-            :param params:
-            :type params: InitializeParams
-            :rtype: None
-            """
-            opts = params.initialization_options
-            method = getattr(opts, "method", "builtin")
-            self.document, self.required, self.csvs = get_document(method)  # type: ignore
-            self.keywords = get_keywords(self.document)
 
         @self.feature(TEXT_DOCUMENT_DID_OPEN)
         @self.feature(TEXT_DOCUMENT_DID_CHANGE)
@@ -91,10 +72,10 @@ class TermuxLanguageServer(LanguageServer):
             diagnostics = get_diagnostics(
                 DIAGNOSTICS_FINDERS
                 + [
-                    RequiredKeywordFinder(self.required[filetype]),
-                    InvalidKeywordFinder(set(self.keywords[filetype])),
-                    UnsortedKeywordFinder(self.keywords[filetype]),
-                    UnsortedCSVFinder(self.csvs[filetype]),
+                    RequiredKeywordFinder(filetype),
+                    InvalidKeywordFinder(filetype),
+                    UnsortedKeywordFinder(filetype),
+                    UnsortedCSVFinder(filetype),
                 ],
                 document.uri,
                 self.trees[document.uri],

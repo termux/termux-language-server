@@ -5,7 +5,8 @@ from typing import Callable, Literal
 
 from tree_sitter import Tree
 
-from .documents import get_document, get_filetype
+from . import FILETYPE
+from .documents import get_filetype
 from .finders import (
     InvalidKeywordFinder,
     RequiredKeywordFinder,
@@ -22,29 +23,14 @@ DIAGNOSTICS_FINDERS = [
 ]
 
 
-def get_keywords(document: dict[str, tuple[str, str]]) -> dict[str, list[str]]:
-    r"""Get keywords.
-
-    :param document:
-    :type document: dict[str, tuple[str, str]]
-    :rtype: dict[str, list[str]]
-    """
-    keywords = {"build.sh": [], "subpackage.sh": []}
-    for k, v in document.items():
-        for filetype, words in keywords.items():
-            if v[1] == filetype:
-                words += [k]
-    return keywords
-
-
-def get_paths(paths: list[str]) -> dict[str, list[str]]:
+def get_paths(paths: list[str]) -> dict[FILETYPE, list[str]]:
     r"""Get paths.
 
     :param paths:
     :type paths: list[str]
-    :rtype: dict[str, list[str]]
+    :rtype: dict[FILETYPE, list[str]]
     """
-    _paths = {"build.sh": [], "subpackage.sh": []}
+    _paths = {k: [] for k in FILETYPE.__args__}  # type: ignore
     for path in paths:
         filetype = get_filetype(path)
         for _filetype, filepaths in _paths.items():
@@ -68,23 +54,20 @@ def check(
     :type color: Literal["auto", "always", "never"]
     :rtype: int
     """
-    document, required, csvs = get_document()
-    keywords = get_keywords(document)
-    _paths = get_paths(paths)
     return sum(
         _check(
-            _paths[filetype],
+            _paths,
             DIAGNOSTICS_FINDERS
             + [
-                RequiredKeywordFinder(required[filetype]),
-                InvalidKeywordFinder(set(keywords[filetype])),
-                UnsortedKeywordFinder(keywords[filetype]),
-                UnsortedCSVFinder(csvs[filetype]),
+                RequiredKeywordFinder(filetype),
+                InvalidKeywordFinder(filetype),
+                UnsortedKeywordFinder(filetype),
+                UnsortedCSVFinder(filetype),
             ],
             parse,
             color,
         )
-        for filetype in ["build.sh", "subpackage.sh"]
+        for filetype, _paths in get_paths(paths).items()
     )
 
 
@@ -100,15 +83,12 @@ def format(
     :type parse: Callable[[bytes], Tree]
     :rtype: None
     """
-    document, _, csvs = get_document()
-    keywords = get_keywords(document)
-    _paths = get_paths(paths)
-    for filetype in ["build.sh", "subpackage.sh"]:
+    for filetype, _paths in get_paths(paths).items():
         _format(
-            _paths[filetype],
+            _paths,
             [
-                UnsortedKeywordFinder(keywords[filetype]),
-                UnsortedCSVFinder(csvs[filetype]),
+                UnsortedKeywordFinder(filetype),
+                UnsortedCSVFinder(filetype),
             ],
             parse,
         )
