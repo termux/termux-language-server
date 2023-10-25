@@ -41,9 +41,10 @@ def init_schema() -> dict[str, Any]:
                 f"`termux-language-server --generate-schema={filetype}`."
             ),
             "type": "object",
-            "required": [],
-            "properties": {},
+            "patternProperties": {},
         }
+    # PKGBUILD has variables
+    schemas["PKGBUILD"]["properties"] = {}
 
     md = MarkdownIt("commonmark", {})
     with open(
@@ -90,21 +91,32 @@ def init_schema() -> dict[str, Any]:
         vars = children[2].content.split()
         name = vars[0].rstrip("()")
         description = get_content(tokens[index + 1 : close_index])
+        kind = vars[1].lstrip("(").rstrip(")") if len(vars) > 1 else "string"
         if vars[0].startswith("pre_") or vars[0].startswith("post_"):
             filetype = "install"
+            kind = "Function"
         else:
             filetype = "PKGBUILD"
-        schemas[filetype]["properties"][name] = {"description": description}
-        kind = vars[1].lstrip("(").rstrip(")") if len(vars) > 1 else "string"
+        if kind == "Function":
+            name = rf"^{name}($|_.*)"
+            properties_name = "patternProperties"
+        else:
+            properties_name = "properties"
+        schemas[filetype][properties_name][name] = {"description": description}
+        # makepkg supports building multiple packages from a single PKGBUILD.
+        # This is achieved by assigning an array of package names to the
+        # pkgname directive.
         if name == "pkgname":
-            schemas[filetype]["properties"][name]["anyOf"] = [
+            schemas[filetype][properties_name][name]["anyOf"] = [
                 {"type": "array", "items": {"type": "string"}},
                 {"type": "string"},
             ]
         elif kind == "string":
-            schemas[filetype]["properties"][name]["type"] = "string"
+            schemas[filetype][properties_name][name]["type"] = "string"
         elif kind == "array":
-            schemas[filetype]["properties"][name]["type"] = "array"
+            schemas[filetype][properties_name][name]["type"] = "array"
         elif kind == "Function":
-            schemas[filetype]["properties"][name]["const"] = 0
+            # Each split package uses a corresponding packaging function with
+            # name package_foo(), where foo is the name of the split package.
+            schemas[filetype][properties_name][name]["const"] = 0
     return schemas
