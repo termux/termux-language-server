@@ -67,7 +67,7 @@ class UnsortedKeywordFinder(UnFixedOrderFinder):
         :rtype: None
         """
         super().__init__(
-            list(SCHEMAS[filetype]["properties"]), message, severity
+            list(SCHEMAS[filetype].get("properties", [])), message, severity
         )
         self.keywords = UnsortedKeywordFinder.get_keywords(filetype)
 
@@ -84,7 +84,7 @@ class UnsortedKeywordFinder(UnFixedOrderFinder):
                 if v.get("const") == 0
                 else CompletionItemKind.Variable
             )
-            for k, v in SCHEMAS[filetype]["properties"].items()
+            for k, v in SCHEMAS[filetype].get("properties", {}).items()
         }
 
     @staticmethod
@@ -223,7 +223,7 @@ class UnsortedCSVFinder(Finder):
         """
         return set(
             k
-            for k, v in SCHEMAS[filetype]["properties"].items()
+            for k, v in SCHEMAS[filetype].get("properties", {}).items()
             if v.get("pattern") == CSV
         )
 

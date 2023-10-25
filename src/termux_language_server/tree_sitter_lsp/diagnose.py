@@ -156,7 +156,8 @@ def check_by_finders(
         diagnostics = get_diagnostics_by_finders(path, tree, finders)
         count += count_level(diagnostics)
         lines += diagnostics2linter_messages(path, diagnostics, color)
-    print("\n".join(lines))
+    if text := "\n".join(lines):
+        print(text)
     return count
 
 
