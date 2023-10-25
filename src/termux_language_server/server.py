@@ -32,6 +32,7 @@ from .finders import (
     FORMAT_FINDER_CLASSES,
     SCHEMAS,
     CSVFinder,
+    PackageFinder,
 )
 from .parser import parse
 from .tree_sitter_lsp.diagnose import get_diagnostics
@@ -106,11 +107,19 @@ class TermuxLanguageServer(LanguageServer):
             if filetype == "":
                 return []
             document = self.workspace.get_document(params.text_document.uri)
-            return CSVFinder(filetype).get_document_links(
-                document.uri,
-                self.trees[document.uri],
-                "https://github.com/termux/termux-packages/tree/master/packages/{{name}}/build.sh",
-            )
+            if filetype in {"build.sh", "subpackage.sh"}:
+                return CSVFinder(filetype).get_document_links(
+                    document.uri,
+                    self.trees[document.uri],
+                    "https://github.com/termux/termux-packages/tree/master/packages/{{name}}/build.sh",
+                )
+            elif filetype in {"PKGBUILD", "install"}:
+                return PackageFinder().get_document_links(
+                    document.uri,
+                    self.trees[document.uri],
+                    "https://archlinux.org/packages/{{uni.get_text()}}",
+                )
+            raise NotImplementedError
 
         @self.feature(TEXT_DOCUMENT_HOVER)
         def hover(params: TextDocumentPositionParams) -> Hover | None:
@@ -147,7 +156,8 @@ class TermuxLanguageServer(LanguageServer):
             ):
                 return None
             if description := (
-                SCHEMAS[filetype]["properties"]
+                SCHEMAS[filetype]
+                .get("properties", {})
                 .get(text, {})
                 .get("description")
             ):

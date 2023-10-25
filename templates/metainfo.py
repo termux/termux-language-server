@@ -16,3 +16,5 @@ EPILOG = "Report bugs to " + $urls["Bug Report"]
 VERSION = f"""$name $version
 Copyright (C) {copyright}
 Written by {author}"""
+
+SOURCE = $urls["Source"]
