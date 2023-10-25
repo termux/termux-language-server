@@ -18,13 +18,13 @@ def get_paths(
 
     :param paths:
     :type paths: list[str]
-    :param get_filetype:
+    :param get_filetype: A function returning ``Literal["filetype1", "filetype2", ...] | Literal[""]``
     :type get_filetype: Callable[[str], str]
     :rtype: dict[str, list[str]]
     """
     filetype_paths = {
         k: []
-        for k in get_filetype.__annotations__["return"].__args__
+        for k in get_filetype.__annotations__["return"].__args__[0].__args__
         if k != ""
     }
     for path in paths:

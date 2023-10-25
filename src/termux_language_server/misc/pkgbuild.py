@@ -96,7 +96,12 @@ def init_schema() -> dict[str, Any]:
             filetype = "PKGBUILD"
         schemas[filetype]["properties"][name] = {"description": description}
         kind = vars[1].lstrip("(").rstrip(")") if len(vars) > 1 else "string"
-        if kind == "string":
+        if name == "pkgname":
+            schemas[filetype]["properties"][name]["anyOf"] = [
+                {"type": "array", "items": {"type": "string"}},
+                {"type": "string"},
+            ]
+        elif kind == "string":
             schemas[filetype]["properties"][name]["type"] = "string"
         elif kind == "array":
             schemas[filetype]["properties"][name]["type"] = "array"
