@@ -27,11 +27,20 @@ class BashTrie(Trie):
         :type parent: Trie | None
         :rtype: "Trie"
         """
-        if node.type in {"word", "string", "concatenation"}:
+        string_types = {
+            "word",
+            "string",
+            "concatenation",
+            "number",
+            "simple_expansion",
+        }
+        if node.type in string_types:
             return cls(UNI.node2range(node), parent, UNI.node2text(node))
         if node.type == "function_definition":
             return cls(UNI.node2range(node), parent, 0)
         if node.type == "variable_assignment":
+            if len(node.children) < 3:
+                return cls(UNI.node2range(node), parent, "")
             node = node.children[2]
             if node.type == "array":
                 trie = cls(UNI.node2range(node), parent, [])
@@ -39,10 +48,10 @@ class BashTrie(Trie):
                 trie.value = [
                     cls.from_node(child, trie)
                     for child in node.children
-                    if child.type in {"word", "string", "concatenation"}
+                    if child.type in string_types
                 ]
                 return trie
-            if node.type in {"word", "string", "concatenation"}:
+            if node.type in string_types:
                 return cls(UNI.node2range(node), parent, UNI.node2text(node))
         if node.type == "program":
             trie = cls(Range(Position(0, 0), Position(1, 0)), parent, {})
