@@ -1,6 +1,7 @@
 r"""Server
 ==========
 """
+import re
 from typing import Any
 
 from lsprotocol.types import (
@@ -138,23 +139,20 @@ class TermuxLanguageServer(LanguageServer):
             )
             if uni is None:
                 return None
-            text = uni.get_text()
-            _range = uni.get_range()
             parent = uni.node.parent
-            if parent is None:
-                return None
-            if (
+            # we only hover variable names and function names
+            if parent is None or not (
                 uni.node.type == "variable_name"
-                and text.isupper()
                 or uni.node.type == "word"
                 and parent.type
                 in {
                     "function_definition",
                     "command_name",
                 }
-                and text.islower()
             ):
                 return None
+            text = uni.get_text()
+            _range = uni.get_range()
             if description := (
                 SCHEMAS[filetype]
                 .get("properties", {})
@@ -162,9 +160,15 @@ class TermuxLanguageServer(LanguageServer):
                 .get("description")
             ):
                 return Hover(
-                    MarkupContent(MarkupKind.PlainText, description),
+                    MarkupContent(MarkupKind.Markdown, description),
                     _range,
                 )
+            for k, v in SCHEMAS[filetype].get("patternProperties", {}).items():
+                if re.match(k, text):
+                    return Hover(
+                        MarkupContent(MarkupKind.Markdown, v["description"]),
+                        _range,
+                    )
 
         @self.feature(TEXT_DOCUMENT_COMPLETION)
         def completions(params: CompletionParams) -> CompletionList:

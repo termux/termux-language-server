@@ -69,8 +69,18 @@ def init_schema() -> dict[str, Any]:
         for dt, dd in zip(dl.findAll("dt"), dl.findAll("dd")):
             if dt.strong is None or dt.strong.text.endswith(":"):
                 continue
-            description = dt.text + "\n" + dd.text.replace("\n", " ").strip()
-            schemas["ebuild"]["properties"][dt.strong.text.split()[0]] = {
+            name = dt.strong.text.split()[0]
+            description = dd.text.replace("\n", " ").strip()
+            example = dt.text.replace("\n", " ")
+            if name != example:
+                description = (
+                    f"""```sh
+{example}
+```
+"""
+                    + description
+                )
+            schemas["ebuild"]["properties"][name] = {
                 "description": description,
             }
     return schemas
