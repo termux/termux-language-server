@@ -87,35 +87,52 @@ def init_schema() -> dict[str, Any]:
         children = tokens[index].children
         if children is None:
             continue
-        vars = children[2].content.split()
-        name = vars[0].rstrip("()")
-        description = get_content(tokens[index + 1 : close_index])
-        kind = vars[1].lstrip("(").rstrip(")") if len(vars) > 1 else "string"
-        if vars[0].startswith("pre_") or vars[0].startswith("post_"):
-            filetype = "install"
-            kind = "Function"
+        words = [child.rstrip(",") for child in children[2].content.split()]
+        # md5sums, ...
+        if len(words) > 2:
+            _words = [child for child in children[4].content.split()]
+            kind = (
+                _words[1].lstrip("(").rstrip(")")
+                if len(words) > 1
+                else "string"
+            )
+            names = words + [_words[0]]
         else:
-            filetype = "PKGBUILD"
-        if kind == "Function":
-            name = rf"^{name}($|_.*)"
-            properties_name = "patternProperties"
-        else:
-            properties_name = "properties"
-        schemas[filetype][properties_name][name] = {"description": description}
-        # makepkg supports building multiple packages from a single PKGBUILD.
-        # This is achieved by assigning an array of package names to the
-        # pkgname directive.
-        if name == "pkgname":
-            schemas[filetype][properties_name][name]["anyOf"] = [
-                {"type": "array", "items": {"type": "string"}},
-                {"type": "string"},
-            ]
-        elif kind == "string":
-            schemas[filetype][properties_name][name]["type"] = "string"
-        elif kind == "array":
-            schemas[filetype][properties_name][name]["type"] = "array"
-        elif kind == "Function":
-            # Each split package uses a corresponding packaging function with
-            # name package_foo(), where foo is the name of the split package.
-            schemas[filetype][properties_name][name]["const"] = 0
+            names = [words[0].rstrip("()")]
+            kind = (
+                words[1].lstrip("(").rstrip(")")
+                if len(words) > 1
+                else "string"
+            )
+        for name in names:
+            description = get_content(tokens[index + 1 : close_index])
+            if name.startswith("pre_") or name.startswith("post_"):
+                filetype = "install"
+                kind = "Function"
+            else:
+                filetype = "PKGBUILD"
+            if kind == "Function":
+                name = rf"^{name}($|_.*)"
+                properties_name = "patternProperties"
+            else:
+                properties_name = "properties"
+            schemas[filetype][properties_name][name] = {
+                "description": description
+            }
+            # makepkg supports building multiple packages from a single PKGBUILD.
+            # This is achieved by assigning an array of package names to the
+            # pkgname directive.
+            if name == "pkgname":
+                schemas[filetype][properties_name][name]["anyOf"] = [
+                    {"type": "array", "items": {"type": "string"}},
+                    {"type": "string"},
+                ]
+            elif kind == "string":
+                schemas[filetype][properties_name][name]["type"] = "string"
+            elif kind in {"array", "arrays"}:
+                schemas[filetype][properties_name][name]["type"] = "array"
+            elif kind == "Function":
+                # Each split package uses a corresponding packaging function with
+                # name package_foo(), where foo is the name of the split package.
+                schemas[filetype][properties_name][name]["const"] = 0
     return schemas
