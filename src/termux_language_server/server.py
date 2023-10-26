@@ -34,6 +34,7 @@ from .finders import (
     CSVFinder,
     PackageFinder,
 )
+from .packages import search_package_document, search_package_names
 from .parser import parse
 from .tree_sitter_lsp.diagnose import get_diagnostics
 from .tree_sitter_lsp.finders import PositionFinder
@@ -74,6 +75,10 @@ class TermuxLanguageServer(LanguageServer):
                 DIAGNOSTICS_FINDER_CLASSES,
                 filetype,
             )
+            if document.path is not None and filetype == "PKGBUILD":
+                from .tools.namcap import namcap
+
+                diagnostics += namcap(document.path, document.source)
             self.publish_diagnostics(params.text_document.uri, diagnostics)
 
         @self.feature(TEXT_DOCUMENT_FORMATTING)
@@ -139,8 +144,12 @@ class TermuxLanguageServer(LanguageServer):
             if uni is None:
                 return None
             parent = uni.node.parent
+            if parent is None:
+                return None
+            text = uni.get_text()
+            _range = uni.get_range()
             # we only hover variable names and function names
-            if parent is None or not (
+            if not (
                 uni.node.type == "variable_name"
                 or uni.node.type == "word"
                 and parent.type
@@ -149,9 +158,15 @@ class TermuxLanguageServer(LanguageServer):
                     "command_name",
                 }
             ):
+                # or package names (for PKGBUILD)
+                if parent.type == "array":
+                    result = search_package_document(text, filetype)
+                    if result is None:
+                        return None
+                    return Hover(
+                        MarkupContent(MarkupKind.Markdown, result), _range
+                    )
                 return None
-            text = uni.get_text()
-            _range = uni.get_range()
             if description := (
                 get_schema(filetype)
                 .get("properties", {})
@@ -188,7 +203,23 @@ class TermuxLanguageServer(LanguageServer):
             ).find(document.uri, self.trees[document.uri])
             if uni is None:
                 return CompletionList(False, [])
+            parent = uni.node.parent
+            if parent is None:
+                return CompletionList(False, [])
             text = uni.get_text()
+            if parent.type == "array":
+                return CompletionList(
+                    False,
+                    [
+                        CompletionItem(
+                            k,
+                            kind=CompletionItemKind.Module,
+                            insert_text=k,
+                        )
+                        for k in search_package_names(filetype)
+                        if k.startswith(text)
+                    ],
+                )
             schema = get_schema(filetype)
             return CompletionList(
                 False,
