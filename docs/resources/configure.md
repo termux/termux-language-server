@@ -34,7 +34,8 @@ endif
 
 ```lua
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
-  pattern = { "build.sh" "*.subpackage.sh" },
+  pattern = { "build.sh" "*.subpackage.sh" "PKGBUILD" "*.install"
+    "makepkg.conf" "*.ebuild" "*.eclass" "color.map" "make.conf" },
   callback = function()
     vim.lsp.start({
       name = "termux",
@@ -50,7 +51,8 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 (make-lsp-client :new-connection
 (lsp-stdio-connection
   `(,(executable-find "termux-language-server")))
-  :activation-fn (lsp-activate-on "build.sh" "*.subpackage.sh")
+  :activation-fn (lsp-activate-on "build.sh" "*.subpackage.sh" "PKGBUILD"
+"*.install" "makepkg.conf" "*.ebuild" "*.eclass" "color.map" "make.conf")
   :server-id "termux")))
 ```
 

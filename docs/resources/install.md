@@ -25,23 +25,11 @@ yay -S termux-language-server
       (
         python3.withPackages (
           p: with p; [
-            nur.repos.termux.termux-language-server
+            nur.repos.Freed-Wu.termux-language-server
           ]
         )
       )
 }
-```
-
-## [Nix](https://nixos.org)
-
-```sh
-nix shell github:termux/termux-language-server
-```
-
-Run without installation:
-
-```sh
-nix run github:termux/termux-language-server -- --help
 ```
 
 ## [PYPI](https://pypi.org/project/termux-language-server)
