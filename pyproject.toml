@@ -44,6 +44,8 @@ dependencies = [
 colorize = ["pygments"]
 dev = ["pytest-cov"]
 misc = ["beautifulsoup4", "markdown-it-py", "pypandoc"]
+# pyproject.toml doesn't support git+git://
+pkgbuild = ["pyalpm"]
 
 [[project.authors]]
 name = "Wu Zhenyu"

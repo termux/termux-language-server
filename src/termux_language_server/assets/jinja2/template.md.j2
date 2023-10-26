@@ -1,0 +1,33 @@
+{{ pkg.desc }}
+
+- version: **{{ pkg.version }}**
+- arch: **{{ pkg.arch }}**
+- url: <{{ pkg.url }}>
+- licenses:
+{%-for license in pkg.licenses %}
+  {{ loop.index }}. *{{ license }}*
+{%-endfor %}
+- groups:
+{%-for group in pkg.groups %}
+  {{ loop.index }}. *{{ group }}*
+{%-endfor %}
+- depends:
+{%-for depend in pkg.depends %}
+  {{ loop.index }}. {{ depend }}
+{%-endfor %}
+- optdepends:
+{%-for optdepend in pkg.optdepends %}
+  {{ loop.index }}. {{ optdepend }}
+{%-endfor %}
+- provides:
+{%-for provide in pkg.provides %}
+  {{ loop.index }}. {{ provide }}
+{%-endfor %}
+- conflicts:
+{%-for conflict in pkg.conflicts %}
+  {{ loop.index }}. {{ conflict }}
+{%-endfor %}
+- replaces:
+{%-for replace in pkg.replaces %}
+  {{ loop.index }}. {{ replace }}
+{%-endfor %}

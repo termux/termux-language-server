@@ -63,17 +63,23 @@ doesn't support:
     - [x] variable values
   - [x] warning
     - [x] variable order
-    - [x] unsorted value.
+    - [x] unsorted values
+    - [x] style check
+      - [x] `PKGBUILD`: by [namcap](https://wiki.archlinux.org/title/Namcap)
 - [x] [Document Formatting](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting):
   - [x] sort variables
   - [x] sort values
 - [x] [Document Link](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_documentLink):
-  - [x] `build.sh`: jump to
-    <https://github.com/termux/termux-packages/tree/master/packages/package_name/build.sh>
-  - [x] `PKGBUILD`: jump to
-    <https://archlinux.org/packages/package_name>
+  - [x] `build.sh`: <https://github.com/termux/termux-packages/tree/master/packages/package_name/build.sh>
+  - [x] `PKGBUILD`: <https://archlinux.org/packages/package_name>
+  - [ ] `ebuild`: <https://packages.gentoo.org/packages/package_name>
 - [x] [Hover](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_hover)
 - [x] [Completion](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_completion)
+  - [x] builtin variables
+  - [x] package names
+    - [ ] `build.sh`
+    - [x] `PKGBUILD`: by [pyalpm](https://github.com/ornitorrincos/pyalpm)
+    - [ ] `ebuild`
 - [ ] [Code Action](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_codeAction)
   - [ ] `PKGBUILD`
     - [ ] generate a template by the name of directory containing `PKGBUILD`, the
