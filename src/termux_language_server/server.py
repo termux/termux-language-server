@@ -189,18 +189,31 @@ class TermuxLanguageServer(LanguageServer):
             if uni is None:
                 return CompletionList(False, [])
             text = uni.get_text()
+            schema = get_schema(filetype)
             return CompletionList(
                 False,
                 [
                     CompletionItem(
                         k,
-                        kind=CompletionItemKind.Variable
-                        if v.get("type") == "string"
-                        else CompletionItemKind.Function,
-                        documentation=v["description"],
+                        kind=CompletionItemKind.Function
+                        if v.get("const") == 0
+                        else CompletionItemKind.Field
+                        if v.get("type") == "array"
+                        else CompletionItemKind.Variable,
+                        documentation=MarkupContent(
+                            MarkupKind.Markdown, v["description"]
+                        ),
                         insert_text=k,
                     )
-                    for k, v in get_schema(filetype)["properties"].items()
+                    for k, v in (
+                        schema.get("properties", {})
+                        | {
+                            k.lstrip("^").split("(")[0]: v
+                            for k, v in schema.get(
+                                "patternProperties", {}
+                            ).items()
+                        }
+                    ).items()
                     if k.startswith(text)
                 ],
             )
