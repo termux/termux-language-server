@@ -2,35 +2,16 @@ r"""Termux
 ==========
 """
 from typing import Any
-from urllib import request
-
-from bs4 import BeautifulSoup, FeatureNotFound
 
 from .. import CSV
 from .._metainfo import SOURCE, project
+from .utils import get_soup
 
 URIS = {
     "variable": "https://github.com/termux/termux-packages/wiki/Creating-new-package",
     "function": "https://github.com/termux/termux-packages/wiki/Building-packages",
     "update": "https://github.com/termux/termux-packages/wiki/Auto-updating-packages",
 }
-
-
-def get_soup(uri: str) -> BeautifulSoup:
-    r"""Get soup.
-
-    :param uri:
-    :type uri: str
-    :rtype: BeautifulSoup
-    """
-    with request.urlopen(uri) as f:  # nosec: B310
-        html = f.read()
-
-    try:
-        soup = BeautifulSoup(html, "lxml")
-    except FeatureNotFound:
-        soup = BeautifulSoup(html, "html.parser")
-    return soup
 
 
 def init_schema() -> dict[str, dict[str, Any]]:

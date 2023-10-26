@@ -1,16 +1,12 @@
 r"""PKGBUILD
 ============
 """
-import os
-from gzip import decompress
 from typing import Any
 
-from markdown_it import MarkdownIt
 from markdown_it.token import Token
-from platformdirs import site_data_dir
-from pypandoc import convert_text
 
 from .._metainfo import SOURCE, project
+from .utils import get_md_tokens
 
 
 def get_content(tokens: list[Token]) -> str:
@@ -45,16 +41,7 @@ def init_schema() -> dict[str, Any]:
     # PKGBUILD has variables
     schemas["PKGBUILD"]["properties"] = {}
 
-    md = MarkdownIt("commonmark", {})
-    with open(
-        os.path.join(
-            os.path.join(site_data_dir("man"), "man5"), "PKGBUILD.5.gz"
-        ),
-        "rb",
-    ) as f:
-        tokens = md.parse(
-            convert_text(decompress(f.read()).decode(), "markdown", "man")
-        )
+    tokens = get_md_tokens("PKGBUILD")
     # **pkgname (array)**
     #
     # > Either the name of the package or an array of names for split
