@@ -74,16 +74,21 @@ def main():
 
         pprint(get_schema(args.generate_schema), indent=args.indent)
         exit()
+    from tree_sitter_languages import get_parser as _get_parser
     from tree_sitter_lsp.diagnose import check
     from tree_sitter_lsp.format import format
 
     from .finders import DIAGNOSTICS_FINDER_CLASSES, FORMAT_FINDER_CLASSES
-    from .parser import parse
     from .utils import get_filetype
 
-    format(args.format, parse, FORMAT_FINDER_CLASSES, get_filetype)
+    parser = _get_parser("bash")
+    format(args.format, parser.parse, FORMAT_FINDER_CLASSES, get_filetype)
     result = check(
-        args.check, parse, DIAGNOSTICS_FINDER_CLASSES, get_filetype, args.color
+        args.check,
+        parser.parse,
+        DIAGNOSTICS_FINDER_CLASSES,
+        get_filetype,
+        args.color,
     )
     if args.format or args.check:
         exit(result)

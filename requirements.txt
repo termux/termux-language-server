@@ -3,8 +3,9 @@
 # https://python-jsonschema.readthedocs.io/en/stable/validate/#validating-formats
 # hostname
 fqdn
-# get nvim-tree-sitter's parser
+# ~/.config/pacman/template.md.j2
 platformdirs
 # uri
 rfc3987
+tree-sitter-languages
 tree-sitter-lsp
