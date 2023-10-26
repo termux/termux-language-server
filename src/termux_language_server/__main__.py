@@ -55,7 +55,7 @@ def get_parser():
     )
     parser.add_argument(
         "--color",
-        choices={"auto", "always", "never"},
+        choices=["auto", "always", "never"],
         default="auto",
         help="when to display color",
     )
