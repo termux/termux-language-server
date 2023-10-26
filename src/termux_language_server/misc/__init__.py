@@ -15,8 +15,14 @@ def get_schema(filetype: str) -> dict[str, Any]:
         from .termux import init_schema
     elif filetype in {"PKGBUILD", "install"}:
         from .pkgbuild import init_schema
-    elif filetype in {"color.map", "make.conf", "ebuild"}:
-        from .portage import init_schema
+    elif filetype == "makepkg.conf":
+        from .makepkg_conf import init_schema
+    elif filetype == "color.map":
+        from .color_map import init_schema
+    elif filetype == "make.conf":
+        from .make_conf import init_schema
+    elif filetype == "ebuild":
+        from .ebuild import init_schema
     else:
         raise NotImplementedError(filetype)
     return init_schema()[filetype]

@@ -15,6 +15,7 @@ FILETYPE = Literal[
     "build.sh",
     "subpackage.sh",
     "PKGBUILD",
+    "makepkg.conf",
     "install",
     "ebuild",
     "make.conf",
