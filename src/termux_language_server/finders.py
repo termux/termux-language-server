@@ -14,16 +14,16 @@ from lsprotocol.types import (
     TextEdit,
 )
 from tree_sitter import Tree
-
-from . import CSV, FILETYPE
-from .schema import BashTrie
-from .tree_sitter_lsp import UNI, Finder
-from .tree_sitter_lsp.finders import (
+from tree_sitter_lsp import UNI, Finder
+from tree_sitter_lsp.finders import (
     ErrorFinder,
     MissingFinder,
     SchemaFinder,
     UnFixedOrderFinder,
 )
+
+from . import CSV, FILETYPE
+from .schema import BashTrie
 from .utils import get_schema
 
 

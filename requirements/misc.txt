@@ -1,6 +1,3 @@
 #!/usr/bin/env -S pip install -r
-# See <https://termux-language-server.readthedocs.io/en/latest/api/termux-language-server.html#termux_language_server.server.get_document>.
 
-beautifulsoup4
-markdown-it-py
-pypandoc
+tree-sitter-lsp[misc]

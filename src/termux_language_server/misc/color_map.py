@@ -3,8 +3,9 @@ r"""Portage's color.map
 """
 from typing import Any
 
+from tree_sitter_lsp.misc import get_soup
+
 from .._metainfo import SOURCE, project
-from .utils import get_soup
 
 
 def init_schema() -> dict[str, dict[str, Any]]:

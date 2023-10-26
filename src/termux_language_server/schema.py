@@ -6,9 +6,8 @@ from typing import Literal
 
 from lsprotocol.types import Position, Range
 from tree_sitter import Node
-
-from .tree_sitter_lsp import UNI
-from .tree_sitter_lsp.schema import Trie
+from tree_sitter_lsp import UNI
+from tree_sitter_lsp.schema import Trie
 
 
 @dataclass

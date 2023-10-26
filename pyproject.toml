@@ -31,19 +31,16 @@ classifiers = [
 # https://github.com/pypa/twine/issues/753
 dynamic = ["version"]
 dependencies = [
-  "colorama",
   "fqdn",
-  "jinja2",
   "platformdirs",
-  "pygls",
   "rfc3987",
-  "tree-sitter",
+  "tree-sitter-lsp",
 ]
 
 [project.optional-dependencies]
-colorize = ["pygments"]
+colorize = ["tree-sitter-lsp[colorize]"]
 dev = ["pytest-cov"]
-misc = ["beautifulsoup4", "markdown-it-py", "pypandoc"]
+misc = ["tree-sitter-lsp[misc]"]
 # pyproject.toml doesn't support git+git://
 pkgbuild = ["pyalpm"]
 

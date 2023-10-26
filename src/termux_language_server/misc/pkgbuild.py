@@ -4,9 +4,9 @@ r"""PKGBUILD
 from typing import Any
 
 from markdown_it.token import Token
+from tree_sitter_lsp.misc import get_md_tokens
 
 from .._metainfo import SOURCE, project
-from .utils import get_md_tokens
 
 
 def get_content(tokens: list[Token]) -> str:
