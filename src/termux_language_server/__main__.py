@@ -5,6 +5,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from contextlib import suppress
 from datetime import datetime
 
+from . import FILETYPE
 from . import __name__ as NAME
 from . import __version__
 
@@ -31,15 +32,7 @@ def get_parser():
     parser.add_argument("--version", version=VERSION, action="version")
     parser.add_argument(
         "--generate-schema",
-        choices={
-            "build.sh",
-            "subpackage.sh",
-            "PKGBUILD",
-            "install",
-            "color.map",
-            "make.conf",
-            "ebuild",
-        },
+        choices=FILETYPE.__args__,  # type: ignore
         help="generate schema json",
     )
     parser.add_argument(
