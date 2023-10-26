@@ -25,7 +25,10 @@ jobs:
       fail-fast: false
       matrix:
         runs-on:
-          - ubuntu-latest
+          # Could not find a version that satisfies the requirement
+          # tree-sitter-languages
+          # No matching distribution found for tree-sitter-languages
+          # - ubuntu-latest
           - macos-latest
           # https://github.com/tree-sitter/py-tree-sitter/issues/170
           # - windows-latest
