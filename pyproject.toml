@@ -123,7 +123,7 @@ archs = ["all"]
 # jsonschema depends on rpds-py which depends on cargo
 # disable *-musllinux_*
 # Fatal Python error: Segmentation fault
-# disable pp*-macosx_*
-skip = "*37-* *38-* *39-* *-musllinux_* pp*-macosx_*"
+# disable pp*
+skip = "*37-* *38-* *39-* *-musllinux_* pp*"
 before-test = "pip install -rrequirements.txt -rrequirements/dev.txt"
 test-command = "pytest {project}"
