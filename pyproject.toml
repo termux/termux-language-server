@@ -43,7 +43,7 @@ dependencies = [
 [project.optional-dependencies]
 colorize = ["pygments"]
 dev = ["pytest-cov"]
-termux = ["beautifulsoup4"]
+misc = ["beautifulsoup4", "markdown-it-py", "pypandoc"]
 
 [[project.authors]]
 name = "Wu Zhenyu"

@@ -111,13 +111,21 @@ def init_schema() -> dict[str, Any]:
             # pkgname directive.
             if name == "pkgname":
                 schemas[filetype][properties_name][name]["anyOf"] = [
-                    {"type": "array", "items": {"type": "string"}},
+                    {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "uniqueItems": True,
+                    },
                     {"type": "string"},
                 ]
             elif kind == "string":
                 schemas[filetype][properties_name][name]["type"] = "string"
             elif kind in {"array", "arrays"}:
-                schemas[filetype][properties_name][name]["type"] = "array"
+                schemas[filetype][properties_name][name] |= {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "uniqueItems": True,
+                }
             elif kind == "Function":
                 # Each split package uses a corresponding packaging function with
                 # name package_foo(), where foo is the name of the split package.

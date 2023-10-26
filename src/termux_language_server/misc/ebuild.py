@@ -24,8 +24,8 @@ def init_schema() -> dict[str, dict[str, Any]]:
         "type": "object",
         "properties": {},
     }
-    for dl in get_soup("ebuild").findAll("dl")[20:-2]:
-        for dt, dd in zip(dl.findAll("dt"), dl.findAll("dd")):
+    for dl in get_soup("ebuild").find_all("dl")[20:-2]:
+        for dt, dd in zip(dl.find_all("dt"), dl.find_all("dd")):
             if dt.strong is None or dt.strong.text.endswith(":"):
                 continue
             name = dt.strong.text.split()[0]
