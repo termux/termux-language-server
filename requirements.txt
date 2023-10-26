@@ -1,14 +1,10 @@
 #!/usr/bin/env -S pip install -r
 
-colorama
 # https://python-jsonschema.readthedocs.io/en/stable/validate/#validating-formats
 # hostname
 fqdn
-jinja2
-jsonschema
 # get nvim-tree-sitter's parser
 platformdirs
-pygls
 # uri
 rfc3987
-tree-sitter
+tree-sitter-lsp

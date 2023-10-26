@@ -3,9 +3,10 @@ r"""Termux
 """
 from typing import Any
 
+from tree_sitter_lsp.misc import get_soup
+
 from .. import CSV
 from .._metainfo import SOURCE, project
-from .utils import get_soup
 
 URIS = {
     "variable": "https://github.com/termux/termux-packages/wiki/Creating-new-package",

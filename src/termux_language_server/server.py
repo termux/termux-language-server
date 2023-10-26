@@ -27,6 +27,9 @@ from lsprotocol.types import (
     TextEdit,
 )
 from pygls.server import LanguageServer
+from tree_sitter_lsp.diagnose import get_diagnostics
+from tree_sitter_lsp.finders import PositionFinder
+from tree_sitter_lsp.format import get_text_edits
 
 from .finders import (
     DIAGNOSTICS_FINDER_CLASSES,
@@ -36,9 +39,6 @@ from .finders import (
 )
 from .packages import search_package_document, search_package_names
 from .parser import parse
-from .tree_sitter_lsp.diagnose import get_diagnostics
-from .tree_sitter_lsp.finders import PositionFinder
-from .tree_sitter_lsp.format import get_text_edits
 from .utils import get_filetype, get_schema
 
 
