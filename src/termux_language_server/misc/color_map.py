@@ -24,8 +24,8 @@ def init_schema() -> dict[str, dict[str, Any]]:
         "type": "object",
         "properties": {},
     }
-    dl = get_soup("color.map").findAll("dl")[1]
-    for dt, dd in zip(dl.findAll("dt"), dl.findAll("dd")):
+    dl = get_soup("color.map").find_all("dl")[1]
+    for dt, dd in zip(dl.find_all("dt"), dl.find_all("dd")):
         name = dt.text.split()[0]
         description = dd.text.replace("\n", " ").strip()
         example = dt.text.replace("\n", " ")
