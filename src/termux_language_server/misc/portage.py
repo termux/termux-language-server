@@ -1,36 +1,10 @@
 r"""Portage
 ===========
 """
-import os
-from gzip import decompress
 from typing import Any
 
-from bs4 import BeautifulSoup, FeatureNotFound
-from platformdirs import site_data_dir
-from pypandoc import convert_text
-
 from .._metainfo import SOURCE, project
-
-
-def get_soup(filename: str) -> BeautifulSoup:
-    r"""Get soup.
-
-    :param filename:
-    :type filename: str
-    :rtype: BeautifulSoup
-    """
-    with open(
-        os.path.join(
-            os.path.join(site_data_dir("man"), "man5"), filename + ".5.gz"
-        ),
-        "rb",
-    ) as f:
-        html = convert_text(decompress(f.read()).decode(), "html", "man")
-    try:
-        soup = BeautifulSoup(html, "lxml")
-    except FeatureNotFound:
-        soup = BeautifulSoup(html, "html.parser")
-    return soup
+from .utils import get_soup
 
 
 def init_schema() -> dict[str, Any]:
@@ -48,22 +22,39 @@ def init_schema() -> dict[str, Any]:
                 f"`{project} --generate-schema={filetype}`."
             ),
             "type": "object",
-            "required": [],
             "properties": {},
         }
     dl = get_soup("color.map").findAll("dl")[1]
     for dt, dd in zip(dl.findAll("dt"), dl.findAll("dd")):
-        description = dt.text + "\n" + dd.text.replace("\n", " ").strip()
-        schemas["color.map"]["properties"][dt.strong.text] = {
+        name = dt.text.split()[0]
+        description = dd.text.replace("\n", " ").strip()
+        example = dt.text.replace("\n", " ")
+        if name != example:
+            description = f"""```sh
+{example}
+```
+{description}"""
+        schemas["color.map"]["properties"][name] = {
             "description": description,
+            "type": "string",
         }
     for dl in get_soup("make.conf").findAll("dl")[:-2]:
         for dt, dd in zip(dl.findAll("dt"), dl.findAll("dd")):
             if dt.strong is None:
                 continue
-            description = dt.text + "\n" + dd.text.replace("\n", " ").strip()
-            schemas["make.conf"]["properties"][dt.strong.text] = {
+            name = dt.strong.text.split()[0]
+            if not name.isupper():
+                continue
+            description = dd.text.replace("\n", " ").strip()
+            example = dt.text.replace("\n", " ")
+            if name != example:
+                description = f"""```sh
+{example}
+```
+{description}"""
+            schemas["make.conf"]["properties"][name] = {
                 "description": description,
+                "type": "string",
             }
     for dl in get_soup("ebuild").findAll("dl")[20:-2]:
         for dt, dd in zip(dl.findAll("dt"), dl.findAll("dd")):
@@ -73,14 +64,15 @@ def init_schema() -> dict[str, Any]:
             description = dd.text.replace("\n", " ").strip()
             example = dt.text.replace("\n", " ")
             if name != example:
-                description = (
-                    f"""```sh
+                description = f"""```sh
 {example}
 ```
-"""
-                    + description
-                )
+{description}"""
             schemas["ebuild"]["properties"][name] = {
                 "description": description,
             }
+            if name.isupper():
+                schemas["ebuild"]["properties"][name]["type"] = "string"
+            else:
+                schemas["ebuild"]["properties"][name]["const"] = 0
     return schemas
