@@ -31,7 +31,6 @@ from pygls.server import LanguageServer
 from .finders import (
     DIAGNOSTICS_FINDER_CLASSES,
     FORMAT_FINDER_CLASSES,
-    SCHEMAS,
     CSVFinder,
     PackageFinder,
 )
@@ -39,7 +38,7 @@ from .parser import parse
 from .tree_sitter_lsp.diagnose import get_diagnostics
 from .tree_sitter_lsp.finders import PositionFinder
 from .tree_sitter_lsp.format import get_text_edits
-from .utils import get_filetype
+from .utils import get_filetype, get_schema
 
 
 class TermuxLanguageServer(LanguageServer):
@@ -154,7 +153,7 @@ class TermuxLanguageServer(LanguageServer):
             text = uni.get_text()
             _range = uni.get_range()
             if description := (
-                SCHEMAS[filetype]
+                get_schema(filetype)
                 .get("properties", {})
                 .get(text, {})
                 .get("description")
@@ -163,7 +162,9 @@ class TermuxLanguageServer(LanguageServer):
                     MarkupContent(MarkupKind.Markdown, description),
                     _range,
                 )
-            for k, v in SCHEMAS[filetype].get("patternProperties", {}).items():
+            for k, v in (
+                get_schema(filetype).get("patternProperties", {}).items()
+            ):
                 if re.match(k, text):
                     return Hover(
                         MarkupContent(MarkupKind.Markdown, v["description"]),
@@ -199,7 +200,7 @@ class TermuxLanguageServer(LanguageServer):
                         documentation=v["description"],
                         insert_text=k,
                     )
-                    for k, v in SCHEMAS[filetype]["properties"].items()
+                    for k, v in get_schema(filetype)["properties"].items()
                     if k.startswith(text)
                 ],
             )

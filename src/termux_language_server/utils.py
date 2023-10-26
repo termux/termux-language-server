@@ -7,6 +7,8 @@ from typing import Any, Literal
 
 from . import FILETYPE
 
+SCHEMAS = {}
+
 
 def get_schema(filetype: FILETYPE) -> dict[str, Any]:
     r"""Get schema.
@@ -15,16 +17,17 @@ def get_schema(filetype: FILETYPE) -> dict[str, Any]:
     :type filetype: FILETYPE
     :rtype: dict[str, Any]
     """
-    file = os.path.join(
-        os.path.join(
-            os.path.join(os.path.dirname(__file__), "assets"),
-            "json",
-        ),
-        f"{filetype}.json",
-    )
-    with open(file, "r") as f:
-        document = json.load(f)
-    return document
+    if filetype not in SCHEMAS:
+        file = os.path.join(
+            os.path.join(
+                os.path.join(os.path.dirname(__file__), "assets"),
+                "json",
+            ),
+            f"{filetype}.json",
+        )
+        with open(file, "r") as f:
+            SCHEMAS[filetype] = json.load(f)
+    return SCHEMAS[filetype]
 
 
 def get_filetype(uri: str) -> FILETYPE | Literal[""]:
