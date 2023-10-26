@@ -27,6 +27,7 @@ from lsprotocol.types import (
     TextEdit,
 )
 from pygls.server import LanguageServer
+from tree_sitter_languages import get_parser
 from tree_sitter_lsp.diagnose import get_diagnostics
 from tree_sitter_lsp.finders import PositionFinder
 from tree_sitter_lsp.format import get_text_edits
@@ -38,7 +39,6 @@ from .finders import (
     PackageFinder,
 )
 from .packages import search_package_document, search_package_names
-from .parser import parse
 from .utils import get_filetype, get_schema
 
 
@@ -54,6 +54,7 @@ class TermuxLanguageServer(LanguageServer):
         """
         super().__init__(*args)
         self.trees = {}
+        self.parser = get_parser("bash")
 
         @self.feature(TEXT_DOCUMENT_DID_OPEN)
         @self.feature(TEXT_DOCUMENT_DID_CHANGE)
@@ -68,7 +69,9 @@ class TermuxLanguageServer(LanguageServer):
             if filetype == "":
                 return None
             document = self.workspace.get_document(params.text_document.uri)
-            self.trees[document.uri] = parse(document.source.encode())
+            self.trees[document.uri] = self.parser.parse(
+                document.source.encode()
+            )
             diagnostics = get_diagnostics(
                 document.uri,
                 self.trees[document.uri],
