@@ -37,34 +37,63 @@
 [![pypi/implementation](https://shields.io/pypi/implementation/termux-language-server)](https://pypi.org/project/termux-language-server/#files)
 [![pypi/pyversions](https://shields.io/pypi/pyversions/termux-language-server)](https://pypi.org/project/termux-language-server/#files)
 
-Language server for
-[termux](https://termux.dev)'s
-[`build.sh`](https://github.com/termux/termux-packages/wiki/Creating-new-package)
-and
-[`*.subpackage.sh`](https://github.com/termux/termux-packages/wiki/Creating-new-package#writing-a-subpackage-script).
+Language server for some specific bash scripts:
 
-`build.sh` is a subtype of bash.
-This language server only provides extra features for `build.sh` which
+- Android [Termux](https://termux.dev)
+  - [`build.sh`](https://github.com/termux/termux-packages/wiki/Creating-new-package)
+  - [`*.subpackage.sh`](https://github.com/termux/termux-packages/wiki/Creating-new-package#writing-a-subpackage-script)
+- [ArchLinux](https://archlinux.org)/Windows [Msys2](https://msys2.org)
+  - [`PKGBUILD`](https://wiki.archlinux.org/title/PKGBUILD)
+  - [`*.install`](https://wiki.archlinux.org/title/PKGBUILD#install)
+  - [`makepkg.conf`](https://man.archlinux.org/man/makepkg.conf.5.en)
+- [Gentoo](https://www.gentoo.org/)
+  - [`*.ebuild`](https://dev.gentoo.org/~zmedico/portage/doc/man/ebuild.5.html)
+  - `*.eclass`
+  - [`make.conf`](https://dev.gentoo.org/~zmedico/portage/doc/man/make.conf.5.html)
+  - [`color.map`](https://dev.gentoo.org/~zmedico/portage/doc/man/color.map.5.html)
+
+This language server only provides extra features which
 [bash-language-server](https://github.com/bash-lsp/bash-language-server)
 doesn't support:
 
 - [x] [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic):
-  - [x] required variables. Such as: `TERMUX_PKG_VERSION`
-  - [x] variable type. Such as: `TERMUX_PKG_DEPENDS` shouldn't be a function
-  - [x] variable value. Such as: `TERMUX_PKG_AUTO_UPDATE` should be `true` or
-    `false`
-  - [x] [variable order](https://github.com/termux/termux-packages/wiki/Creating-new-package#table-of-available-package-control-fields)
-  - [x] unsorted comma separated value. Such as
-    `TERMUX_PKG_RECOMMENDS="python-sentencepiece, python-numpy"` should be
-    `TERMUX_PKG_RECOMMENDS="python-numpy, python-sentencepiece"`
+  - [x] error
+    - [x] required variables
+    - [x] variable type: string/array/function
+    - [x] variable values
+  - [x] warning
+    - [x] variable order
+    - [x] unsorted value.
 - [x] [Document Formatting](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting):
-  - [x] sort some variables
-  - [x] sort comma separated value
+  - [x] sort variables
+  - [x] sort values
 - [x] [Document Link](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_documentLink):
-  jump to
-  <https://github.com/termux/termux-packages/tree/master/packages/package_name/build.sh>
+  - [x] `build.sh`: jump to
+    <https://github.com/termux/termux-packages/tree/master/packages/package_name/build.sh>
+  - [x] `PKGBUILD`: jump to
+    <https://archlinux.org/packages/package_name>
 - [x] [Hover](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_hover)
 - [x] [Completion](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_completion)
+- [ ] [Code Action](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_codeAction)
+  - [ ] `PKGBUILD`
+    - [ ] generate a template by the name of directory containing `PKGBUILD`, the
+      templates comes from:
+      - [ ] customized by user
+      - [ ] [pip2pkgbuild](https://github.com/wenLiangcan/pip2pkgbuild)
+      - [ ] [cpan2aur](https://metacpan.org/release/CPANPLUS-Dist-Arch)
+      - [ ] [gem2arch](https://github.com/anatol/gem2arch)
+      - [ ] [arch-hs](https://github.com/berberman/arch-hs)
+    - [ ] update `.SRCINFO` by `makepkg --printsrcinfo > .SRCINFO`
+    - [ ] update `pkgsums` by [`updpkgsums`](https://gitlab.archlinux.org/pacman/pacman-contrib)
+    - [ ] update version by a `nvcheck.toml` to tell this
+      program where to search new version:
+
+```toml
+[package_name]
+source = "github"
+github = "author_name/repo_name"
+use_max_tag = true
+```
 
 Other features:
 
@@ -80,21 +109,33 @@ Other features:
 
 ### Document Link
 
-![document link](https://github.com/termux/termux-language-server/assets/32936898/9149386d-0e19-4f88-9931-dba8a3d960bc)
+![document link](https://github.com/Freed-Wu/pkgbuild-language-server/assets/32936898/d3777f3c-9b75-41f9-b6b3-1c4ec55c7283)
 
 ### Hover
 
-![document hover](https://github.com/termux/termux-language-server/assets/32936898/5dfbe6d1-6bff-4ffd-bc8e-ad2c2895af52)
+![keyword](https://github.com/Freed-Wu/requirements-language-server/assets/32936898/91bfde00-28f7-4376-8b7a-10a0bd56ba51)
+
+![package](https://github.com/Freed-Wu/pkgbuild-language-server/assets/32936898/3d9fa906-35ea-4063-a9eb-06282d3e8596)
 
 ### Completion
 
-![completion](https://github.com/termux/termux-language-server/assets/32936898/11f2bafc-cb3b-4559-9c3e-6df474e819bd)
+![completion](https://github.com/Freed-Wu/pkgbuild-language-server/assets/32936898/c060690c-071b-41a0-bde5-dce338f4e779)
+
+## How Does It Work
+
+For every subtype of bash, there exists one
+[json](https://github.com/termux/termux-language-server/tree/main/src/termux_language_server/assets/json)
+respecting [json schema specification](https://json-schema.org/specification)
+to provide the following information:
+
+- variable type
+- variable description
+- variable value enumerate
+- is variable required
+- ...
+
+If you want to support more filetypes, just add a new json schema for it.
 
 Read
 [![readthedocs](https://shields.io/readthedocs/termux-language-server)](https://termux-language-server.readthedocs.io)
 to know more.
-
-## Similar Projects
-
-- [pkgbuild-language-server](https://github.com/Freed-Wu/pkgbuild-language-server):
-  ArchLinux's `PKGBUILD`.
