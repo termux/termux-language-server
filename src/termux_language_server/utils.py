@@ -44,6 +44,8 @@ def get_filetype(uri: str) -> FILETYPE | Literal[""]:
         return "install"
     if basename == "PKGBUILD":
         return "PKGBUILD"
+    if basename == "makepkg.conf":
+        return "makepkg.conf"
     if ext in {"ebuild", "eclass"}:
         return "ebuild"
     if basename == "make.conf":
