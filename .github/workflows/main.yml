@@ -87,7 +87,7 @@ jobs:
     steps:
       - uses: Freed-Wu/update-aur-package@v1.0.11
         with:
-          package_name: autotools-language-server
+          package_name: termux-language-server
           ssh_private_key: ${{secrets.AUR_SSH_PRIVATE_KEY}}
 
   deploy-nur:
