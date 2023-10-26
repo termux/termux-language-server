@@ -121,6 +121,9 @@ skips = ["*_test.py", "*/test_*.py"]
 [tool.cibuildwheel]
 archs = ["all"]
 # jsonschema depends on rpds-py which depends on cargo
-skip = "*37-* *38-* *39-* *-musllinux_*"
+# disable *-musllinux_*
+# Fatal Python error: Segmentation fault
+# disable pp*-macosx_*
+skip = "*37-* *38-* *39-* *-musllinux_* pp*-macosx_*"
 before-test = "pip install -rrequirements.txt -rrequirements/dev.txt"
 test-command = "pytest {project}"
