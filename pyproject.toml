@@ -60,6 +60,8 @@ Source = "https://github.com/termux/termux-language-server"
 
 [project.scripts]
 termux-language-server = "termux_language_server.__main__:main"
+pkgbuild-language-server = "termux_language_server.__main__:main"
+portage-language-server = "termux_language_server.__main__:main"
 
 [tool.scikit-build]
 experimental = true
