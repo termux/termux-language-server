@@ -13,7 +13,6 @@ def init_schema() -> dict[str, dict[str, Any]]:
 
     :rtype: dict[str, dict[str, Any]]
     """
-    schema = {}
     filetype = "makepkg.conf"
     schema = {
         "$id": f"{SOURCE}/blob/main/src/termux_language_server/assets/json/{filetype}.json",
