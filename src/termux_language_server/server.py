@@ -217,9 +217,12 @@ class TermuxLanguageServer(LanguageServer):
                         CompletionItem(
                             k,
                             kind=CompletionItemKind.Module,
+                            documentation=MarkupContent(
+                                MarkupKind.Markdown, v
+                            ),
                             insert_text=k,
                         )
-                        for k in search_package_names(filetype)
+                        for k, v in search_package_names(filetype).items()
                         if k.startswith(text)
                     ],
                 )
