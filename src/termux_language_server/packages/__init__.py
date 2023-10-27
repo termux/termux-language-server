@@ -20,9 +20,11 @@ def search_package_document(name: str, filetype: FILETYPE) -> str:
     return get_package_document(name)
 
 
-def search_package_names(filetype: FILETYPE) -> dict[str, str]:
+def search_package_names(name: str, filetype: FILETYPE) -> dict[str, str]:
     r"""Search package names.
 
+    :param name:
+    :type name: str
     :param filetype:
     :type filetype: FILETYPE
     :rtype: dict[str, str]
@@ -31,4 +33,4 @@ def search_package_names(filetype: FILETYPE) -> dict[str, str]:
         from .pkgbuild import get_package_names
     else:
         raise NotImplementedError
-    return get_package_names()
+    return get_package_names(name)
