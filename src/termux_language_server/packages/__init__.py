@@ -20,12 +20,12 @@ def search_package_document(name: str, filetype: FILETYPE) -> str:
     return get_package_document(name)
 
 
-def search_package_names(filetype: FILETYPE) -> list[str]:
+def search_package_names(filetype: FILETYPE) -> dict[str, str]:
     r"""Search package names.
 
     :param filetype:
     :type filetype: FILETYPE
-    :rtype: list[str]
+    :rtype: dict[str, str]
     """
     if filetype == "PKGBUILD":
         from .pkgbuild import get_package_names

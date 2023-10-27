@@ -5,15 +5,9 @@ from pathlib import Path
 
 from jinja2 import Template
 from platformdirs import user_config_path
+from pyalpm import Handle
 
-try:
-    from pyalpm import Handle
-
-    DB = Handle(".", "/var/lib/pacman").get_localdb()
-except ImportError:
-    from argparse import Namespace
-
-    DB = Namespace(pkgcache=[])
+DB = Handle(".", "/var/lib/pacman").get_localdb()
 TEMPLATE_NAME = "template.md.j2"
 PATH = user_config_path("pacman") / TEMPLATE_NAME
 if not PATH.exists():
@@ -21,24 +15,25 @@ if not PATH.exists():
 TEMPLATE = PATH.read_text()
 
 
-def get_package_document(name: str, template: str = TEMPLATE) -> str:
+def get_package_document(name: str, template: str | None = TEMPLATE) -> str:
     r"""Get package document.
 
     :param name:
     :type name: str
-    :param template:
-    :type template: str
+    :param template: return description when template is None, which is faster.
+    :type template: str | None
     :rtype: str
     """
-    for pkg in DB.pkgcache:
-        if pkg.name == name:
-            return Template(template).render(pkg=pkg)
-    return ""
+    if template is None:
+        return DB.get_pkg(name).desc
+    return Template(template).render(pkg=DB.get_pkg(name))
 
 
-def get_package_names() -> list[str]:
+def get_package_names() -> dict[str, str]:
     r"""Get package names.
 
-    :rtype: list[str]
+    :rtype: dict[str, str]
     """
-    return [pkg.name for pkg in DB.pkgcache]
+    return {
+        pkg.name: get_package_document(pkg.name, None) for pkg in DB.pkgcache
+    }
