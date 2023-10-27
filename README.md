@@ -71,7 +71,9 @@ doesn't support:
   - [x] sort values
 - [x] [Document Link](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_documentLink):
   - [x] `build.sh`: <https://github.com/termux/termux-packages/tree/master/packages/package_name/build.sh>
-  - [x] `PKGBUILD`: <https://archlinux.org/packages/package_name>
+  - [x] `PKGBUILD`:
+    - [x] ArchLinux: <https://archlinux.org/packages/package_name>
+    - [x] Windows Msys2: <https://packages.msys2.org/base/package_name>
   - [ ] `ebuild`: <https://packages.gentoo.org/packages/package_name>
 - [x] [Hover](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_hover)
 - [x] [Completion](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_completion)

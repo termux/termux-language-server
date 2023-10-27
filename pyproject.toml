@@ -70,6 +70,9 @@ write_to = "src/termux_language_server/_version.py"
 [tool.setuptools-generate]
 write-to = "src/termux_language_server/_metainfo.py"
 
+[tool.setuptools-generate.metainfo-template]
+file = "templates/metainfo.py.j2"
+
 [tool.mdformat]
 number = true
 

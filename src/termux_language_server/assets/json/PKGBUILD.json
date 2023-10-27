@@ -55,7 +55,8 @@
     },
     "url": {
       "description": "The URL to the VCS repository. This must include the VCS in the URL protocol for makepkg to recognize this as a VCS source. If the protocol does not include the VCS name, it can be added by prefixing the URL with vcs+. For example, using a Git repository over HTTPS would have a source URL in the form: git+https://\\....",
-      "type": "string"
+      "type": "string",
+      "format": "uri"
     },
     "license": {
       "description": "This field specifies the license(s) that apply to the package. Commonly used licenses can be found in */usr/share/licenses/common*. If you see the package's license there, simply reference it in the license field (e.g., license=(GPL)). If the package provides a license not available in */usr/share/licenses/common*, then you should include it in the package itself and set license=(custom) or license=(custom:LicenseName). The license should be placed in *\\$pkgdir/usr/share/licenses/\\$pkgname/* when building the package. If multiple licenses are applicable, list all of them: license=(GPL FDL).",
@@ -173,7 +174,14 @@
       "description": "Defines on which architectures the given package is available (e.g., arch=(i686 x86_64)). Packages that contain no architecture specific files should use arch=(any). Valid characters for members of this array are alphanumerics and \"\\_\".",
       "type": "array",
       "items": {
-        "type": "string"
+        "type": "string",
+        "enum": [
+          "any",
+          "i686",
+          "x86_64",
+          "arm",
+          "aarch64"
+        ]
       },
       "uniqueItems": true
     },
@@ -276,6 +284,60 @@
     "query": {
       "description": "(optional) Allows specifying whether a VCS checkout should be checked for PGP-signed revisions. The source line should have the format source=(url#fragment?signed) or source=(url?signed#fragment). Currently only supported by Git.",
       "type": "string"
+    },
+    "mingw_arch": {
+      "type": "array",
+      "description": "A list of MSYS2 environments the package is built for. Defaults to an empty list.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "mingw32",
+          "mingw64",
+          "ucrt64",
+          "clang64",
+          "clang32",
+          "clangarm64"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "msys2_internal": {
+      "type": "boolean",
+      "description": "Whether the package is an internal or meta package and shouldn't be linked to external sources. Defaults to false."
+    },
+    "msys2_references": {
+      "type": "array",
+      "description": "Maps the package to external resources, such as other package repositories.",
+      "items": {
+        "type": "string",
+        "pattern": "(archlinux|aur|cygwin|cygwin-mingw64|pypi)(|: .*)"
+      },
+      "uniqueItems": true
+    },
+    "msys2_changelog_url": {
+      "type": "string",
+      "description": "NEWS file in git or the GitHub releases page. In case there are multiple, the one that is more useful for packagers.",
+      "format": "uri"
+    },
+    "msys2_documentation_url": {
+      "type": "string",
+      "description": "URL to the documentation for the API, tools, etc., in case it's a different website than the homepage.",
+      "format": "uri"
+    },
+    "msys2_repository_url": {
+      "type": "string",
+      "description": "URL to the web view of the repository, e.g., on GitHub or GitLab.",
+      "format": "uri"
+    },
+    "msys2_issue_tracker_url": {
+      "type": "string",
+      "description": "URL to the bug tracker, mailing list archive, etc.",
+      "format": "uri"
+    },
+    "msys2_pgp_keys_url": {
+      "type": "string",
+      "description": "URL to a website containing which keys are used to sign releases.",
+      "format": "uri"
     }
   }
 }
