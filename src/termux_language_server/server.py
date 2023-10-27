@@ -227,8 +227,9 @@ class TermuxLanguageServer(LanguageServer):
                             ),
                             insert_text=k,
                         )
-                        for k, v in search_package_names(filetype).items()
-                        if k.startswith(text)
+                        for k, v in search_package_names(
+                            text, filetype
+                        ).items()
                     ],
                 )
             schema = get_schema(filetype)
