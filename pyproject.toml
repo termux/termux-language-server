@@ -47,6 +47,23 @@ termux-language-server = "termux_language_server.__main__:main"
 pkgbuild-language-server = "termux_language_server.__main__:main"
 portage-language-server = "termux_language_server.__main__:main"
 
+[tool.setuptools.data-files]
+"share/man/man1" = [
+  "sdist/termux-language-server.1",
+  "sdist/pkgbuild-language-server.1",
+  "sdist/portage-language-server.1",
+]
+"share/bash-completion/completions" = [
+  "sdist/termux-language-server",
+  "sdist/pkgbuild-language-server",
+  "sdist/portage-language-server",
+]
+"share/zsh/site-functions" = [
+  "sdist/_termux-language-server",
+  "sdist/_pkgbuild-language-server",
+  "sdist/_portage-language-server",
+]
+
 [tool.scikit-build]
 experimental = true
 
@@ -60,8 +77,11 @@ file = "requirements/colorize.txt"
 [tool.setuptools.dynamic.optional-dependencies.dev]
 file = "requirements/dev.txt"
 
-[tool.setuptools.dynamic.optional-dependencies.termux]
-file = "requirements/termux.txt"
+[tool.setuptools.dynamic.optional-dependencies.misc]
+file = "requirements/misc.txt"
+
+[tool.setuptools.dynamic.optional-dependencies.pkgbuild]
+file = "requirements/pkgbuild.txt"
 # end: scripts/update-pyproject.toml.pl
 
 [tool.setuptools_scm]
