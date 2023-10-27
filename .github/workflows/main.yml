@@ -16,7 +16,8 @@ permissions:
 
 env:
   PYTHONUTF8: "1"
-  python-version: 3.x
+  # https://github.com/tree-sitter/py-tree-sitter/pull/161
+  python-version: "3.11"
   cache: pip
 
 jobs:
@@ -25,13 +26,9 @@ jobs:
       fail-fast: false
       matrix:
         runs-on:
-          # Could not find a version that satisfies the requirement
-          # tree-sitter-languages
-          # No matching distribution found for tree-sitter-languages
-          # - ubuntu-latest
+          - ubuntu-latest
           - macos-latest
-          # https://github.com/tree-sitter/py-tree-sitter/issues/170
-          # - windows-latest
+          - windows-latest
     runs-on: ${{matrix.runs-on}}
     steps:
       - uses: actions/checkout@v3
