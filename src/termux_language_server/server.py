@@ -206,9 +206,9 @@ class TermuxLanguageServer(LanguageServer):
             if filetype == "":
                 return CompletionList(False, [])
             document = self.workspace.get_document(params.text_document.uri)
-            uni = PositionFinder(
-                Position(params.position.line, params.position.character - 1)
-            ).find(document.uri, self.trees[document.uri])
+            uni = PositionFinder(params.position, right_equal=True).find(
+                document.uri, self.trees[document.uri]
+            )
             if uni is None:
                 return CompletionList(False, [])
             parent = uni.node.parent

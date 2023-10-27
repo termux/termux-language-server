@@ -1,4 +1,4 @@
 #!/usr/bin/env -S pip install -r
 
-git+git://gitlab.archlinux.org/pacman/namcap
+# git+git://gitlab.archlinux.org/pacman/namcap
 pyalpm
