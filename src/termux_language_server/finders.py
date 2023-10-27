@@ -369,6 +369,23 @@ class PackageFinder(Finder):
         )
 
 
+@dataclass
+class MinGWFinder(Finder):
+    r"""Mingwfinder."""
+
+    def __call__(self, uni: UNI) -> bool:
+        r"""Call.
+
+        :param uni:
+        :type uni: UNI
+        :rtype: bool
+        """
+        text = uni.get_text()
+        return uni.node.type == "variable_name" and (
+            text.startswith("mingw_") or text.startswith("msys2_")
+        )
+
+
 DIAGNOSTICS_FINDER_CLASSES = [
     ErrorFinder,
     MissingFinder,

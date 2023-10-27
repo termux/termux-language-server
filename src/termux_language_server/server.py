@@ -36,6 +36,7 @@ from .finders import (
     DIAGNOSTICS_FINDER_CLASSES,
     FORMAT_FINDER_CLASSES,
     CSVFinder,
+    MinGWFinder,
     PackageFinder,
 )
 from .packages import search_package_document, search_package_names
@@ -122,10 +123,14 @@ class TermuxLanguageServer(LanguageServer):
                     "https://github.com/termux/termux-packages/tree/master/packages/{{name}}/build.sh",
                 )
             elif filetype in {"PKGBUILD", "install"}:
+                if MinGWFinder().find(document.uri, self.trees[document.uri]):
+                    url = "https://packages.msys2.org/base/{{uni.get_text()}}"
+                else:
+                    url = "https://archlinux.org/packages/{{uni.get_text()}}"
                 return PackageFinder().get_document_links(
                     document.uri,
                     self.trees[document.uri],
-                    "https://archlinux.org/packages/{{uni.get_text()}}",
+                    url,
                 )
             raise NotImplementedError
 

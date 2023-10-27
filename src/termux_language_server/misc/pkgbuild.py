@@ -4,7 +4,7 @@ r"""PKGBUILD
 from typing import Any
 
 from markdown_it.token import Token
-from tree_sitter_lsp.misc import get_md_tokens
+from tree_sitter_lsp.misc import get_md_tokens, get_soup
 
 from .._metainfo import SOURCE, project
 
@@ -130,4 +130,58 @@ def init_schema() -> dict[str, Any]:
                 # Each split package uses a corresponding packaging function with
                 # name package_foo(), where foo is the name of the split package.
                 schemas[filetype][properties_name][name]["const"] = 0
+    # uname -m
+    schemas["PKGBUILD"]["properties"]["arch"]["items"]["enum"] = [
+        "any",
+        "i686",
+        "x86_64",
+        "arm",
+        "aarch64",
+    ]
+    schemas["PKGBUILD"]["properties"]["url"]["format"] = "uri"
+
+    soup = get_soup("https://www.msys2.org/dev/pkgbuild/")
+    for tr in soup.find_all("tr")[1:]:
+        tds = tr.find_all("td")
+        name = tds[0].code.text
+        kind = tds[1].text
+        kind = {"mapping": "array"}.get(kind, kind)
+        description = tds[2].text
+        schemas["PKGBUILD"]["properties"][name] = {
+            "type": kind,
+            "description": description,
+        }
+        if kind == "array":
+            schemas["PKGBUILD"]["properties"][name] |= {
+                "items": {"type": "string"},
+                "uniqueItems": True,
+            }
+        elif kind == "object":
+            schemas["PKGBUILD"]["properties"][name] |= {"properties": {}}
+        elif kind == "string" and name.endswith("_url"):
+            schemas["PKGBUILD"]["properties"][name]["format"] = "uri"
+    # TODO: https://www.msys2.org/dev/pkgbuild/
+    schemas["PKGBUILD"]["properties"]["mingw_arch"]["items"]["enum"] = [
+        "mingw32",
+        "mingw64",
+        "ucrt64",
+        "clang64",
+        "clang32",
+        "clangarm64",
+    ]
+    names = []
+    for li in soup.find_all("li"):
+        code = li.find("code")
+        if code is None:
+            continue
+        name = code.text
+        if not li.text.startswith(name):
+            continue
+        names += [name]
+        # text = li.text
+        # _, _, text = text.partition(name)
+        # description = text.replace("\n", " ").lstrip("- ")
+    schemas["PKGBUILD"]["properties"]["msys2_references"]["items"][
+        "pattern"
+    ] = f"({'|'.join(names)})(|: .*)"
     return schemas
