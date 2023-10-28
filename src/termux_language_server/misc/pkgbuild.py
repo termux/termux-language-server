@@ -147,6 +147,10 @@ def init_schema() -> dict[str, Any]:
         "aarch64",
     ]
     schemas["PKGBUILD"]["properties"]["url"]["format"] = "uri"
+    del schemas["PKGBUILD"]["properties"]["pkgver"]["type"]
+    schemas["PKGBUILD"]["properties"]["pkgver"] |= {
+        "anyOf": [{"type": "string"}, {"const": 0}]
+    }
 
     soup = get_soup("https://www.msys2.org/dev/pkgbuild/")
     for tr in soup.find_all("tr")[1:]:

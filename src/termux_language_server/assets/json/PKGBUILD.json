@@ -39,7 +39,14 @@
     },
     "pkgver": {
       "description": "The version of the software as released from the author (e.g., *2.7.1*). The variable is not allowed to contain colons, forward slashes, hyphens or whitespace.\nThe pkgver variable can be automatically updated by providing a pkgver() function in the PKGBUILD that outputs the new package version. This is run after downloading and extracting the sources and running the prepare() function (if present), so it can use those files in determining the new pkgver. This is most useful when used with sources from version control systems (see below).",
-      "type": "string"
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "const": 0
+        }
+      ]
     },
     "pkgrel": {
       "description": "This is the release number specific to the distribution. This allows package maintainers to make updates to the package's configure flags, for example. This is typically set to *1* for each new upstream software release and incremented for intermediate PKGBUILD updates. The variable is a positive integer, with an optional subrelease level specified by adding another positive integer separated by a period (i.e. in the form x.y).",
