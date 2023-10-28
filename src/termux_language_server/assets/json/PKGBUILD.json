@@ -177,9 +177,15 @@
         "type": "string",
         "enum": [
           "any",
+          "pentium4",
+          "i486",
           "i686",
           "x86_64",
+          "x86_64_v3",
           "arm",
+          "armv6h",
+          "armv7h",
+          "armv8",
           "aarch64"
         ]
       },
