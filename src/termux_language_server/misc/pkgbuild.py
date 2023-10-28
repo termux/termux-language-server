@@ -130,12 +130,20 @@ def init_schema() -> dict[str, Any]:
                 # Each split package uses a corresponding packaging function with
                 # name package_foo(), where foo is the name of the split package.
                 schemas[filetype][properties_name][name]["const"] = 0
-    # uname -m
+    # https://archlinux32.org/architecture/
+    # https://archlinux.org/packages/
+    # https://archlinuxarm.org/forum/viewforum.php?f=56
     schemas["PKGBUILD"]["properties"]["arch"]["items"]["enum"] = [
         "any",
+        "pentium4",
+        "i486",
         "i686",
         "x86_64",
+        "x86_64_v3",
         "arm",
+        "armv6h",
+        "armv7h",
+        "armv8",
         "aarch64",
     ]
     schemas["PKGBUILD"]["properties"]["url"]["format"] = "uri"
@@ -160,7 +168,7 @@ def init_schema() -> dict[str, Any]:
             schemas["PKGBUILD"]["properties"][name] |= {"properties": {}}
         elif kind == "string" and name.endswith("_url"):
             schemas["PKGBUILD"]["properties"][name]["format"] = "uri"
-    # TODO: https://www.msys2.org/dev/pkgbuild/
+    # https://packages.msys2.org/repos
     schemas["PKGBUILD"]["properties"]["mingw_arch"]["items"]["enum"] = [
         "mingw32",
         "mingw64",
