@@ -13,18 +13,40 @@ from lsprotocol.types import (
     Range,
     TextEdit,
 )
-from tree_sitter import Tree
+from tree_sitter import Node, Tree
 from tree_sitter_lsp import UNI, Finder
 from tree_sitter_lsp.finders import (
-    ErrorFinder,
-    MissingFinder,
+    ErrorQueryFinder,
+    QueryFinder,
     SchemaFinder,
     UnFixedOrderFinder,
 )
 
 from . import CSV, FILETYPE
 from .schema import BashTrie
-from .utils import get_schema
+from .utils import get_query, get_schema
+
+
+@dataclass(init=False)
+class ErrorBashFinder(ErrorQueryFinder):
+    r"""Errorbashfinder."""
+
+    def __init__(
+        self,
+        message: str = "{{uni.get_text()}}: error",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
+    ) -> None:
+        r"""Init.
+
+        :param filetype:
+        :type filetype: str
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
+        :rtype: None
+        """
+        super().__init__("bash", message, severity)
 
 
 @dataclass(init=False)
@@ -339,56 +361,63 @@ class CSVFinder(UnsortedCSVFinder):
         return links
 
 
-class PackageFinder(Finder):
+@dataclass(init=False)
+class PackageFinder(QueryFinder):
     r"""Packagefinder."""
 
-    def __call__(self, uni: UNI) -> bool:
-        r"""Call.
+    def __init__(
+        self,
+        message: str = "{{uni.get_text()}}: no such file",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
+    ) -> None:
+        r"""Init.
 
-        :param uni:
-        :type uni: UNI
-        :rtype: bool
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
+        :rtype: None
         """
-        parent = uni.node.parent
-        if parent is None:
-            return False
-        if parent.parent is None:
-            return False
-        return (
-            uni.node.type == "word"
-            and parent.type == "array"
-            and parent.parent.type == "variable_assignment"
-            and UNI.node2text(parent.parent.children[0])
-            in [
-                "depends",
-                "optdepends",
-                "makedepends",
-                "conflicts",
-                "provides",
-            ]
-        )
+        query = get_query("package")
+        super().__init__(query, message, severity)
+
+    def capture2uni(self, capture: tuple[Node, str], uri: str) -> UNI | None:
+        r"""Capture2uni.
+
+        :param capture:
+        :type capture: tuple[Node, str]
+        :param uri:
+        :type uri: str
+        :rtype: UNI | None
+        """
+        node, label = capture
+        uni = UNI(uri, node)
+        return uni if label == "package" else None
 
 
-@dataclass
-class MinGWFinder(Finder):
+@dataclass(init=False)
+class MinGWFinder(QueryFinder):
     r"""Mingwfinder."""
 
-    def __call__(self, uni: UNI) -> bool:
-        r"""Call.
+    def __init__(
+        self,
+        message: str = "{{uni.get_text()}}: no such file",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
+    ) -> None:
+        r"""Init.
 
-        :param uni:
-        :type uni: UNI
-        :rtype: bool
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
+        :rtype: None
         """
-        text = uni.get_text()
-        return uni.node.type == "variable_name" and (
-            text.startswith("mingw_") or text.startswith("msys2_")
-        )
+        query = get_query("mingw")
+        super().__init__(query, message, severity)
 
 
 DIAGNOSTICS_FINDER_CLASSES = [
-    ErrorFinder,
-    MissingFinder,
+    ErrorBashFinder,
     BashFinder,
     UnsortedKeywordFinder,
     UnsortedCSVFinder,
