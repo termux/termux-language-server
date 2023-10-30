@@ -123,7 +123,14 @@ class TermuxLanguageServer(LanguageServer):
                     "https://github.com/termux/termux-packages/tree/master/packages/{{name}}/build.sh",
                 )
             elif filetype in {"PKGBUILD", "install"}:
-                if MinGWFinder().find(document.uri, self.trees[document.uri]):
+                if (
+                    len(
+                        MinGWFinder().find_all(
+                            document.uri, self.trees[document.uri]
+                        )
+                    )
+                    > 0
+                ):
                     url = "https://packages.msys2.org/base/{{uni.get_text()}}"
                 else:
                     url = "https://archlinux.org/packages/{{uni.get_text()}}"

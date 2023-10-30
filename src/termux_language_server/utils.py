@@ -5,9 +5,38 @@ import json
 import os
 from typing import Any, Literal
 
+from tree_sitter.binding import Query
+from tree_sitter_languages import get_language
+
 from . import FILETYPE
 
 SCHEMAS = {}
+QUERIES = {}
+
+
+def get_query(name: str, filetype: str = "bash") -> Query:
+    r"""Get query.
+
+    :param name:
+    :type name: str
+    :param filetype:
+    :type filetype: FILETYPE
+    :rtype: Query
+    """
+    if name not in QUERIES:
+        with open(
+            os.path.join(
+                os.path.join(
+                    os.path.join(os.path.dirname(__file__), "assets"),
+                    "queries",
+                ),
+                f"{name}{os.path.extsep}scm",
+            )
+        ) as f:
+            text = f.read()
+        language = get_language(filetype)
+        QUERIES[name] = language.query(text)
+    return QUERIES[name]
 
 
 def get_schema(filetype: FILETYPE) -> dict[str, Any]:
