@@ -6,6 +6,7 @@ from typing import Any
 from tree_sitter_lsp.misc import get_soup
 
 from .._metainfo import SOURCE, project
+from .licenses import ATOM
 
 
 def init_schema() -> dict[str, dict[str, Any]]:
@@ -43,4 +44,5 @@ def init_schema() -> dict[str, dict[str, Any]]:
                 schema["properties"][name]["type"] = "string"
             else:
                 schema["properties"][name]["const"] = 0
+    schema["properties"]["LICENSE"]["pattern"] = rf"{ATOM}(( |\n){ATOM})*"
     return {filetype: schema}

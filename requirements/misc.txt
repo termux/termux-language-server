@@ -1,3 +1,4 @@
 #!/usr/bin/env -S pip install -r
 
+license-expression
 tree-sitter-lsp[misc]
