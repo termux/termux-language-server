@@ -88,7 +88,7 @@ repos:
         additional_dependencies:
           - tomli
   - repo: https://github.com/kumaraditya303/mirrors-pyright
-    rev: v1.1.332
+    rev: v1.1.333
     hooks:
       - id: pyright
   - repo: https://github.com/PyCQA/bandit
