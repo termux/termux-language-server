@@ -1,6 +1,7 @@
 r"""PKGBUILD
 ============
 """
+import os
 from typing import Any
 
 from markdown_it.token import Token
@@ -196,4 +197,7 @@ def init_schema() -> dict[str, Any]:
     schemas["PKGBUILD"]["properties"]["msys2_references"]["items"][
         "pattern"
     ] = f"({'|'.join(names)})(|: .*)"
+    schemas["PKGBUILD"]["properties"]["license"]["items"]["enum"] = os.listdir(
+        "/usr/share/licenses/common"
+    )
     return schemas
