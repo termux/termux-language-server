@@ -7,6 +7,7 @@ from tree_sitter_lsp.misc import get_soup
 
 from .. import CSV
 from .._metainfo import SOURCE, project
+from .licenses import ATOM
 
 URIS = {
     "variable": "https://github.com/termux/termux-packages/wiki/Creating-new-package",
@@ -158,4 +159,7 @@ def init_schema() -> dict[str, dict[str, Any]]:
     schemas["build.sh"]["properties"]["TERMUX_PKG_UPDATE_VERSION_REGEXP"][
         "format"
     ] = "regex"
+    schemas["build.sh"]["properties"]["TERMUX_PKG_LICENSE"][
+        "pattern"
+    ] = rf"{ATOM}(,{ATOM})*"
     return schemas
