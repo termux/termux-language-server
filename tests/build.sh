@@ -1,4 +1,3 @@
-# shellcheck disable=SC2034
 # https://github.com/termux/termux-packages/pull/17457/files
 TERMUX_PKG_LICENSE=GPL-3.0
 TERMUX_PKG_HOMEPAGE=https://github.com/ggerganov/llama.cpp

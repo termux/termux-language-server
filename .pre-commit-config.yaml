@@ -46,12 +46,15 @@ repos:
     rev: 3.0.0
     hooks:
       - id: check-mailmap
+      - id: shellcheck
+        exclude_types:
+          - zsh
   - repo: https://github.com/rhysd/actionlint
     rev: v1.6.26
     hooks:
       - id: actionlint
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.32.0
+    rev: v1.33.0
     hooks:
       - id: yamllint
   - repo: https://github.com/executablebooks/mdformat
@@ -73,8 +76,12 @@ repos:
       - id: markdownlint-cli2
         additional_dependencies:
           - markdown-it-texmath
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.7.0-2
+    hooks:
+      - id: shfmt
   - repo: https://github.com/psf/black
-    rev: 23.10.1
+    rev: 23.11.0
     hooks:
       - id: black
   - repo: https://github.com/PyCQA/isort
@@ -88,7 +95,7 @@ repos:
         additional_dependencies:
           - tomli
   - repo: https://github.com/kumaraditya303/mirrors-pyright
-    rev: v1.1.333
+    rev: v1.1.335
     hooks:
       - id: pyright
   - repo: https://github.com/PyCQA/bandit
