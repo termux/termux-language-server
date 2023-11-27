@@ -34,6 +34,8 @@ class BashTrie(Trie):
             "simple_expansion",
         }
         if node.type in string_types:
+            if node.type == "string":
+                node = node.children[1]
             return cls(UNI.node2range(node), parent, UNI.node2text(node))
         if node.type == "function_definition":
             return cls(UNI.node2range(node), parent, 0)
