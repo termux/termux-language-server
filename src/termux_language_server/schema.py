@@ -34,7 +34,7 @@ class BashTrie(Trie):
         text = UNI.node2text(node)
         _range = UNI.node2range(node)
         if node.type in {"string", "raw_string"} and node.children != 3:
-            text = eval(text)  # nosec: B307
+            text = text.strip("'\"")
             _range.start.character += 1
             _range.end.character -= 1
         return cls(_range, parent, text)
