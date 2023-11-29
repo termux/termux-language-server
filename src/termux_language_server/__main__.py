@@ -33,7 +33,7 @@ def get_parser():
     parser.add_argument(
         "--generate-schema",
         choices=FILETYPE.__args__,  # type: ignore
-        help="generate schema json",
+        help="generate schema in an output format",
     )
     parser.add_argument(
         "--indent",
@@ -57,41 +57,62 @@ def get_parser():
         "--color",
         choices=["auto", "always", "never"],
         default="auto",
-        help="when to display color",
+        help="when to display color, default: %(default)s",
+    )
+    parser.add_argument(
+        "--convert",
+        nargs="*",
+        default={},
+        help="convert files to output format",
+    )
+    parser.add_argument(
+        "--output-format",
+        choices=["json", "yaml", "toml"],
+        default="json",
+        help="output format: %(default)s",
     )
     return parser
 
 
 def main():
     r"""Parse arguments and provide shell completions."""
-    parser = get_parser()
-    args = parser.parse_args()
+    args = get_parser().parse_args()
 
-    if args.generate_schema:
+    if args.generate_schema or args.format or args.check or args.convert:
+        from tree_sitter_languages import get_parser as _get_parser
+        from tree_sitter_lsp.diagnose import check
+        from tree_sitter_lsp.format import format
         from tree_sitter_lsp.utils import pprint
 
-        from .misc import get_schema
+        from .finders import DIAGNOSTICS_FINDER_CLASSES, FORMAT_FINDER_CLASSES
+        from .schema import BashTrie
+        from .utils import get_filetype
 
-        pprint(get_schema(args.generate_schema), indent=args.indent)
-        exit()
-    from tree_sitter_languages import get_parser as _get_parser
-    from tree_sitter_lsp.diagnose import check
-    from tree_sitter_lsp.format import format
+        parser = _get_parser("bash")
+        if args.generate_schema:
+            from .misc import get_schema
 
-    from .finders import DIAGNOSTICS_FINDER_CLASSES, FORMAT_FINDER_CLASSES
-    from .utils import get_filetype
-
-    parser = _get_parser("bash")
-    format(args.format, parser.parse, FORMAT_FINDER_CLASSES, get_filetype)
-    result = check(
-        args.check,
-        parser.parse,
-        DIAGNOSTICS_FINDER_CLASSES,
-        get_filetype,
-        args.color,
-    )
-    if args.format or args.check:
-        exit(result)
+            pprint(
+                get_schema(args.generate_schema),
+                filetype=args.output_format,
+                indent=args.indent,
+            )
+        for file in args.convert:
+            pprint(
+                BashTrie.from_file(file, parser.parse).to_json(),
+                filetype=args.output_format,
+                indent=args.indent,
+            )
+        format(args.format, parser.parse, FORMAT_FINDER_CLASSES, get_filetype)
+        exit(
+            check(
+                args.check,
+                parser.parse,
+                DIAGNOSTICS_FINDER_CLASSES,
+                get_filetype,
+                args.color,
+            )
+        )
 
     from .server import TermuxLanguageServer
 
