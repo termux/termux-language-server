@@ -8,6 +8,7 @@ from markdown_it.token import Token
 from tree_sitter_lsp.misc import get_md_tokens, get_soup
 
 from .._metainfo import SOURCE, project
+from .licenses import LICENSES
 
 
 def get_content(tokens: list[Token]) -> str:
@@ -197,7 +198,15 @@ def init_schema() -> dict[str, Any]:
     schemas["PKGBUILD"]["properties"]["msys2_references"]["items"][
         "pattern"
     ] = f"({'|'.join(names)})(|: .*)"
-    schemas["PKGBUILD"]["properties"]["license"]["items"]["enum"] = os.listdir(
-        "/usr/share/licenses/common"
-    )
+    schemas["PKGBUILD"]["properties"]["license"]["items"] = {
+        "oneOf": [
+            {
+                "type": "string",
+                "enum": LICENSES
+                + os.listdir("/usr/share/licenses/common")
+                + ["custom"],
+            },
+            {"type": "string", "pattern": "custom:.+"},
+        ]
+    }
     return schemas
