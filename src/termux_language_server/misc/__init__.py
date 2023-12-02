@@ -3,12 +3,14 @@ r"""Misc
 """
 from typing import Any
 
+from .. import FILETYPE
 
-def get_schema(filetype: str) -> dict[str, Any]:
+
+def get_schema(filetype: FILETYPE) -> dict[str, Any]:
     r"""Get schema.
 
     :param filetype:
-    :type filetype: str
+    :type filetype: FILETYPE
     :rtype: dict[str, Any]
     """
     if filetype in {"build.sh", "subpackage.sh"}:
