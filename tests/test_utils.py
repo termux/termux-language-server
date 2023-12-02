@@ -6,8 +6,8 @@ class Test:
     r"""Test."""
 
     @staticmethod
-    def test_get_document() -> None:
-        r"""Test get document.
+    def test_get_schema() -> None:
+        r"""Test get schema.
 
         :rtype: None
         """
