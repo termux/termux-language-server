@@ -112,7 +112,7 @@ def init_schema() -> dict[str, Any]:
             # This is achieved by assigning an array of package names to the
             # pkgname directive.
             if name == "pkgname":
-                schemas[filetype][properties_name][name]["anyOf"] = [
+                schemas[filetype][properties_name][name]["oneOf"] = [
                     {
                         "type": "array",
                         "items": {"type": "string"},
@@ -151,7 +151,7 @@ def init_schema() -> dict[str, Any]:
     schemas["PKGBUILD"]["properties"]["url"]["format"] = "uri"
     del schemas["PKGBUILD"]["properties"]["pkgver"]["type"]
     schemas["PKGBUILD"]["properties"]["pkgver"] |= {
-        "anyOf": [{"type": "string"}, {"const": 0}]
+        "oneOf": [{"type": "string"}, {"const": 0}]
     }
 
     soup = get_soup("https://www.msys2.org/dev/pkgbuild/")
