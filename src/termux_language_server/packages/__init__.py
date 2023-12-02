@@ -3,6 +3,17 @@ r"""Packages
 """
 from .. import FILETYPE
 
+PACKAGE_VARIABLES = {
+    "PKGBUILD": {
+        "depends",
+        "makedepends",
+        "optdepends",
+        "conflicts",
+        "provides",
+        "replaces",
+    }
+}
+
 
 def search_package_document(name: str, filetype: FILETYPE) -> str:
     r"""Search package document.
