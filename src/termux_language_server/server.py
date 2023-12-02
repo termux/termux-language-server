@@ -22,7 +22,6 @@ from lsprotocol.types import (
     Hover,
     MarkupContent,
     MarkupKind,
-    Position,
     TextDocumentPositionParams,
     TextEdit,
 )
