@@ -27,6 +27,7 @@ from lsprotocol.types import (
 )
 from pygls.server import LanguageServer
 from tree_sitter_languages import get_parser
+from tree_sitter_lsp.complete import get_completion_list_by_enum
 from tree_sitter_lsp.diagnose import get_diagnostics
 from tree_sitter_lsp.finders import PositionFinder
 from tree_sitter_lsp.format import get_text_edits
@@ -253,25 +254,10 @@ class TermuxLanguageServer(LanguageServer):
                 )
             schema = get_schema(filetype)
             if parent.type == "array" and parent.parent is not None:
-                items = (
-                    schema["properties"]
-                    .get(parent.parent.children[0].text.decode(), {})
-                    .get("items", {})
+                property = schema["properties"].get(
+                    parent.parent.children[0].text.decode(), {}
                 )
-                enum = items.get(
-                    "enum", items.get("oneOf", [{}])[0].get("enum", [])
-                )
-                return CompletionList(
-                    False,
-                    [
-                        CompletionItem(
-                            k,
-                            kind=CompletionItemKind.Constant,
-                            insert_text=k,
-                        )
-                        for k in enum
-                    ],
-                )
+                return get_completion_list_by_enum(text, property)
             return CompletionList(
                 False,
                 [

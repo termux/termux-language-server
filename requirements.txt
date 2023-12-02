@@ -8,4 +8,4 @@ platformdirs
 # uri
 rfc3987
 tree-sitter-languages
-tree-sitter-lsp >= 0.0.5
+tree-sitter-lsp >= 0.0.6
