@@ -20,7 +20,7 @@ def get_query(name: str, filetype: str = "bash") -> Query:
     :param name:
     :type name: str
     :param filetype:
-    :type filetype: FILETYPE
+    :type filetype: str
     :rtype: Query
     """
     if name not in QUERIES:
