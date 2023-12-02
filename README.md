@@ -129,6 +129,12 @@ Other features:
 
 ![completion](https://github.com/Freed-Wu/pkgbuild-language-server/assets/32936898/c060690c-071b-41a0-bde5-dce338f4e779)
 
+![arch](https://github.com/termux/termux-language-server/assets/32936898/e10b40c6-515e-4d50-9526-d32ea26b9238)
+
+![license](https://github.com/termux/termux-language-server/assets/32936898/13109df3-30ba-4371-ad0a-aa7f46c8e80a)
+
+![depends](https://github.com/termux/termux-language-server/assets/32936898/a70b41ae-cf4b-44cc-bb10-a54cb5488f30)
+
 ## How Does It Work
 
 For every subtype of bash, there exists one

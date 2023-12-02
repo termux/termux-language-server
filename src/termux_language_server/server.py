@@ -38,7 +38,11 @@ from .finders import (
     MinGWFinder,
     PackageFinder,
 )
-from .packages import search_package_document, search_package_names
+from .packages import (
+    PACKAGE_VARIABLES,
+    search_package_document,
+    search_package_names,
+)
 from .utils import get_filetype, get_schema
 
 
@@ -172,8 +176,12 @@ class TermuxLanguageServer(LanguageServer):
                     "command_name",
                 }
             ):
-                # or package names (for PKGBUILD)
-                if parent.type == "array":
+                if (
+                    parent.type == "array"
+                    and parent.parent is not None
+                    and parent.parent.children[0].text.decode()
+                    in PACKAGE_VARIABLES.get(filetype, set())
+                ):
                     result = search_package_document(text, filetype)
                     if result is None:
                         return None
@@ -221,7 +229,12 @@ class TermuxLanguageServer(LanguageServer):
             if parent is None:
                 return CompletionList(False, [])
             text = uni.get_text()
-            if parent.type == "array":
+            if (
+                parent.type == "array"
+                and parent.parent is not None
+                and parent.parent.children[0].text.decode()
+                in PACKAGE_VARIABLES.get(filetype, set())
+            ):
                 return CompletionList(
                     False,
                     [
@@ -239,6 +252,26 @@ class TermuxLanguageServer(LanguageServer):
                     ],
                 )
             schema = get_schema(filetype)
+            if parent.type == "array" and parent.parent is not None:
+                items = (
+                    schema["properties"]
+                    .get(parent.parent.children[0].text.decode(), {})
+                    .get("items", {})
+                )
+                enum = items.get(
+                    "enum", items.get("oneOf", [{}])[0].get("enum", [])
+                )
+                return CompletionList(
+                    False,
+                    [
+                        CompletionItem(
+                            k,
+                            kind=CompletionItemKind.Constant,
+                            insert_text=k,
+                        )
+                        for k in enum
+                    ],
+                )
             return CompletionList(
                 False,
                 [
