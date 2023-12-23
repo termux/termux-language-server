@@ -137,18 +137,7 @@ Other features:
 
 ## How Does It Work
 
-For every subtype of bash, there exists one
-[json](https://github.com/termux/termux-language-server/tree/main/src/termux_language_server/assets/json)
-respecting [json schema specification](https://json-schema.org/specification)
-to provide the following information:
-
-- variable type
-- variable description
-- variable value enumerate
-- is variable required
-- ...
-
-If you want to support more filetypes, just add a new json schema for it.
+See [here](https://github.com/Freed-Wu/tree-sitter-lsp#schema).
 
 Read
 [![readthedocs](https://shields.io/readthedocs/termux-language-server)](https://termux-language-server.readthedocs.io)
