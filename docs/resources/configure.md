@@ -116,3 +116,18 @@ command = "termux-language-server"
   }
 }
 ```
+
+## [Visual Studio Code](https://code.visualstudio.com/)
+
+[An official support of generic LSP client is pending](https://github.com/microsoft/vscode/issues/137885).
+
+### [vscode-glspc](https://gitlab.com/ruilvo/vscode-glspc)
+
+`~/.config/Code/User/settings.json`:
+
+```json
+{
+  "glspc.serverPath": "termux-language-server",
+  "glspc.languageId": "bash"
+}
+```
