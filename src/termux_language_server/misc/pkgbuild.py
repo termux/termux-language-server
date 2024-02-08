@@ -150,6 +150,9 @@ def init_schema() -> dict[str, Any]:
     ]
     schemas["PKGBUILD"]["properties"]["url"]["format"] = "uri"
     del schemas["PKGBUILD"]["properties"]["pkgver"]["type"]
+    for name in schemas["PKGBUILD"]["properties"]:
+        if name.endswith("sums"):
+            del schemas["PKGBUILD"]["properties"][name]["uniqueItems"]
     schemas["PKGBUILD"]["properties"]["pkgver"] |= {
         "oneOf": [{"type": "string"}, {"const": 0}]
     }

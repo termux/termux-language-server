@@ -714,8 +714,7 @@
       "type": "array",
       "items": {
         "type": "string"
-      },
-      "uniqueItems": true
+      }
     },
     "md5sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
@@ -723,7 +722,6 @@
       "items": {
         "type": "string"
       },
-      "uniqueItems": true
     },
     "sha1sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
@@ -731,7 +729,6 @@
       "items": {
         "type": "string"
       },
-      "uniqueItems": true
     },
     "sha224sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
@@ -739,7 +736,6 @@
       "items": {
         "type": "string"
       },
-      "uniqueItems": true
     },
     "sha256sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
@@ -747,7 +743,6 @@
       "items": {
         "type": "string"
       },
-      "uniqueItems": true
     },
     "sha384sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
@@ -755,7 +750,6 @@
       "items": {
         "type": "string"
       },
-      "uniqueItems": true
     },
     "sha512sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
@@ -763,7 +757,6 @@
       "items": {
         "type": "string"
       },
-      "uniqueItems": true
     },
     "b2sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
@@ -771,7 +764,6 @@
       "items": {
         "type": "string"
       },
-      "uniqueItems": true
     },
     "groups": {
       "description": "An array of symbolic names that represent groups of packages, allowing you to install multiple packages by requesting a single target. For example, one could install all KDE packages by installing the *kde* group.",
