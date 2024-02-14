@@ -96,19 +96,33 @@ file = "templates/metainfo.py.j2"
 [tool.mdformat]
 number = true
 
-[tool.black]
-line-length = 79
-
-[tool.isort]
-line_length = 79
-profile = "black"
-
-# https://github.com/PyCQA/pydocstyle/issues/418
-[tool.pydocstyle]
-add_ignore = "D205, D400"
-
 [tool.doq]
 template_path = "templates"
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+select = [
+  # pycodestyle
+  "E",
+  # pyflakes
+  "F",
+  # pyupgrade
+  "UP",
+  # flake8-bugbear
+  "B",
+  # flake8-simplify
+  "SIM",
+  # isort
+  "I",
+]
+ignore = ["D205", "D400"]
+preview = true
+
+[tool.ruff.format]
+docstring-code-format = true
+preview = true
 
 [tool.coverage.report]
 exclude_lines = [
@@ -116,9 +130,6 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "\\s*import tomli as tomllib",
 ]
-
-[tool.bandit.assert_used]
-skips = ["*_test.py", "*/test_*.py"]
 
 [tool.cibuildwheel]
 archs = ["all"]

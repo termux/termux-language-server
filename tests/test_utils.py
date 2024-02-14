@@ -1,4 +1,5 @@
 r"""Test utils."""
+
 from termux_language_server.utils import get_schema
 
 

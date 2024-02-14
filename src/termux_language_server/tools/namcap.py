@@ -1,6 +1,7 @@
 r"""Namcap
 ==========
 """
+
 from lsprotocol.types import Diagnostic, DiagnosticSeverity, Position, Range
 
 
