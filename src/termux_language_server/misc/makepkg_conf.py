@@ -18,7 +18,7 @@ def init_schema() -> dict[str, dict[str, Any]]:
     schema = {
         "$id": (
             f"{SOURCE}/blob/main/"
-            "src/termux_language_server/assets/json/{filetype}.json"
+            f"src/termux_language_server/assets/json/{filetype}.json"
         ),
         "$schema": "http://json-schema.org/draft-07/schema#",
         "$comment": (
