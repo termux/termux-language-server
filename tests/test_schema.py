@@ -1,11 +1,11 @@
 r"""Test schema."""
-import os
 
-from tree_sitter_languages import get_parser
-from tree_sitter_lsp.finders import SchemaFinder
+import os
 
 from termux_language_server.schema import BashTrie
 from termux_language_server.utils import get_filetype, get_schema
+from tree_sitter_languages import get_parser
+from tree_sitter_lsp.finders import SchemaFinder
 
 PATH = os.path.dirname(__file__)
 

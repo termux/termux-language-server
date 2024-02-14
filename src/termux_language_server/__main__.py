@@ -1,13 +1,13 @@
 r"""This module can be called by
 `python -m <https://docs.python.org/3/library/__main__.html>`_.
 """
+
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from contextlib import suppress
 from datetime import datetime
 
-from . import FILETYPE
+from . import FILETYPE, __version__
 from . import __name__ as NAME
-from . import __version__
 
 NAME = NAME.replace("_", "-")
 VERSION = rf"""{NAME} {__version__}

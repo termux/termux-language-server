@@ -1,6 +1,7 @@
 r"""Licenses
 ============
 """
+
 from license_expression import get_license_index
 
 LICENSES = [

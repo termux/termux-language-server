@@ -1,6 +1,7 @@
 r"""Packages
 ============
 """
+
 from .. import FILETYPE
 
 PACKAGE_VARIABLES = {

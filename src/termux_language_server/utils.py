@@ -1,6 +1,7 @@
 r"""Utils
 =========
 """
+
 import json
 import os
 from typing import Any, Literal
@@ -54,7 +55,7 @@ def get_schema(filetype: FILETYPE) -> dict[str, Any]:
             ),
             f"{filetype}.json",
         )
-        with open(file, "r") as f:
+        with open(file) as f:
             SCHEMAS[filetype] = json.load(f)
     return SCHEMAS[filetype]
 
