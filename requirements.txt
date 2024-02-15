@@ -1,11 +1,12 @@
 #!/usr/bin/env -S pip install -r
 
 # https://python-jsonschema.readthedocs.io/en/stable/validate/#validating-formats
-# hostname
+# validate hostname
 fqdn
 # ~/.config/pacman/template.md.j2
 platformdirs
-# uri
+# validate uri
 rfc3987
 tree-sitter-languages
-tree-sitter-lsp >= 0.0.6
+# ErrorFinder
+tree-sitter-lsp >= 0.0.13
