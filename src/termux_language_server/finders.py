@@ -17,7 +17,7 @@ from lsprotocol.types import (
 from tree_sitter import Node, Tree
 from tree_sitter_lsp import UNI, Finder
 from tree_sitter_lsp.finders import (
-    ErrorQueryFinder,
+    ErrorFinder,
     QueryFinder,
     SchemaFinder,
     UnFixedOrderFinder,
@@ -26,28 +26,6 @@ from tree_sitter_lsp.finders import (
 from . import CSV, FILETYPE
 from .schema import BashTrie
 from .utils import get_query, get_schema
-
-
-@dataclass(init=False)
-class ErrorBashFinder(ErrorQueryFinder):
-    r"""Errorbashfinder."""
-
-    def __init__(
-        self,
-        message: str = "{{uni.get_text()}}: error",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
-    ) -> None:
-        r"""Init.
-
-        :param filetype:
-        :type filetype: str
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
-        :rtype: None
-        """
-        super().__init__("bash", message, severity)
 
 
 @dataclass(init=False)
@@ -326,7 +304,7 @@ class CSVFinder(UnsortedCSVFinder):
         return self.is_csv(uni)
 
     def get_document_links(
-        self, uri: str, tree: Tree, template: str
+        self, uri: str, tree: Tree, template: str = ""
     ) -> list[DocumentLink]:
         r"""Get document links.
 
@@ -418,7 +396,7 @@ class MinGWFinder(QueryFinder):
 
 
 DIAGNOSTICS_FINDER_CLASSES = [
-    ErrorBashFinder,
+    ErrorFinder,
     BashFinder,
     UnsortedKeywordFinder,
     UnsortedCSVFinder,
