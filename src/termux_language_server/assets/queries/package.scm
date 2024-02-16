@@ -7,4 +7,3 @@
   @variable.name "^(depends|optdepends|makedepends|conflicts|provides)$"
   )
  )
-; ex: filetype=query

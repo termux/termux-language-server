@@ -6,4 +6,3 @@
   @variable.name "^(mingw|msys2)_"
   )
  )
-; ex: filetype=query
