@@ -4,7 +4,7 @@ r"""Termux
 
 from typing import Any
 
-from tree_sitter_lsp.misc import get_soup
+from lsp_tree_sitter.misc import get_soup
 
 from .. import CSV
 from .._metainfo import SOURCE, project

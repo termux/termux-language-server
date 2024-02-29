@@ -5,8 +5,8 @@ r"""PKGBUILD
 import os
 from typing import Any
 
+from lsp_tree_sitter.misc import get_md_tokens, get_soup
 from markdown_it.token import Token
-from tree_sitter_lsp.misc import get_md_tokens, get_soup
 
 from .._metainfo import SOURCE, project
 from .licenses import LICENSES

@@ -79,10 +79,10 @@ def main():
     args = get_parser().parse_args()
 
     if args.generate_schema or args.format or args.check or args.convert:
+        from lsp_tree_sitter.diagnose import check
+        from lsp_tree_sitter.format import format
+        from lsp_tree_sitter.utils import pprint
         from tree_sitter_languages import get_parser as _get_parser
-        from tree_sitter_lsp.diagnose import check
-        from tree_sitter_lsp.format import format
-        from tree_sitter_lsp.utils import pprint
 
         from .finders import DIAGNOSTICS_FINDER_CLASSES, FORMAT_FINDER_CLASSES
         from .schema import BashTrie
