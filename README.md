@@ -137,7 +137,7 @@ Other features:
 
 ## How Does It Work
 
-See [here](https://github.com/neomutt/lsp-tree-sitter#schema).
+See [here](https://github.com/neomutt/lsp-tree-sitter#usage).
 
 Read
 [![readthedocs](https://shields.io/readthedocs/termux-language-server)](https://termux-language-server.readthedocs.io)
