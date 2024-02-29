@@ -5,6 +5,10 @@ r"""Server
 import re
 from typing import Any
 
+from lsp_tree_sitter.complete import get_completion_list_by_enum
+from lsp_tree_sitter.diagnose import get_diagnostics
+from lsp_tree_sitter.finders import PositionFinder
+from lsp_tree_sitter.format import get_text_edits
 from lsprotocol.types import (
     TEXT_DOCUMENT_COMPLETION,
     TEXT_DOCUMENT_DID_CHANGE,
@@ -28,10 +32,6 @@ from lsprotocol.types import (
 )
 from pygls.server import LanguageServer
 from tree_sitter_languages import get_parser
-from tree_sitter_lsp.complete import get_completion_list_by_enum
-from tree_sitter_lsp.diagnose import get_diagnostics
-from tree_sitter_lsp.finders import PositionFinder
-from tree_sitter_lsp.format import get_text_edits
 
 from .finders import (
     DIAGNOSTICS_FINDER_CLASSES,

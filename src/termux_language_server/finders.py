@@ -6,6 +6,13 @@ from copy import deepcopy
 from dataclasses import dataclass
 
 from jinja2 import Template
+from lsp_tree_sitter import UNI, Finder
+from lsp_tree_sitter.finders import (
+    ErrorFinder,
+    QueryFinder,
+    SchemaFinder,
+    UnFixedOrderFinder,
+)
 from lsprotocol.types import (
     CompletionItemKind,
     DiagnosticSeverity,
@@ -15,13 +22,6 @@ from lsprotocol.types import (
     TextEdit,
 )
 from tree_sitter import Node, Tree
-from tree_sitter_lsp import UNI, Finder
-from tree_sitter_lsp.finders import (
-    ErrorFinder,
-    QueryFinder,
-    SchemaFinder,
-    UnFixedOrderFinder,
-)
 
 from . import CSV, FILETYPE
 from .schema import BashTrie

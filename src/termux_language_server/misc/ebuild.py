@@ -4,7 +4,7 @@ r"""Portage's ebuild
 
 from typing import Any
 
-from tree_sitter_lsp.misc import get_soup
+from lsp_tree_sitter.misc import get_soup
 
 from .._metainfo import SOURCE, project
 from .licenses import ATOM

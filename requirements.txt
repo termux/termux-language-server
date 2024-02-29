@@ -3,10 +3,9 @@
 # https://python-jsonschema.readthedocs.io/en/stable/validate/#validating-formats
 # validate hostname
 fqdn
+lsp-tree-sitter
 # ~/.config/pacman/template.md.j2
 platformdirs
 # validate uri
 rfc3987
 tree-sitter-languages
-# ErrorFinder
-tree-sitter-lsp >= 0.0.13
