@@ -1,5 +1,5 @@
 ---
-exclude: (^templates/.*|.*\.json$)
+exclude: ^templates/.*|.*\.json$
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -23,7 +23,7 @@ repos:
       - id: check-toml
       - id: check-json
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.4
+    rev: v1.5.5
     hooks:
       - id: remove-crlf
   - repo: https://github.com/codespell-project/codespell
@@ -46,6 +46,7 @@ repos:
     rev: 3.0.0
     hooks:
       - id: check-mailmap
+      # https://github.com/koalaman/shellcheck/issues/2909
       - id: shellcheck
         exclude_types:
           - zsh
