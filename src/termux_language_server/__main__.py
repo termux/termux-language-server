@@ -3,11 +3,15 @@ r"""This module can be called by
 """
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from contextlib import suppress
 from datetime import datetime
 
 from . import FILETYPE, __version__
 from . import __name__ as NAME
+
+try:
+    import shtab
+except ImportError:
+    import _shtab as shtab
 
 NAME = NAME.replace("_", "-")
 VERSION = rf"""{NAME} {__version__}
@@ -25,10 +29,7 @@ def get_parser():
         epilog=EPILOG,
         formatter_class=RawDescriptionHelpFormatter,
     )
-    with suppress(ImportError):
-        import shtab
-
-        shtab.add_argument_to(parser)
+    shtab.add_argument_to(parser)
     parser.add_argument("--version", version=VERSION, action="version")
     parser.add_argument(
         "--generate-schema",
@@ -36,22 +37,16 @@ def get_parser():
         help="generate schema in an output format",
     )
     parser.add_argument(
+        "--output-format",
+        choices=["json", "yaml", "toml"],
+        default="json",
+        help="output format: %(default)s",
+    )
+    parser.add_argument(
         "--indent",
         type=int,
         default=2,
-        help="generated json's indent",
-    )
-    parser.add_argument(
-        "--check",
-        nargs="*",
-        default={},
-        help="check file's errors and warnings",
-    )
-    parser.add_argument(
-        "--format",
-        nargs="*",
-        default={},
-        help="format files",
+        help="generated json, yaml's indent, ignored by toml: %(default)s",
     )
     parser.add_argument(
         "--color",
@@ -60,17 +55,23 @@ def get_parser():
         help="when to display color, default: %(default)s",
     )
     parser.add_argument(
+        "--check",
+        nargs="*",
+        default={},
+        help="check file's errors and warnings",
+    ).complete = shtab.FILE  # type: ignore
+    parser.add_argument(
+        "--format",
+        nargs="*",
+        default={},
+        help="format files",
+    ).complete = shtab.FILE  # type: ignore
+    parser.add_argument(
         "--convert",
         nargs="*",
         default={},
         help="convert files to output format",
-    )
-    parser.add_argument(
-        "--output-format",
-        choices=["json", "yaml", "toml"],
-        default="json",
-        help="output format: %(default)s",
-    )
+    ).complete = shtab.FILE  # type: ignore
     return parser
 
 
@@ -92,10 +93,13 @@ def main():
         if args.generate_schema:
             from .misc import get_schema
 
+            kwargs = (
+                {"indent": args.indent} if args.output_format != "toml" else {}
+            )
             pprint(
                 get_schema(args.generate_schema),
                 filetype=args.output_format,
-                indent=args.indent,
+                **kwargs,
             )
         for file in args.convert:
             pprint(
