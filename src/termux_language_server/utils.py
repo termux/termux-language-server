@@ -27,10 +27,9 @@ def get_query(name: str, filetype: str = "bash") -> Query:
     if name not in QUERIES:
         with open(
             os.path.join(
-                os.path.join(
-                    os.path.join(os.path.dirname(__file__), "assets"),
-                    "queries",
-                ),
+                os.path.dirname(__file__),
+                "assets",
+                "queries",
                 f"{name}{os.path.extsep}scm",
             )
         ) as f:
@@ -49,10 +48,9 @@ def get_schema(filetype: FILETYPE) -> dict[str, Any]:
     """
     if filetype not in SCHEMAS:
         file = os.path.join(
-            os.path.join(
-                os.path.join(os.path.dirname(__file__), "assets"),
-                "json",
-            ),
+            os.path.dirname(__file__),
+            "assets",
+            "json",
             f"{filetype}.json",
         )
         with open(file) as f:
