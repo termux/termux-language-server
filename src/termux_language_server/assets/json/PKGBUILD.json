@@ -721,49 +721,49 @@
       "type": "array",
       "items": {
         "type": "string"
-      },
+      }
     },
     "sha1sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
       "type": "array",
       "items": {
         "type": "string"
-      },
+      }
     },
     "sha224sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
       "type": "array",
       "items": {
         "type": "string"
-      },
+      }
     },
     "sha256sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
       "type": "array",
       "items": {
         "type": "string"
-      },
+      }
     },
     "sha384sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
       "type": "array",
       "items": {
         "type": "string"
-      },
+      }
     },
     "sha512sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
       "type": "array",
       "items": {
         "type": "string"
-      },
+      }
     },
     "b2sums": {
       "description": "Alternative integrity checks that makepkg supports; these all behave similar to the cksums option described above. To enable use and generation of these checksums, be sure to set up the INTEGRITY_CHECK option in **makepkg.conf**(5).",
       "type": "array",
       "items": {
         "type": "string"
-      },
+      }
     },
     "groups": {
       "description": "An array of symbolic names that represent groups of packages, allowing you to install multiple packages by requesting a single target. For example, one could install all KDE packages by installing the *kde* group.",
@@ -910,16 +910,12 @@
       },
       "uniqueItems": true
     },
-    "msys2_internal": {
-      "type": "boolean",
-      "description": "Whether the package is an internal or meta package and shouldn't be linked to external sources. Defaults to false."
-    },
     "msys2_references": {
       "type": "array",
       "description": "Maps the package to external resources, such as other package repositories.",
       "items": {
         "type": "string",
-        "pattern": "(archlinux|aur|cygwin|cygwin-mingw64|pypi)(|: .*)"
+        "pattern": "(archlinux|aur|cygwin|cygwin-mingw64|pypi|gentoo|internal)(|: .*)"
       },
       "uniqueItems": true
     },
