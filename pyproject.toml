@@ -30,7 +30,7 @@ classifiers = [
 dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [[project.authors]]
-name = "Wu Zhenyu"
+name = "Wu, Zhenyu"
 email = "wuzhenyu@ustc.edu"
 
 [project.license]

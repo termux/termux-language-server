@@ -16,7 +16,7 @@ except ImportError:
 NAME = NAME.replace("_", "-")
 VERSION = rf"""{NAME} {__version__}
 Copyright (C) {datetime.now().year}
-Written by Wu Zhenyu
+Written by Wu, Zhenyu
 """
 EPILOG = """
 Report bugs to <wuzhenyu@ustc.edu>.
