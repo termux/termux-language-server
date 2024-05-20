@@ -85,4 +85,6 @@ def get_filetype(uri: str) -> FILETYPE | Literal[""]:
         return "make.conf"
     if basename == "color.map":
         return "color.map"
+    if ext == "mdd":
+        return "mdd"
     return ""

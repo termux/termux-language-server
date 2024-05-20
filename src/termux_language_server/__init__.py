@@ -21,6 +21,7 @@ FILETYPE = Literal[
     "ebuild",
     "make.conf",
     "color.map",
+    "mdd",
 ]
 PACKAGE_NAME = r"[a-z][a-z0-9-]*"
 CSV = f"{PACKAGE_NAME}(, {PACKAGE_NAME})*"

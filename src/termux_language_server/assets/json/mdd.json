@@ -1,0 +1,62 @@
+{
+  "$id": "https://github.com/termux/termux-language-server/blob/main/src/termux_language_server/assets/json/build.sh.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "https://github.com/zsh-users/zsh/blob/57248b88830ce56adc243a40c7773fb3825cab34/Etc/zsh-development-guide#L285-L288",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "name of the module"
+    },
+    "link": {
+      "type": "string",
+      "enum": ["static", "dynamic", "no"],
+      "description": "as described in INSTALL. In addition, the value `either` is allowed in the .mdd file, which will be converted by configure to `dynamic` if that is available, else `static`. May also be a command string, which will be run within configure and whose output is used to set the value of `link` in config.modules.  This allows a system-specific choice of modules.  For example, \n```zsh\nlink=`case $host in\n  *-hpux*) echo dynamic;\n  ;;\n  *) echo no;\n  ;;\n  esac`\n```"
+    },
+    "load": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "description": "whether the shell should include hooks for loading the module automatically as necessary. (This corresponds to an `L` in xmods.conf in the old mechanism.)"
+    },
+    "moddeps": {
+      "type": "string",
+      "description": "modules on which this module depends (default none)"
+    },
+    "nozshdep": {
+      "type": "string",
+      "description": "non-empty indicates no dependence on the `zsh/main' pseudo-module"
+    },
+    "alwayslink": {
+      "type": "string",
+      "description": "if non-empty, always link the module into the executable"
+    },
+    "autofeatures": {
+      "type": "string",
+      "description": "features defined by the module for autoloading, a space-separated list.  The syntax for features is as for zmodload -F, e.g. b:mybin refers to the builtin mybin.  This replaces the previous mechanism with separate variables for builtins, conditions, math functions and parameters.  Note the features are only available in zsh's native mode, not in emulation modes."
+    },
+    "autofeatures_emu": {
+      "type": "string",
+      "description": "As autofeatures, but the features so presented are available in modes that are *not* zsh's native mode. The variable autofeatures must also be present."
+    },
+    "objects": {
+      "type": "string",
+      "description": ".o files making up this module (*must* be defined)"
+    },
+    "proto": {
+      "type": "string",
+      "description": ".syms files for this module (default generated from $objects)"
+    },
+    "headers": {
+      "type": "string",
+      "description": "extra headers for this module (default none)"
+    },
+    "hdrdeps": {
+      "type": "string",
+      "description": "extra headers on which the .mdh depends (default none)"
+    },
+    "otherincs": {
+      "type": "string",
+      "description": "extra headers that are included indirectly (default none)"
+    }
+  }
+}
