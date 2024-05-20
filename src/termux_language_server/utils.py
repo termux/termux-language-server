@@ -6,13 +6,16 @@ import json
 import os
 from typing import Any, Literal
 
-from tree_sitter import Query
-from tree_sitter_languages import get_language
+from tree_sitter import Language, Parser, Query
+from tree_sitter_bash import language as get_language_ptr
 
 from . import FILETYPE
 
 SCHEMAS = {}
 QUERIES = {}
+language = Language(get_language_ptr(), "bash")
+parser = Parser()
+parser.set_language(language)
 
 
 def get_query(name: str, filetype: str = "bash") -> Query:
@@ -34,7 +37,6 @@ def get_query(name: str, filetype: str = "bash") -> Query:
             )
         ) as f:
             text = f.read()
-        language = get_language(filetype)
         QUERIES[name] = language.query(text)
     return QUERIES[name]
 
