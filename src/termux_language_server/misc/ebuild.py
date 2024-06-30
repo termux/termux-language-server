@@ -2,12 +2,14 @@ r"""Portage's ebuild
 ====================
 """
 
+import os
+from shlex import split
+from subprocess import check_output  # nosec: B404
 from typing import Any
 
 from lsp_tree_sitter.misc import get_soup
 
 from .._metainfo import SOURCE, project
-from .licenses import ATOM
 
 
 def init_schema() -> dict[str, dict[str, Any]]:
@@ -48,5 +50,9 @@ def init_schema() -> dict[str, dict[str, Any]]:
                 schema["properties"][name]["type"] = "string"
             else:
                 schema["properties"][name]["const"] = 0
-    schema["properties"]["LICENSE"]["pattern"] = rf"{ATOM}(( |\n){ATOM})*"
+    path = (
+        check_output(split("portageq get_repo_path / gentoo")).decode().strip()
+    )
+    atom = f"({'|'.join(os.listdir(path))})"
+    schema["properties"]["LICENSE"]["pattern"] = rf"{atom}(( |\n){atom})*"
     return {filetype: schema}
