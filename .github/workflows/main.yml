@@ -27,7 +27,8 @@ jobs:
       matrix:
         runs-on:
           - ubuntu-latest
-          - macos-latest
+          # https://github.com/tree-sitter/tree-sitter-bash/issues/265
+          # - macos-latest
           - windows-latest
     runs-on: ${{matrix.runs-on}}
     steps:
