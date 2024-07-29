@@ -1,5 +1,5 @@
 {
-  "$id": "https://github.com/termux/termux-language-server/blob/main/src/termux_language_server/assets/json/build.sh.json",
+  "$id": "https://github.com/termux/termux-language-server/blob/main/src/termux_language_server/assets/json/mdd.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$comment": "https://github.com/zsh-users/zsh/blob/57248b88830ce56adc243a40c7773fb3825cab34/Etc/zsh-development-guide#L285-L288",
   "type": "object",
