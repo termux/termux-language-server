@@ -88,4 +88,6 @@ def get_filetype(uri: str) -> FILETYPE | Literal[""]:
         return "color.map"
     if ext == "mdd":
         return "mdd"
+    if basename in {"devscripts.conf", ".devscripts"}:
+        return "devscripts.conf"
     return ""

@@ -1,0 +1,634 @@
+{
+  "$id": "https://github.com/termux/termux-language-server/blob/main/src/termux_language_server/assets/json/build.sh.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "/etc/devscripts.conf",
+  "type": "object",
+  "properties": {
+    "DEVSCRIPTS_CHECK_DIRNAME_LEVEL": {
+      "type": "string",
+      "enum": ["0", "1", "2"],
+      "default": "1",
+      "description": "Several programs check the directory name and refuse to function if it does not match the name of the package being worked on.  (The details are described in the individual manpages.) These two variables control this behaviour, corresponding to the --check-dirname-level and --check-dirname-regex command line options. The possible values of DEVSCRIPTS_CHECK_DIRNAME_LEVEL are:\n  0    never check the directory name\n  1    check the directory name only if the program has changed directory\n  2    always check the directory name"
+    },
+    "DEVSCRIPTS_CHECK_DIRNAME_REGEX": {
+      "type": "string",
+      "format": "regex",
+      "default": "PACKAGE(-.+)?",
+      "description": "The variable DEVSCRIPTS_DIRNAME_REGEXP is a Perl regex which defines what is considered a valid directory name for the source package PACKAGE; if it includes a '/', then it must match the full directory path, otherwise it must match the full directory name"
+    },
+    "BTS_OFFLINE": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Default bts show/bugs to run in offline mode?"
+    },
+    "BTS_CACHE": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Cache all visited bug reports once a cache has been established for the first time?"
+    },
+    "BTS_CACHE_MODE": {
+      "type": "string",
+      "enum": ["min", "max", "full"],
+      "default": "min",
+      "description": "How much to mirror when caching?  The minimal amount (min), the mbox version as well (mbox) or the whole works (full)?"
+    },
+    "BTS_FORCE_REFRESH": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Always refresh the cache, even if nothing's changed?"
+    },
+    "BTS_MAIL_READER": {
+      "type": "string",
+      "default": "mutt -f %s",
+      "description": "How do we read an mbox?  This will be split on whitespace, then %s is replaced by the mbox name and %% by a single %."
+    },
+    "BTS_SENDMAIL_COMMAND": {
+      "type": "string",
+      "default": "/usr/sbin/sendmail",
+      "description": "What sendmail command do we use?  This will be split on whitespace."
+    },
+    "BTS_ONLY_NEW": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Download only new bugs when caching?  If set to yes, don't check for updates in bugs we already have."
+    },
+    "BTS_SMTP_HOST": {
+      "type": "string",
+      "default": "reportbug.debian.org",
+      "description": "Which SMTP host should be used?  Note that if both an SMTP host and sendmail command are specified in the configuration file(s), the SMTP host will be used unless overridden by --sendmail on the command line"
+    },
+    "BTS_SMTP_AUTH_USERNAME": {
+      "type": "string",
+      "default": "user",
+      "description": "If the SMTP host specified above requires authentication, the following options may be used to specify the username and password to use. If only a username is provided then the password will be prompted for before sending the e-mail"
+    },
+    "BTS_SMTP_AUTH_PASSWORD": {
+      "type": "string",
+      "default": "pass",
+      "description": "If the SMTP host specified above requires authentication, the following options may be used to specify the username and password to use. If only a username is provided then the password will be prompted for before sending the e-mail"
+    },
+    "BTS_SMTP_HELO": {
+      "type": "string",
+      "default": "foo.example.com",
+      "description": "Specify a HELO to use when connecting to the SMTP host. If not supplied and the file /etc/mailname exists, its contents will be used as the HELO"
+    },
+    "BTS_INCLUDE_RESOLVED": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Include resolved bugs when caching?"
+    },
+    "BTS_SUPPRESS_ACKS": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Suppress BTS acknowledgment e-mails (ignored by the control bot)"
+    },
+    "BTS_INTERACTIVE": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Allow the generated message to be edited and, if necessary, abandoned before sending it to the control bot?\nIf set to yes, prompt for confirmation / edit / abandonment.\nIf set to force, spawn an editor and then proceed as if set to yes"
+    },
+    "BTS_DEFAULT_CC": {
+      "type": "string",
+      "default": "example@example.com",
+      "description": "Specify a list of e-mail addresses to which a carbon copy of the generated e-mail to the control bot should automatically be sent."
+    },
+    "BTS_SERVER": {
+      "type": "string",
+      "default": "https://bugs.debian.org",
+      "description": "Which debbugs server should be used?"
+    },
+    "DEBCHANGE_PRESERVE": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Preserve the source tree dirname if the upstream version changes?"
+    },
+    "DEBCHANGE_QUERY_BTS": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Query the BTS when --closes is being used?"
+    },
+    "DEBCHANGE_RELEASE_HEURISTIC": {
+      "type": "string",
+      "enum": ["log", "changelog"],
+      "default": "log",
+      "description": "Select a heuristic to use to determine whether the package has released. See the debchange man page for details."
+    },
+    "DEBCHANGE_MULTIMAINT": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Introduce multiple-maintainer markers in changelog sections?"
+    },
+    "DEBCHANGE_MULTIMAINT_MERGE": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "When appending to a multiple-maintainer changelog, if there are existing changes made by the current maintainer, should new changelog entries be appended to the existing entries?"
+    },
+    "DEBCHANGE_MAINTTRAILER": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "When appending entries to the changelog, should the trailer line be maintained as-is?"
+    },
+    "DEBCHANGE_TZ": {
+      "type": "string",
+      "default": "UTC",
+      "description": "Use a fixed timezone in changelog entries?"
+    },
+    "DEBCHANGE_LOWER_VERSION_PATTERN": {
+      "type": "string",
+      "default": "bpo",
+      "description": "Allow a new version to be lower than the current package version if the new version matches the specified regular expression"
+    },
+    "DEBCHANGE_AUTO_NMU": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Attempt to automatically determine whether the current changelog stanza represents an NMU?"
+    },
+    "DEBCHANGE_FORCE_SAVE_ON_RELEASE": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "When --release was used and an editor presented, force the changelog to be explicitly saved in the editor?  If this is set to \"no\" then the changes made by --release will be automatically saved."
+    },
+    "DEBCHECKOUT_AUTH_URLS": {
+      "type": "string",
+      "default": "",
+      "description": "List of space-separated pairs REGEXP/REPLACEMENT_TEXT to define custom rules to enable authenticated mode."
+    },
+    "DEBCHECKOUT_SOURCE": {
+      "type": "string",
+      "default": "auto",
+      "description": "For debian-dir-only repositories, also retrieve the source package, unpack it, and move the missing files over."
+    },
+    "DEBCHECKOUT_USER": {
+      "type": "string",
+      "default": "",
+      "description": "Username for authenticated mode, can be overridden with -u|--user."
+    },
+    "DEBCLEAN_CLEANDEBS": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Remove .deb, .changes, .dsc and .upload files?"
+    },
+    "DEBCOMMIT_STRIP_MESSAGE": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Strip a leading \"* \" from commit messages taken from changelogs?"
+    },
+    "DEBCOMMIT_SIGN_TAGS": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Sign created tags using gnupg?"
+    },
+    "DEBCOMMIT_RELEASE_USE_CHANGELOG": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Take any uncommitted changes in the changelog in to account when determining the commit message for a release?"
+    },
+    "DEBCOMMIT_SIGN_COMMITS": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Sign commits using gnupg?"
+    },
+    "DEBDIFF_DIRS": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Show directory names which appear in the filelist?"
+    },
+    "DEBDIFF_CONTROL": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Compare control files?"
+    },
+    "DEBDIFF_CONTROLFILES": {
+      "type": "string",
+      "default": "control",
+      "description": "Which control files to compare?  A comma-separated list, with possibilities such as postinst, config and so on; ALL means compare all control files."
+    },
+    "DEBDIFF_SHOW_MOVED": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Show files which have moved between .debs?"
+    },
+    "DEBDIFF_WDIFF_OPT": {
+      "type": "string",
+      "default": "",
+      "description": "Option to pass to wdiff"
+    },
+    "DEBDIFF_SHOW_DIFFSTAT": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Include the output of diffstat?"
+    },
+    "DEBDIFF_WDIFF_SOURCE_CONTROL": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Compare control files in source packages using wdiff?"
+    },
+    "DEBDIFF_AUTO_VER_SORT": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Always compare package in version order, rather than the order specified on the command line?"
+    },
+    "DEBDIFF_UNPACK_TARBALLS": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Unpack tarballs found in the top level source directory."
+    },
+    "DEBDIFF_APPLY_PATCHES": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Apply patches when comparing 3.0 (quilt)-format packages"
+    },
+    "DEBRELEASE_UPLOADER": {
+      "type": "string",
+      "enum": ["dupload", "dput"],
+      "default": "dupload",
+      "description": "This specifies which uploader program to use.  As of devscripts 2.22.1ubuntu1 the recognised values are \"dupload\" (default) and \"dput\".  Check the debrelease(1) manpage for any recent changes to this variable"
+    },
+    "DEBRELEASE_DEBS_DIR": {
+      "type": "string",
+      "default": "..",
+      "description": "This specifies the directory, relative to the top of the source tree, in which the .changes and .debs files are to be found.  Note that this also affects debc and debi."
+    },
+    "DEBSIGN_ALWAYS_RESIGN": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Always re-sign files even if they are already signed, without prompting."
+    },
+    "DEBSIGN_PROGRAM": {
+      "type": "string",
+      "default": "",
+      "description": "Which signing program to use?  gpg and pgp are the usual values; the default is determined as described in the manpage. Corresponds to -p option"
+    },
+    "DEBSIGN_SIGNLIKE": {
+      "type": "string",
+      "default": "",
+      "description": "How the signing program works; must be either gpg or pgp as of devscripts version 2.22.1ubuntu1.  The default is described in the manpage.  Corresponds to -sgpg and -spgp."
+    },
+    "DEBSIGN_MAINT": {
+      "type": "string",
+      "default": "",
+      "description": "Maintainer name (only used to determine GPG keyid; -m option)"
+    },
+    "DEBSIGN_KEYID": {
+      "type": "string",
+      "default": "",
+      "description": "GPG keyid to use (-k option)"
+    },
+    "DEBSNAP_DESTDIR": {
+      "type": "string",
+      "default": "",
+      "description": "Where to put the directory named <prefix>-<package>/ default: source-$package_name if unset"
+    },
+    "DEBSNAP_VERBOSE": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Verbosely show messages"
+    },
+    "DEBSNAP_BASE_URL": {
+      "type": "string",
+      "default": "https://snapshot.debian.org",
+      "description": "The base URL of the archive to download from"
+    },
+    "DEBSNAP_CLEAN_REGEX": {
+      "type": "string",
+      "format": "regex",
+      "default": "s@\\([^/]*\\)/[^/]*/\\(.*\\)@\\1/\\2@",
+      "description": "A sed regexp to transform pool/<component>/f/foo into the desired layout default: make the directory from pool/<component>/f/foo to pool/f/foo"
+    },
+    "DEBSNAP_SOURCES_GZ_PATH": {
+      "type": "string",
+      "default": "source/Sources.gz",
+      "description": "Where the Sources.gz lives, subdirectory of DEBSNAP_BASE_URL/<clean dir>/"
+    },
+    "DEBUILD_PRESERVE_ENV": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "no",
+      "description": "Do we preserve the whole environment except for PATH?"
+    },
+    "DEBUILD_PRESERVE_ENVVARS": {
+      "type": "string",
+      "default": "",
+      "description": "Are there any environment variables we should preserve?  This should be a comma-separated list."
+    },
+    "DEBUILD_TGZ_CHECK": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Do we check for the existence of the .orig.tar.gz before calling dpkg-buildpackage?"
+    },
+    "DEBUILD_ROOTCMD": {
+      "type": "string",
+      "default": "fakeroot",
+      "description": "Corresponds to the dpkg-buildpackage -r option."
+    },
+    "DEBUILD_DPKG_BUILDPACKAGE_OPTS": {
+      "type": "string",
+      "default": "",
+      "description": "Extra options given to dpkg-buildpackage before any command-line options specified.  Single options containing spaces should be quoted, for example \"-m'Julian Gilbey <jdg@debian.org>' -us -uc\" If this contains a -r, -d or -D option, this will also be recognised when running debuild binary|binary-arch|..."
+    },
+    "DEBUILD_LINTIAN": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Do we run lintian at the end of a full run?"
+    },
+    "DEBUILD_LINTIAN_OPTS": {
+      "type": "string",
+      "default": "",
+      "description": "Extra options given to lintian before any command-line options specified."
+    },
+    "DEBUILD_PREPEND_PATH": {
+      "type": "string",
+      "default": "/usr/lib/ccache",
+      "description": "Colon-separated list of options to be added to the beginning of PATH once it has been sanitised"
+    },
+    "DEBUILD_SIGNING_USERNAME": {
+      "type": "string",
+      "default": "user@host",
+      "description": "Credentials to pass to debrsign when signing dsc / changes files Setting this option to a non-blank string implies using debrsign"
+    },
+    "DEBUILD_DPKG_BUILDPACKAGE_HOOK": {
+      "type": "string",
+      "default": "",
+      "description": "Hooks; see the manpage for details of these"
+    },
+    "DEBUILD_CLEAN_HOOK": {
+      "type": "string",
+      "default": "",
+      "description": "Hooks; see the manpage for details of these"
+    },
+    "DEBUILD_DPKG_SOURCE_HOOK": {
+      "type": "string",
+      "default": "",
+      "description": "Hooks; see the manpage for details of these"
+    },
+    "DEBUILD_BUILD_HOOK": {
+      "type": "string",
+      "default": "",
+      "description": "Hooks; see the manpage for details of these"
+    },
+    "DEBUILD_BINARY_HOOK": {
+      "type": "string",
+      "default": "",
+      "description": "Hooks; see the manpage for details of these"
+    },
+    "DEBUILD_FINAL_CLEAN_HOOK": {
+      "type": "string",
+      "default": "",
+      "description": "Hooks; see the manpage for details of these"
+    },
+    "DEBUILD_LINTIAN_HOOK": {
+      "type": "string",
+      "default": "",
+      "description": "Hooks; see the manpage for details of these"
+    },
+    "DEBUILD_SIGNING_HOOK": {
+      "type": "string",
+      "default": "",
+      "description": "Hooks; see the manpage for details of these"
+    },
+    "DEBUILD_POST_DPKG_BUILDPACKAGE_HOOK": {
+      "type": "string",
+      "default": "",
+      "description": "Hooks; see the manpage for details of these"
+    },
+    "DGET_PATH": {
+      "type": "string",
+      "default": "",
+      "description": "Extra directories to search for files in addition to /var/cache/apt/archives.  This is a colon-separated list of directories."
+    },
+    "DGET_UNPACK": {
+      "type": "string",
+      "default": "yes",
+      "enum": ["yes", "no"],
+      "description": "Unpack downloaded source packages"
+    },
+    "DGET_VERIFY": {
+      "type": "string",
+      "default": "yes",
+      "enum": ["yes", "no"],
+      "description": "Verify source package signatures using dscverify"
+    },
+    "DPKG_DEPCHECK_OPTIONS": {
+      "type": "string",
+      "default": "",
+      "description": "Extra options given to dpkg-depcheck before any command-line options specified.  For example: \"-b --features=-catch-alternatives\""
+    },
+    "DPKGSIG_KEYID": {
+      "type": "string",
+      "default": "",
+      "description": "This key ID takes precedence over the rest"
+    },
+    "DPKGSIG_SIGN_CHANGES": {
+      "type": "string",
+      "default": "auto",
+      "description": "Do we sign the .changes and .dsc files?  See the manpage for more info.  Valid options are no, auto, yes, full and force_full."
+    },
+    "DPKGSIG_CACHE_PASS": {
+      "type": "string",
+      "default": "auto",
+      "description": "Do we cache the gpg passphrase by default?  This can be dangerous!"
+    },
+    "DSCVERIFY_KEYRINGS": {
+      "type": "string",
+      "default": "",
+      "description": "A colon separated list of extra keyrings to read."
+    },
+    "GREP_EXCUSES_MAINTAINER": {
+      "type": "string",
+      "default": "",
+      "description": "This specifies a default maintainer name or email to hunt for"
+    },
+    "GREP_EXCUSES_FTP_MASTER": {
+      "type": "string",
+      "default": "",
+      "description": "Is this running on ftp-master.debian.org?  If so, we use the local excuses file"
+    },
+    "MKBUILDDEPS_TOOL": {
+      "type": "string",
+      "default": "/usr/bin/apt-get --no-install-recommends",
+      "description": "Which tool to use for installing build depends?"
+    },
+    "MKBUILDDEPS_REMOVE_AFTER_INSTALL": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Remove package files after install?"
+    },
+    "MKBUILDDEPS_ROOTCMD": {
+      "type": "string",
+      "default": "",
+      "description": "Tool used to gain root privileges to install the deb"
+    },
+    "NMUDIFF_DELAY": {
+      "type": "string",
+      "default": "3",
+      "pattern": "\\d+",
+      "description": "Number of days to indicate that an NMU upload has been delayed by using the DELAYED upload queue. 0 indicates no delay. Defaults to \"XX\" which adds a placeholder to the e-mail."
+    },
+    "NMUDIFF_MUTT": {
+      "type": "string",
+      "enum": ["yes", "no"],
+      "default": "yes",
+      "description": "Should we use mutt to edit and send the message or just a plain old editor?"
+    },
+    "NMUDIFF_NEWREPORT": {
+      "type": "string",
+      "default": "maybe",
+      "enum": ["yes", "no", "maybe"],
+      "description": "Should we always submit a new report (yes), always send to the bugs which are being closed (no), or send to the bug being closed if there is only one of them, otherwise send a new report (maybe)?"
+    },
+    "PLOTCHANGELOG_OPTIONS": {
+      "type": "string",
+      "default": "",
+      "description": "Command line options to use (space separated).  None of the options should contain spaces.  Use the PLOTCHANGELOG_GNUPLOT variable for the --gnuplot command line option."
+    },
+    "PLOTCHANGELOG_GNUPLOT": {
+      "type": "string",
+      "default": "",
+      "description": "Here we can give gnuplot options.  Any command line --gnuplot commands will be appended to these."
+    },
+    "PTS_UNTIL": {
+      "type": "string",
+      "default": "now + 30 days",
+      "description": "How long will we subscribe for by default?  The default is 30 days. Setting this to 'forever' means that no unsubscription request will be scheduled."
+    },
+    "RMADISON_URL_MAP_EXAMPLE": {
+      "type": "string",
+      "default": "http://example.com/madison.cgi",
+      "description": "Add a custom URL to the default list of shorthands so one can use it with -u without having to specify the full URL"
+    },
+    "RMADISON_DEFAULT_URL": {
+      "type": "string",
+      "default": "debian",
+      "description": "Default URL to use if none is specified on the command line."
+    },
+    "RMADISON_ARCHITECTURE": {
+      "type": "string",
+      "default": "source,i386,amd64,all",
+      "description": "Default architecture to use if none is specified on the command line. use --architecture='*' to run an unrestricted query when RMADISON_ARCHITECTURE is set."
+    },
+    "USCAN_DOWNLOAD": {
+      "type": "string",
+      "default": "yes",
+      "enum": ["yes", "no"],
+      "description": "Should we download newer upstream files we come across?"
+    },
+    "USCAN_PASV": {
+      "type": "string",
+      "default": "default",
+      "enum": ["yes", "no", "default"],
+      "description": "Should we use FTP PASV mode for ftp:// links?  'default' means let Net::FTP(3) make the choice (primarily based on the FTP_PASSIVE environment variable); 'yes' and 'no' override the default"
+    },
+    "USCAN_SYMLINK": {
+      "type": "string",
+      "default": "yes",
+      "enum": ["yes", "no", "rename", "symlink"],
+      "description": "Should we create a symlink from the downloaded tar.gz file to pkg_version.orig.tar.gz, rename it like this or do nothing? Options are 'symlink'/'yes', 'rename' or 'no'"
+    },
+    "USCAN_DEHS_OUTPUT": {
+      "type": "string",
+      "default": "no",
+      "enum": ["yes", "no"],
+      "description": "Should we use DEHS style output (XML format)?"
+    },
+    "USCAN_VERBOSE": {
+      "type": "string",
+      "default": "no",
+      "enum": ["yes", "no"],
+      "description": "Should we give verbose output?"
+    },
+    "USCAN_USER_AGENT": {
+      "type": "string",
+      "default": "Debian uscan X.Y.Z",
+      "description": "What user agent string should we send with requests? (Default is 'Debian uscan X.Y.Z')"
+    },
+    "USCAN_DESTDIR": {
+      "type": "string",
+      "default": "..",
+      "description": "Where should downloaded files be placed?"
+    },
+    "USCAN_REPACK": {
+      "type": "string",
+      "default": "no",
+      "enum": ["yes", "no"],
+      "description": "Automatically repack bzipped tar or zip archives to gzipped tars?"
+    },
+    "USCAN_EXCLUSION": {
+      "type": "string",
+      "default": "yes",
+      "enum": ["yes", "no"],
+      "description": "Use the Files-Excluded field in debian/copyright to determine whether the orig tarball needs to be repacked to remove non-DFSG content?"
+    },
+    "UUPDATE_PRISTINE": {
+      "type": "string",
+      "default": "yes",
+      "enum": ["yes", "no"],
+      "description": "Should we retain the pristine upstream source wherever possible?"
+    },
+    "UUPDATE_SYMLINK_ORIG": {
+      "type": "string",
+      "default": "yes",
+      "enum": ["yes", "no"],
+      "description": "Should we symlink the .orig.tar.gz file to its new name or copy it instead?  yes=symlink, no=copy"
+    },
+    "UUPDATE_ROOTCMD": {
+      "type": "string",
+      "default": "",
+      "description": "Corresponds to the dpkg-buildpackage -r option and debuild DEBUILD_ROOTCMD option.  Normally, this can be left empty, as then the debuild setting will be used."
+    },
+    "WHOUPLOADS_DATE": {
+      "type": "string",
+      "default": "no",
+      "enum": ["yes", "no"],
+      "description": "Display the date of the upload?"
+    },
+    "WHOUPLOADS_MAXUPLOADS": {
+      "type": "string",
+      "default": "3",
+      "pattern": "\\d+",
+      "description": "Maximum number of uploads to display per package"
+    },
+    "WHOUPLOADS_KEYRINGS": {
+      "type": "string",
+      "default": "/usr/share/keyrings/debian-keyring.gpg:/usr/share/keyrings/debian-keyring.pgp:/usr/share/keyrings/debian-maintainers.gpg:/usr/share/keyrings/debian-nonupload.gpg",
+      "description": "Colon-separated list of keyrings to examine by default"
+    }
+  },
+  "patternProperties": {
+    "DEBUILD_SET_ENVVAR_.*": {
+      "type": "string",
+      "description": "How to set a preserved environment variable"
+    }
+  }
+}

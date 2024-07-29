@@ -22,6 +22,7 @@ FILETYPE = Literal[
     "make.conf",
     "color.map",
     "mdd",
+    "devscripts.conf",
 ]
 PACKAGE_NAME = r"[a-z][a-z0-9-]*"
 CSV = f"{PACKAGE_NAME}(, {PACKAGE_NAME})*"

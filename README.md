@@ -51,6 +51,8 @@ Language server for some specific bash scripts:
   - `*.eclass`
   - [`make.conf`](https://dev.gentoo.org/~zmedico/portage/doc/man/make.conf.5.html)
   - [`color.map`](https://dev.gentoo.org/~zmedico/portage/doc/man/color.map.5.html)
+- Debian/Ubuntu
+  - [`devscripts.conf` and `.devscripts`](https://manpages.ubuntu.com/manpages/bionic/man5/devscripts.conf.5.html)
 - zsh
   - [`*.mdd`](https://github.com/zsh-users/zsh/blob/57248b88830ce56adc243a40c7773fb3825cab34/Etc/zsh-development-guide#L285-L288)
 
