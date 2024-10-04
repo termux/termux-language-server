@@ -39,7 +39,7 @@ repos:
         args:
           - --msg-filename
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: 2.7.3
+    rev: 3.0.3
     hooks:
       - id: editorconfig-checker
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
@@ -51,7 +51,7 @@ repos:
         exclude_types:
           - zsh
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.1
+    rev: v1.7.2
     hooks:
       - id: actionlint
   - repo: https://github.com/adrienverge/yamllint
@@ -73,22 +73,22 @@ repos:
           - mdformat-config
           - mdformat-web
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.13.0
+    rev: v0.14.0
     hooks:
       - id: markdownlint-cli2
         additional_dependencies:
           - markdown-it-texmath
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.8.0-1
+    rev: v3.9.0-1
     hooks:
       - id: shfmt
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.5.4
+    rev: v0.6.7
     hooks:
       - id: ruff
       - id: ruff-format
   - repo: https://github.com/kumaraditya303/mirrors-pyright
-    rev: v1.1.372
+    rev: v1.1.381
     hooks:
       - id: pyright
 
