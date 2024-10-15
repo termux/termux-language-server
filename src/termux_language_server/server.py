@@ -14,7 +14,7 @@ from lsprotocol.types import (
     TEXT_DOCUMENT_DID_CHANGE,
     TEXT_DOCUMENT_DID_OPEN,
     TEXT_DOCUMENT_DOCUMENT_LINK,
-    TEXT_DOCUMENT_FORMATTING,
+    # TEXT_DOCUMENT_FORMATTING,
     TEXT_DOCUMENT_HOVER,
     CompletionItem,
     CompletionItemKind,
@@ -86,7 +86,8 @@ class TermuxLanguageServer(LanguageServer):
                 diagnostics += namcap(document.path, document.source)
             self.publish_diagnostics(params.text_document.uri, diagnostics)
 
-        @self.feature(TEXT_DOCUMENT_FORMATTING)
+        # https://github.com/termux/termux-language-server/issues/19#issuecomment-2413779969
+        # @self.feature(TEXT_DOCUMENT_FORMATTING)
         def format(params: DocumentFormattingParams) -> list[TextEdit]:
             r"""Format.
 
@@ -177,6 +178,7 @@ class TermuxLanguageServer(LanguageServer):
                 if (
                     parent.type == "array"
                     and parent.parent is not None
+                    and parent.parent.children[0].text is not None
                     and parent.parent.children[0].text.decode()
                     in PACKAGE_VARIABLES.get(filetype, set())
                 ):
@@ -230,6 +232,7 @@ class TermuxLanguageServer(LanguageServer):
             if (
                 parent.type == "array"
                 and parent.parent is not None
+                and parent.parent.children[0].text is not None
                 and parent.parent.children[0].text.decode()
                 in PACKAGE_VARIABLES.get(filetype, set())
             ):
@@ -250,7 +253,11 @@ class TermuxLanguageServer(LanguageServer):
                     ],
                 )
             schema = get_schema(filetype)
-            if parent.type == "array" and parent.parent is not None:
+            if (
+                parent.type == "array"
+                and parent.parent is not None
+                and parent.parent.children[0].text is not None
+            ):
                 property = schema["properties"].get(
                     parent.parent.children[0].text.decode(), {}
                 )

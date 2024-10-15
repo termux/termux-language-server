@@ -3,7 +3,7 @@ exclude: ^templates/|\.json$
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-added-large-files
       - id: fix-byte-order-marker
@@ -51,7 +51,7 @@ repos:
         exclude_types:
           - zsh
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.2
+    rev: v1.7.3
     hooks:
       - id: actionlint
   - repo: https://github.com/adrienverge/yamllint
@@ -83,12 +83,12 @@ repos:
     hooks:
       - id: shfmt
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.7
+    rev: v0.6.9
     hooks:
       - id: ruff
       - id: ruff-format
   - repo: https://github.com/kumaraditya303/mirrors-pyright
-    rev: v1.1.381
+    rev: v1.1.383
     hooks:
       - id: pyright
 
