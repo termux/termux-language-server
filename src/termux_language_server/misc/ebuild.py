@@ -50,8 +50,11 @@ def init_schema() -> dict[str, dict[str, Any]]:
                 schema["properties"][name]["type"] = "string"
             else:
                 schema["properties"][name]["const"] = 0
+    eprefix = os.path.dirname(os.path.dirname(os.getenv("SHELL", "")))
     path = (
-        check_output(split("portageq get_repo_path / gentoo")).decode().strip()
+        check_output(split(f"portageq get_repo_path {eprefix} gentoo"))
+        .decode()
+        .strip()
     )
     atom = f"({'|'.join(os.listdir(path))})"
     schema["properties"]["LICENSE"]["pattern"] = rf"{atom}(( |\n){atom})*"
