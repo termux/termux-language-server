@@ -69,7 +69,7 @@ def get_filetype(uri: str) -> FILETYPE | Literal[""]:
     dirname = os.path.basename(os.path.dirname(uri))
     basename = os.path.basename(uri)
     ext = uri.split(os.path.extsep)[-1]
-    if basename == "build.sh" and dirname != "scripts":
+    if basename == "build.sh" and dirname != "scripts" and dirname != "recipe":
         return "build.sh"
     if basename.endswith(".subpackage.sh"):
         return "subpackage.sh"
