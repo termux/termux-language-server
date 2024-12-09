@@ -59,7 +59,7 @@ repos:
     hooks:
       - id: yamllint
   - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.18
+    rev: 0.7.19
     hooks:
       - id: mdformat
         additional_dependencies:
@@ -73,22 +73,22 @@ repos:
           - mdformat-config
           - mdformat-web
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.14.0
+    rev: v0.16.0
     hooks:
       - id: markdownlint-cli2
         additional_dependencies:
           - markdown-it-texmath
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.10.0-1
+    rev: v3.10.0-2
     hooks:
       - id: shfmt
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.2
+    rev: v0.8.2
     hooks:
       - id: ruff
       - id: ruff-format
   - repo: https://github.com/kumaraditya303/mirrors-pyright
-    rev: v1.1.387
+    rev: v1.1.390
     hooks:
       - id: pyright
 
