@@ -292,7 +292,7 @@ class CSVFinder(UnsortedCSVFinder):
 
         :rtype: None
         """
-        self.csvs -= {"TERMUX_PKG_BLACKLISTED_ARCHES"}
+        self.csvs -= {"TERMUX_PKG_EXCLUDED_ARCHES"}
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.
