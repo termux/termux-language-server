@@ -175,7 +175,7 @@
         "false"
       ]
     },
-    "TERMUX_PKG_BLACKLISTED_ARCHES": {
+    "TERMUX_PKG_EXCLUDED_ARCHES": {
       "type": "string",
       "description": "Comma-separated list of CPU architectures for which package cannot be compiled.",
       "pattern": "[a-z][a-z0-9-]*(, [a-z][a-z0-9-]*)*"
