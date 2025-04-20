@@ -81,7 +81,7 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 ```toml
 [[language]]
 name = "sh"
-language-servers = [ "termux-language-server",]
+language-servers = ["termux-language-server"]
 
 [language_server.termux-language-server]
 command = "termux-language-server"
@@ -95,7 +95,7 @@ command = "termux-language-server"
 
 ```toml
 [language_server.termux-language-server]
-filetypes = [ "sh",]
+filetypes = ["sh"]
 command = "termux-language-server"
 ```
 
