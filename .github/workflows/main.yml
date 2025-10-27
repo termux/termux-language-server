@@ -31,8 +31,8 @@ jobs:
           - windows-latest
     runs-on: ${{matrix.runs-on}}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{env.python-version}}
           cache: ${{env.cache}}
@@ -45,7 +45,7 @@ jobs:
       - name: Test
         run: |
           pytest --cov
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
   build:
     needs: test
     strategy:
@@ -57,8 +57,8 @@ jobs:
           - windows-latest
     runs-on: ${{matrix.runs-on}}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{env.python-version}}
           cache: ${{env.cache}}
@@ -75,12 +75,12 @@ jobs:
         if: runner.os == 'Linux' && startsWith(github.ref, 'refs/tags/')
         with:
           password: ${{secrets.PYPI_API_TOKEN}}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: runner.os == 'Linux' && ! startsWith(github.ref, 'refs/tags/')
         with:
           path: |
             dist/*
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v2
         if: runner.os == 'Linux' && startsWith(github.ref, 'refs/tags/')
         with:
           # body_path: build/CHANGELOG.md
