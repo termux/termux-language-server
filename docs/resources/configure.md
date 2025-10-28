@@ -3,12 +3,7 @@
 - For windows, change `~/.config` to `~/AppData/Local`
 - For macOS, change `~/.config` to `~/Library`
 
-## (Neo)[Vim](https://www.vim.org)
-
-For vim:
-
-- Change `~/.config/nvim` to `~/.vim`
-- Change `init.vim` to `vimrc`
+## [Neovim](https://neovim.io) / [Vim](https://www.vim.org)
 
 ### [coc.nvim](https://github.com/neoclide/coc.nvim)
 
@@ -29,7 +24,8 @@ For vim:
 
 ### [vim-lsp](https://github.com/prabirshrestha/vim-lsp)
 
-`~/.config/nvim/init.vim`:
+Neovim - `~/.config/nvim/init.vim`:\
+Vim - `~/.config/vim/vimrc`:
 
 ```vim
 if executable('termux-language-server')
@@ -63,9 +59,9 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 
 ## [Emacs](https://www.gnu.org/software/emacs)
 
-`~/.emacs.d/init.el`:
+`~/.config/emacs/init.el`:
 
-```lisp
+```elisp
 (make-lsp-client :new-connection
 (lsp-stdio-connection
   `(,(executable-find "termux-language-server")))
@@ -119,7 +115,7 @@ command = "termux-language-server"
 
 ## [Visual Studio Code](https://code.visualstudio.com/)
 
-[An official support of generic LSP client is pending](https://github.com/microsoft/vscode/issues/137885).
+[Official support for generic LSP clients is pending](https://github.com/microsoft/vscode/issues/137885).
 
 ### [vscode-glspc](https://gitlab.com/ruilvo/vscode-glspc)
 
