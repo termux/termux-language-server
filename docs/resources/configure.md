@@ -40,21 +40,22 @@ if executable('termux-language-server')
 endif
 ```
 
-## [Neovim](https://neovim.io)
+### [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) (upstream configs)
 
-`~/.config/nvim/init.lua`:
+Example via [`lazy.nvim`](https://github.com/folke/lazy.nvim)\
+For other options see: [nvim-lspconfig#install](https://github.com/neovim/nvim-lspconfig#install)\
+Or the documentation for your plugin manager of choice.
+
+`~/.config/nvim/init.vim`:
 
 ```lua
-vim.api.nvim_create_autocmd({ "BufEnter" }, {
-  pattern = { "build.sh", "*.subpackage.sh", "PKGBUILD", "*.install",
-    "makepkg.conf", "*.ebuild", "*.eclass", "color.map", "make.conf" },
-  callback = function()
-    vim.lsp.start({
-      name = "termux",
-      cmd = { "termux-language-server" }
-    })
-  end,
+require('lazy').setup({
+  -- [...]
+  { 'neovim/nvim-lspconfig' },
+  -- [...]
 })
+
+vim.lsp.enable('termux_language_server')
 ```
 
 ## [Emacs](https://www.gnu.org/software/emacs)
