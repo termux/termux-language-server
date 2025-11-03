@@ -32,8 +32,8 @@ class BashTrie(Trie):
         """
         if node.type == "string" and node.children == 3:
             node = node.children[1]
-        text = UNI.node2text(node)
-        _range = UNI.node2range(node)
+        text = UNI(node).text
+        _range = UNI(node).range
         if node.type in {"string", "raw_string"} and node.children != 3:
             text = text.strip("'\"")
             _range.start.character += 1
@@ -61,13 +61,13 @@ class BashTrie(Trie):
         if node.type in string_types:
             return cls.from_string_node(node, parent)
         if node.type == "function_definition":
-            return cls(UNI.node2range(node), parent, 0)
+            return cls(UNI(node).range, parent, 0)
         if node.type == "variable_assignment":
             if len(node.children) < 3:
-                return cls(UNI.node2range(node), parent, "")
+                return cls(UNI(node).range, parent, "")
             node = node.children[2]
             if node.type == "array":
-                trie = cls(UNI.node2range(node), parent, [])
+                trie = cls(UNI(node).range, parent, [])
                 value: list[Trie] = trie.value  # type: ignore
                 trie.value = [
                     cls.from_node(child, trie)
@@ -85,7 +85,7 @@ class BashTrie(Trie):
                     "variable_assignment",
                     "function_definition",
                 }:
-                    value[UNI.node2text(child.children[0])] = cls.from_node(
+                    value[UNI(child.children[0]).text] = cls.from_node(
                         child, trie
                     )
             return trie

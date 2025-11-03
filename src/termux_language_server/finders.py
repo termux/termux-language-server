@@ -181,8 +181,8 @@ class UnsortedKeywordFinder(UnFixedOrderFinder):
                 return []
             # swap 2 unis
             return [
-                TextEdit(UNI.node2range(parent), UNI.node2text(_parent)),
-                TextEdit(UNI.node2range(_parent), UNI.node2text(parent)),
+                TextEdit(UNI(parent).range, UNI(_parent).text),
+                TextEdit(UNI(_parent).range, UNI(parent).text),
             ]
         return []
 
@@ -247,7 +247,7 @@ class UnsortedCSVFinder(Finder):
             parent.type == "variable_assignment"
             and uni.node == parent.children[-1]
             and (uni.node.type == "word" or uni.node.type == "string")
-            and UNI.node2text(parent.children[0]) in self.csvs
+            and UNI(parent.children[0]).text in self.csvs
         )
 
     @staticmethod
