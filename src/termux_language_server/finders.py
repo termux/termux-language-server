@@ -370,7 +370,7 @@ class PackageFinder(QueryFinder):
         :rtype: UNI | None
         """
         node, label = capture
-        uni = UNI(uri, node)
+        uni = UNI(node, uri)
         return uni if label == "package" else None
 
 
