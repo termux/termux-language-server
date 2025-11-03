@@ -68,7 +68,7 @@ repos:
           - mdformat-myst
           - mdformat-toc
           - mdformat-deflist
-          - mdformat-beautysh
+          # - mdformat-beautysh
           - mdformat-ruff
           - mdformat-config
           - mdformat-web
@@ -83,12 +83,12 @@ repos:
     hooks:
       - id: shfmt
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.1
+    rev: v0.14.2
     hooks:
       - id: ruff-check
       - id: ruff-format
   - repo: https://github.com/kumaraditya303/mirrors-pyright
-    rev: v1.1.406
+    rev: v1.1.407
     hooks:
       - id: pyright
 

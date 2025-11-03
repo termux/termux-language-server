@@ -27,6 +27,7 @@ from lsprotocol.types import (
     Hover,
     MarkupContent,
     MarkupKind,
+    PublishDiagnosticsParams,
     TextDocumentPositionParams,
     TextEdit,
 )
@@ -72,7 +73,9 @@ class TermuxLanguageServer(LanguageServer):
             filetype = get_filetype(params.text_document.uri)
             if filetype == "":
                 return None
-            document = self.workspace.get_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             self.trees[document.uri] = parser.parse(document.source.encode())
             diagnostics = get_diagnostics(
                 document.uri,
@@ -84,7 +87,12 @@ class TermuxLanguageServer(LanguageServer):
                 from .tools.namcap import namcap
 
                 diagnostics += namcap(document.path, document.source)
-            self.publish_diagnostics(params.text_document.uri, diagnostics)
+            self.text_document_publish_diagnostics(
+                PublishDiagnosticsParams(
+                    params.text_document.uri,
+                    diagnostics,
+                )
+            )
 
         # https://github.com/termux/termux-language-server/issues/19#issuecomment-2413779969
         # @self.feature(TEXT_DOCUMENT_FORMATTING)
@@ -98,7 +106,9 @@ class TermuxLanguageServer(LanguageServer):
             filetype = get_filetype(params.text_document.uri)
             if filetype == "":
                 return []
-            document = self.workspace.get_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             return get_text_edits(
                 document.uri,
                 self.trees[document.uri],
@@ -117,7 +127,9 @@ class TermuxLanguageServer(LanguageServer):
             filetype = get_filetype(params.text_document.uri)
             if filetype == "":
                 return []
-            document = self.workspace.get_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             if filetype in {"build.sh", "subpackage.sh"}:
                 return CSVFinder(filetype).get_document_links(
                     document.uri,
@@ -154,7 +166,9 @@ class TermuxLanguageServer(LanguageServer):
             filetype = get_filetype(params.text_document.uri)
             if filetype == "":
                 return None
-            document = self.workspace.get_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             uni = PositionFinder(params.position).find(
                 document.uri, self.trees[document.uri]
             )
@@ -219,7 +233,9 @@ class TermuxLanguageServer(LanguageServer):
             filetype = get_filetype(params.text_document.uri)
             if filetype == "":
                 return CompletionList(False, [])
-            document = self.workspace.get_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             uni = PositionFinder(params.position, right_equal=True).find(
                 document.uri, self.trees[document.uri]
             )
