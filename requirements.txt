@@ -3,7 +3,7 @@
 # https://python-jsonschema.readthedocs.io/en/stable/validate/#validating-formats
 # validate hostname
 fqdn
-lsp-tree-sitter >= 0.0.16
+lsp-tree-sitter >= 0.1.0
 # ~/.config/pacman/template.md.j2
 platformdirs
 pygls >= 2.0.0

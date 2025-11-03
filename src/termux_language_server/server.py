@@ -145,9 +145,9 @@ class TermuxLanguageServer(LanguageServer):
                     )
                     > 0
                 ):
-                    url = "https://packages.msys2.org/base/{{uni.get_text()}}"
+                    url = "https://packages.msys2.org/base/{{uni.text}}"
                 else:
-                    url = "https://archlinux.org/packages/{{uni.get_text()}}"
+                    url = "https://archlinux.org/packages/{{uni.text}}"
                 return PackageFinder().get_document_links(
                     document.uri,
                     self.trees[document.uri],
@@ -177,8 +177,8 @@ class TermuxLanguageServer(LanguageServer):
             parent = uni.node.parent
             if parent is None:
                 return None
-            text = uni.get_text()
-            _range = uni.get_range()
+            text = uni.text
+            _range = uni.range
             # we only hover variable names and function names
             if not (
                 uni.node.type == "variable_name"
@@ -244,7 +244,7 @@ class TermuxLanguageServer(LanguageServer):
             parent = uni.node.parent
             if parent is None:
                 return CompletionList(False, [])
-            text = uni.get_text()
+            text = uni.text
             if (
                 parent.type == "array"
                 and parent.parent is not None

@@ -50,7 +50,7 @@ class UnsortedKeywordFinder(UnFixedOrderFinder):
     def __init__(
         self,
         filetype: FILETYPE,
-        message: str = "{{uni.get_text()}}: is unsorted due to {{_uni}}",
+        message: str = "{{uni.text}}: is unsorted due to {{_uni}}",
         severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
     ) -> None:
         r"""Init.
@@ -154,7 +154,7 @@ class UnsortedKeywordFinder(UnFixedOrderFinder):
         :type uni: UNI
         :rtype: bool
         """
-        text = uni.get_text()
+        text = uni.text
         return (
             text in self.order
             and text in self.keywords
@@ -194,7 +194,7 @@ class UnsortedCSVFinder(Finder):
     def __init__(
         self,
         filetype: FILETYPE,
-        message: str = "{{uni.get_text()}}: unsorted",
+        message: str = "{{uni.text}}: unsorted",
         severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
     ) -> None:
         r"""Init.
@@ -231,7 +231,7 @@ class UnsortedCSVFinder(Finder):
         :type uni: UNI
         :rtype: bool
         """
-        return self.is_csv(uni) and self.sort(uni.get_text()) != uni.get_text()
+        return self.is_csv(uni) and self.sort(uni.text) != uni.text
 
     def is_csv(self, uni: UNI) -> bool:
         r"""Is csv.
@@ -277,7 +277,7 @@ class UnsortedCSVFinder(Finder):
         :rtype: list[TextEdit]
         """
         text_edits = [
-            TextEdit(uni.get_range(), self.sort(uni.get_text()))
+            TextEdit(uni.range, self.sort(uni.text))
             for uni in self.find_all(uri, tree)
         ]
         return text_edits
@@ -319,7 +319,7 @@ class CSVFinder(UnsortedCSVFinder):
         links = []
         for uni in self.find_all(uri, tree):
             start = list(uni.node.start_point)
-            text = uni.get_text()
+            text = uni.text
             if text.startswith('"'):
                 text = text.strip('"')
                 start[1] += 1
@@ -346,7 +346,7 @@ class PackageFinder(QueryFinder):
 
     def __init__(
         self,
-        message: str = "{{uni.get_text()}}: no such file",
+        message: str = "{{uni.text}}: no such file",
         severity: DiagnosticSeverity = DiagnosticSeverity.Error,
     ) -> None:
         r"""Init.
@@ -380,7 +380,7 @@ class MinGWFinder(QueryFinder):
 
     def __init__(
         self,
-        message: str = "{{uni.get_text()}}: no such file",
+        message: str = "{{uni.text}}: no such file",
         severity: DiagnosticSeverity = DiagnosticSeverity.Error,
     ) -> None:
         r"""Init.
