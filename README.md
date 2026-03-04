@@ -41,7 +41,7 @@ Language server for some specific bash scripts:
 
 - Android [Termux](https://termux.dev)
   - [`build.sh`](https://github.com/termux/termux-packages/wiki/Creating-new-package)
-  - [`*.subpackage.sh`](https://github.com/termux/termux-packages/wiki/Creating-new-package#writing-a-subpackage-script)
+  - [`*.subpackage.sh`](https://github.com/termux/termux-packages/wiki/Creating-new-package#subpackage-build-script)
 - [ArchLinux](https://archlinux.org)/Windows [Msys2](https://msys2.org)
   - [`PKGBUILD`](https://wiki.archlinux.org/title/PKGBUILD)
   - [`*.install`](https://wiki.archlinux.org/title/PKGBUILD#install)
