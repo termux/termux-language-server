@@ -4,6 +4,6 @@
    value: (array (word) @package)
    )
  (#match?
-  @variable.name "^(depends|optdepends|makedepends|conflicts|provides)$"
+  @variable.name "^(depends|optdepends|makedepends|conflicts|provides|DEPEND|RDEPEND|BDEPEND|IDEPEND|PDEPEND)$"
   )
  )

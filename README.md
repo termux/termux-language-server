@@ -85,7 +85,7 @@ doesn't support:
   - [x] package names
     - [ ] `build.sh`
     - [x] `PKGBUILD`: by [pyalpm](https://github.com/ornitorrincos/pyalpm)
-    - [ ] `ebuild`
+    - [x] `ebuild`: by [portage](https://wiki.gentoo.org/wiki/Portage)
 - [ ] [Code Action](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_codeAction)
   - [ ] `PKGBUILD`
     - [ ] generate a template by the name of directory containing `PKGBUILD`, the

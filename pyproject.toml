@@ -82,6 +82,9 @@ file = "requirements/misc.txt"
 
 [tool.setuptools.dynamic.optional-dependencies.pkgbuild]
 file = "requirements/pkgbuild.txt"
+
+[tool.setuptools.dynamic.optional-dependencies.ebuild]
+file = "requirements/ebuild.txt"
 # end: scripts/update-pyproject.toml.pl
 
 [tool.setuptools_scm]

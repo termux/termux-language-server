@@ -27,7 +27,9 @@ from lsprotocol.types import (
     Hover,
     MarkupContent,
     MarkupKind,
+    Position,
     PublishDiagnosticsParams,
+    Range,
     TextDocumentPositionParams,
     TextEdit,
 )
@@ -46,6 +48,64 @@ from .packages import (
     search_package_names,
 )
 from .utils import get_filetype, get_schema, parser
+
+
+RE_PKG_START = re.compile(r"[A-Za-z_0-9/\-\.>=<!~*]*$")
+RE_PKG_END = re.compile(r"^[A-Za-z_0-9/\-\.>=<!~*]*")
+RE_EMPTY = re.compile(r"^")
+
+
+def _is_in_dep_string(tree, position, filetype):
+    r"""Check if cursor is inside a dependency variable's string.
+
+    :param tree:
+    :param position:
+    :type position: Position
+    :param filetype:
+    :type filetype: str
+    :rtype: bool
+    """
+    point = (position.line, position.character)
+    node = tree.root_node.descendant_for_point_range(point, point)
+    return (
+        node is not None
+        and node.type == "string"
+        and node.parent is not None
+        and node.parent.children[0].text is not None
+        and node.parent.children[0].text.decode()
+        in PACKAGE_VARIABLES.get(filetype, set())
+    )
+
+
+def _package_completions(prefix, filetype, position):
+    r"""Build completion list for package names.
+
+    :param prefix:
+    :type prefix: str
+    :param filetype:
+    :type filetype: str
+    :param position:
+    :type position: Position
+    :rtype: CompletionList
+    """
+    edit_range = Range(
+        start=Position(position.line, position.character - len(prefix)),
+        end=position,
+    )
+    return CompletionList(
+        False,
+        [
+            CompletionItem(
+                k,
+                kind=CompletionItemKind.Module,
+                documentation=MarkupContent(MarkupKind.Markdown, v)
+                if v
+                else None,
+                text_edit=TextEdit(range=edit_range, new_text=k),
+            )
+            for k, v in search_package_names(prefix, filetype).items()
+        ],
+    )
 
 
 class TermuxLanguageServer(LanguageServer):
@@ -190,13 +250,20 @@ class TermuxLanguageServer(LanguageServer):
                 }
             ):
                 if (
-                    parent.type == "array"
+                    parent.type in {"array", "string"}
                     and parent.parent is not None
                     and parent.parent.children[0].text is not None
                     and parent.parent.children[0].text.decode()
                     in PACKAGE_VARIABLES.get(filetype, set())
                 ):
-                    result = search_package_document(text, filetype)
+                    result = search_package_document(
+                        document.word_at_position(
+                            params.position, RE_PKG_START, RE_PKG_END
+                        )
+                        if parent.type == "string"
+                        else text,
+                        filetype,
+                    )
                     if result is None:
                         return None
                     return Hover(
@@ -239,34 +306,40 @@ class TermuxLanguageServer(LanguageServer):
             uni = PositionFinder(params.position, right_equal=True).find(
                 document.uri, self.trees[document.uri]
             )
-            if uni is None:
-                return CompletionList(False, [])
+            if uni is None or uni.node.type == '"':
+                if _is_in_dep_string(
+                    self.trees[document.uri],
+                    params.position,
+                    filetype,
+                ):
+                    return _package_completions(
+                        document.word_at_position(
+                            params.position, RE_PKG_START, RE_EMPTY
+                        ),
+                        filetype,
+                        params.position,
+                    )
+                if uni is None:
+                    return CompletionList(False, [])
             parent = uni.node.parent
             if parent is None:
                 return CompletionList(False, [])
             text = uni.text
             if (
-                parent.type == "array"
+                parent.type in {"array", "string"}
                 and parent.parent is not None
                 and parent.parent.children[0].text is not None
                 and parent.parent.children[0].text.decode()
                 in PACKAGE_VARIABLES.get(filetype, set())
             ):
-                return CompletionList(
-                    False,
-                    [
-                        CompletionItem(
-                            k,
-                            kind=CompletionItemKind.Module,
-                            documentation=MarkupContent(
-                                MarkupKind.Markdown, v
-                            ),
-                            insert_text=k,
-                        )
-                        for k, v in search_package_names(
-                            text, filetype
-                        ).items()
-                    ],
+                return _package_completions(
+                    document.word_at_position(
+                        params.position, RE_PKG_START, RE_EMPTY
+                    )
+                    if parent.type == "string"
+                    else text,
+                    filetype,
+                    params.position,
                 )
             schema = get_schema(filetype)
             if (
