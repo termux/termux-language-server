@@ -67,8 +67,4 @@ def get_package_names(name: str) -> dict[str, str]:
     :type name: str
     :rtype: dict[str, str]
     """
-    return {
-        cp: ""
-        for cp in _ALL_PACKAGES
-        if cp.startswith(name)
-    }
+    return {cp: "" for cp in _ALL_PACKAGES if cp.startswith(name)}
