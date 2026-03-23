@@ -49,7 +49,6 @@ from .packages import (
 )
 from .utils import get_filetype, get_schema, parser
 
-
 RE_PKG_START = re.compile(r"[A-Za-z_0-9/\-\.>=<!~*]*$")
 RE_PKG_END = re.compile(r"^[A-Za-z_0-9/\-\.>=<!~*]*")
 RE_EMPTY = re.compile(r"^")

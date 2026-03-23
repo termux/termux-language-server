@@ -3,12 +3,13 @@ r"""Configure the Sphinx documentation builder.
 https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
 
-from termux_language_server import __version__ as version  # type: ignore
 from termux_language_server._metainfo import (  # type: ignore
     author,
     copyright,
     project,
 )
+
+from termux_language_server import __version__ as version  # type: ignore
 
 __all__ = ["version", "author", "copyright", "project"]
 
