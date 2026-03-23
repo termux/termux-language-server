@@ -12,7 +12,14 @@ PACKAGE_VARIABLES = {
         "conflicts",
         "provides",
         "replaces",
-    }
+    },
+    "ebuild": {
+        "DEPEND",
+        "RDEPEND",
+        "BDEPEND",
+        "IDEPEND",
+        "PDEPEND",
+    },
 }
 
 
@@ -27,6 +34,8 @@ def search_package_document(name: str, filetype: FILETYPE) -> str:
     """
     if filetype == "PKGBUILD":
         from .pkgbuild import get_package_document
+    elif filetype == "ebuild":
+        from .ebuild import get_package_document
     else:
         raise NotImplementedError
     return get_package_document(name)
@@ -43,6 +52,8 @@ def search_package_names(name: str, filetype: FILETYPE) -> dict[str, str]:
     """
     if filetype == "PKGBUILD":
         from .pkgbuild import get_package_names
+    elif filetype == "ebuild":
+        from .ebuild import get_package_names
     else:
         raise NotImplementedError
     return get_package_names(name)
