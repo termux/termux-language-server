@@ -56,62 +56,17 @@ Language server for some specific bash scripts:
 - zsh
   - [`*.mdd`](https://github.com/zsh-users/zsh/blob/57248b88830ce56adc243a40c7773fb3825cab34/Etc/zsh-development-guide#L285-L288)
 
-This language server only provides extra features which
-[bash-language-server](https://github.com/bash-lsp/bash-language-server)
-doesn't support:
+A completion for [bash-language-server](https://github.com/bash-lsp/bash-language-server).
+Refer [lsp-tree-sitter](https://github.com/neomutt/lsp-tree-sitter).
 
-- [x] [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic):
-  - [x] error
-    - [x] required variables
-    - [x] variable type: string/array/function
-    - [x] variable values
-  - [x] warning
-    - [x] variable order
-    - [x] unsorted values
-    - [x] style check
-      - [x] `PKGBUILD`: by [namcap](https://wiki.archlinux.org/title/Namcap)
-- [x] [Document Formatting](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting):
-  - [x] sort variables
-  - [x] sort values
-- [x] [Document Link](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_documentLink):
-  - [x] `build.sh`: <https://github.com/termux/termux-packages/tree/master/packages/package_name/build.sh>
-  - [x] `PKGBUILD`:
-    - [x] ArchLinux: <https://archlinux.org/packages/package_name>
-    - [x] Windows Msys2: <https://packages.msys2.org/base/package_name>
-  - [ ] `ebuild`: <https://packages.gentoo.org/packages/package_name>
-- [x] [Hover](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_hover)
-- [x] [Completion](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_completion)
-  - [x] builtin variables
-  - [x] package names
-    - [ ] `build.sh`
-    - [x] `PKGBUILD`: by [pyalpm](https://github.com/ornitorrincos/pyalpm)
-    - [x] `ebuild`: by [portage](https://wiki.gentoo.org/wiki/Portage)
-- [ ] [Code Action](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_codeAction)
-  - [ ] `PKGBUILD`
-    - [ ] generate a template by the name of directory containing `PKGBUILD`, the
-      templates comes from:
-      - [ ] customized by user
-      - [ ] [pip2pkgbuild](https://github.com/wenLiangcan/pip2pkgbuild)
-      - [ ] [cpan2aur](https://metacpan.org/release/CPANPLUS-Dist-Arch)
-      - [ ] [gem2arch](https://github.com/anatol/gem2arch)
-      - [ ] [arch-hs](https://github.com/berberman/arch-hs)
-    - [ ] update `.SRCINFO` by `makepkg --printsrcinfo > .SRCINFO`
-    - [ ] update `pkgsums` by [`updpkgsums`](https://gitlab.archlinux.org/pacman/pacman-contrib)
-    - [ ] update version by a `nvcheck.toml` to tell this
-      program where to search new version:
+Extra features:
 
-```toml
-[package_name]
-source = "github"
-github = "author_name/repo_name"
-use_max_tag = true
-```
-
-Other features:
-
-- [x] [pre-commit-hooks](https://pre-commit.com/)
-  - [x] linter
-  - [x] formatter
+- complete package names
+  - [x] `PKGBUILD`: by [pyalpm](https://github.com/ornitorrincos/pyalpm)
+  - [x] `ebuild`: by [portage](https://wiki.gentoo.org/wiki/Portage)
+  - [ ] `build.sh`
+- linter
+  - [x] `PKGBUILD`: by [namcap](https://wiki.archlinux.org/title/Namcap)
 
 ## Screenshots
 
@@ -121,28 +76,18 @@ Other features:
 
 ### Document Link
 
-![document link](https://github.com/Freed-Wu/pkgbuild-language-server/assets/32936898/d3777f3c-9b75-41f9-b6b3-1c4ec55c7283)
+![document link](https://github.com/neomutt/lsp-tree-sitter/assets/32936898/d3777f3c-9b75-41f9-b6b3-1c4ec55c7283)
 
 ### Hover
 
-![keyword](https://github.com/Freed-Wu/requirements-language-server/assets/32936898/91bfde00-28f7-4376-8b7a-10a0bd56ba51)
-
-![package](https://github.com/Freed-Wu/pkgbuild-language-server/assets/32936898/3d9fa906-35ea-4063-a9eb-06282d3e8596)
+![package](https://github.com/neomutt/lsp-tree-sitter/assets/32936898/3d9fa906-35ea-4063-a9eb-06282d3e8596)
 
 ### Completion
 
-![completion](https://github.com/Freed-Wu/pkgbuild-language-server/assets/32936898/c060690c-071b-41a0-bde5-dce338f4e779)
+![completion](https://github.com/neomutt/lsp-tree-sitter/assets/32936898/c060690c-071b-41a0-bde5-dce338f4e779)
 
 ![arch](https://github.com/termux/termux-language-server/assets/32936898/e10b40c6-515e-4d50-9526-d32ea26b9238)
 
 ![license](https://github.com/termux/termux-language-server/assets/32936898/13109df3-30ba-4371-ad0a-aa7f46c8e80a)
 
 ![depends](https://github.com/termux/termux-language-server/assets/32936898/a70b41ae-cf4b-44cc-bb10-a54cb5488f30)
-
-## How Does It Work
-
-See [lsp-tree-sitter documentation](https://github.com/neomutt/lsp-tree-sitter#usage).
-
-Read
-[![readthedocs](https://shields.io/readthedocs/termux-language-server)](https://termux-language-server.readthedocs.io)
-to know more.

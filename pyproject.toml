@@ -1,106 +1,56 @@
-[build-system]
-requires = ["setuptools_scm[toml] >= 6.2", "setuptools-generate >= 0.0.6"]
-build-backend = "setuptools.build_meta"
-
-# https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 [project]
 name = "termux-language-server"
-description = "Language server for build.sh, PKGBUILD, ebuild"
+version = "0.1.0"
+description = "language server for PKGBUILD/build.sh/ebuild"
 readme = "README.md"
-# type_a | type_b
-requires-python = ">= 3.10"
-keywords = ["termux", "language server"]
-classifiers = [
-  "Development Status :: 3 - Alpha",
-  "Intended Audience :: Developers",
-  "Topic :: Software Development :: Build Tools",
-  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-  "Operating System :: Microsoft :: Windows",
-  "Operating System :: POSIX",
-  "Operating System :: Unix",
-  "Operating System :: MacOS",
-  "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
+requires-python = ">=3.10"
+license = "GPL-3.0-or-later"
+authors = [{ name = "Wu, Zhenyu", email = "wuzhenyu@ustc.edu" }]
+keywords = ["json schema", "language server", "tree sitter"]
+dependencies = [
+  "fqdn>=1.5.1",
+  "jinja2>=3.1.6",
+  "lsp-tree-sitter>=0.2.6",
+  "platformdirs>=4.10.1",
+  "rfc3987>=1.3.8",
+  "tree-sitter-bash>=0.25.1",
 ]
-dynamic = ["version", "dependencies", "optional-dependencies"]
-
-[[project.authors]]
-name = "Wu, Zhenyu"
-email = "wuzhenyu@ustc.edu"
-
-[project.license]
-text = "GPL v3"
-
-[project.urls]
-Homepage = "https://termux-language-server.readthedocs.io"
-Download = "https://github.com/termux/termux-language-server/releases"
-"Bug Report" = "https://github.com/termux/termux-language-server/issues"
-Source = "https://github.com/termux/termux-language-server"
 
 [project.scripts]
 termux-language-server = "termux_language_server.__main__:main"
-pkgbuild-language-server = "termux_language_server.__main__:main"
-portage-language-server = "termux_language_server.__main__:main"
 
-[tool.setuptools.data-files]
-"share/man/man1" = [
-  "sdist/termux-language-server.1",
-  "sdist/pkgbuild-language-server.1",
-  "sdist/portage-language-server.1",
+[project.optional-dependencies]
+dev = [
+  "license-expression>=30.4.4",
+  "pytest-cov>=7.1.0",
 ]
-"share/bash-completion/completions" = [
-  "sdist/termux-language-server",
-  "sdist/pkgbuild-language-server",
-  "sdist/portage-language-server",
+ebuild = [
+  "portage>=3.0.81.2",
 ]
-"share/zsh/site-functions" = [
-  "sdist/_termux-language-server",
-  "sdist/_pkgbuild-language-server",
-  "sdist/_portage-language-server",
+pkgbuild = [
+  # "git+https://gitlab.archlinux.org/pacman/namcap",
+  "pyalpm>=0.10.0",
 ]
 
-[tool.scikit-build]
-experimental = true
+[build-system]
+requires = ["uv_build<0.12"]
+build-backend = "uv_build"
 
-[tool.setuptools.dynamic.dependencies]
-file = "requirements.txt"
+[tool.codespell]
+ignore-words-list = "namd, doman"
 
-# begin: scripts/update-pyproject.toml.pl
-[tool.setuptools.dynamic.optional-dependencies.colorize]
-file = "requirements/colorize.txt"
-
-[tool.setuptools.dynamic.optional-dependencies.dev]
-file = "requirements/dev.txt"
-
-[tool.setuptools.dynamic.optional-dependencies.misc]
-file = "requirements/misc.txt"
-
-[tool.setuptools.dynamic.optional-dependencies.pkgbuild]
-file = "requirements/pkgbuild.txt"
-
-[tool.setuptools.dynamic.optional-dependencies.ebuild]
-file = "requirements/ebuild.txt"
-# end: scripts/update-pyproject.toml.pl
-
-[tool.setuptools_scm]
-write_to = "src/termux_language_server/_version.py"
-
-[tool.setuptools-generate]
-write-to = "src/termux_language_server/_metainfo.py"
-
-[tool.setuptools-generate.metainfo-template]
-file = "templates/metainfo.py.j2"
-
-[tool.mdformat]
-number = true
+[tool.coverage.report]
+exclude_lines = [
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+  "\\s*import tomli as tomllib",
+]
 
 [tool.doq]
 template_path = "templates"
+
+[tool.mdformat]
+number = true
 
 [tool.ruff]
 line-length = 79
@@ -126,16 +76,3 @@ preview = true
 [tool.ruff.format]
 docstring-code-format = true
 preview = true
-
-[tool.coverage.report]
-exclude_lines = [
-  "if TYPE_CHECKING:",
-  "if __name__ == .__main__.:",
-  "\\s*import tomli as tomllib",
-]
-
-[tool.cibuildwheel]
-archs = ["all"]
-skip = "*37-* *38-* *39-*"
-before-test = "pip install -rrequirements.txt -rrequirements/dev.txt"
-test-command = "pytest {project}"

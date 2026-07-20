@@ -1,11 +1,6 @@
-_version.py
-_metainfo.py
+uv.lock
 
-# create by https://github.com/iamcco/coc-gitignore (Sat Jun 17 2023 19:59:16 GMT+0800 (China Standard Time))
-# pydev.gitignore:
-.pydevproject
-
-# create by https://github.com/iamcco/coc-gitignore (Sat Jun 17 2023 19:59:20 GMT+0800 (China Standard Time))
+# create by https://github.com/iamcco/coc-gitignore (Sun Jul 19 2026 20:10:58 GMT+0800 (China Standard Time))
 # Python.gitignore:
 # Byte-compiled / optimized / DLL files
 __pycache__/

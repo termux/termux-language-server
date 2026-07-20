@@ -49,7 +49,7 @@
       "type": "string"
     },
     "EBUILD_PHASE": {
-      "description": "Contains the abreviated name of the phase function that is currently executing, such as \"setup\", \"unpack\", \"compile\", or \"preinst\".",
+      "description": "Contains the abbreviated name of the phase function that is currently executing, such as \"setup\", \"unpack\", \"compile\", or \"preinst\".",
       "type": "string"
     },
     "EBUILD_PHASE_FUNC": {
@@ -81,7 +81,7 @@
       "type": "string"
     },
     "PROVIDES_EXCLUDE": {
-      "description": "```sh\nPROVIDES_EXCLUDE = [space delimited list of fnmatch patterns]\n```\nSonames and file paths matched by these fnmatch patterns will be excluded during genertion of PROVIDES metadata (see portage(5)). Patterns are delimited by whitespace, and it is possible to create patterns containing quoted whitespace.",
+      "description": "```sh\nPROVIDES_EXCLUDE = [space delimited list of fnmatch patterns]\n```\nSonames and file paths matched by these fnmatch patterns will be excluded during generation of PROVIDES metadata (see portage(5)). Patterns are delimited by whitespace, and it is possible to create patterns containing quoted whitespace.",
       "type": "string"
     },
     "PORTAGE_LOG_FILE": {
@@ -121,7 +121,7 @@
       "type": "string"
     },
     "EAPI": {
-      "description": "```sh\nEAPI = \"0\"\n```\nDefines the ebuild API version to which this package conforms. If not defined then it defaults to \"0\". If portage does not recognize the EAPI value then it will mask the package and refuse to perform any operations with it since this means that a newer version of portage needs to be installed first. For maximum backward compatiblity, a package should conform to the lowest possible EAPI. Note that anyone who uses the ebuild(1) command with this package will be required to have a version of portage that recognizes the EAPI to which this package conforms.",
+      "description": "```sh\nEAPI = \"0\"\n```\nDefines the ebuild API version to which this package conforms. If not defined then it defaults to \"0\". If portage does not recognize the EAPI value then it will mask the package and refuse to perform any operations with it since this means that a newer version of portage needs to be installed first. For maximum backward compatibility, a package should conform to the lowest possible EAPI. Note that anyone who uses the ebuild(1) command with this package will be required to have a version of portage that recognizes the EAPI to which this package conforms.",
       "type": "string"
     },
     "SRC_URI": {
@@ -266,7 +266,7 @@
       "const": 0
     },
     "pkg_setup": {
-      "description": "This function can be used if the package needs specific setup actions or checks to be preformed before anything else. Initial working directory: $PORTAGE_TMPDIR",
+      "description": "This function can be used if the package needs specific setup actions or checks to be performed before anything else. Initial working directory: $PORTAGE_TMPDIR",
       "const": 0
     },
     "src_unpack": {

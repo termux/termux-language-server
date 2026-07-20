@@ -2,14 +2,8 @@
 - id: termux-language-server-check
   name: termux language server check
   description: >
-    Check build.sh and *.subpackage.sh
+    Check bash
   language: python
-  files: (build|\.subpackage)\.sh$
+  types:
+    - bash
   entry: termux-language-server --check
-- id: termux-language-server-format
-  name: termux language server format
-  description: >
-    Format build.sh and *.subpackage.sh
-  language: python
-  files: (build|\.subpackage)\.sh$
-  entry: termux-language-server --format

@@ -1,4 +1,4 @@
-# Updated by https://github.com/Freed-Wu/pkgbuild-language-server/blob/main/.github/workflows/main.yml
+# shellcheck shell=bash disable=SC2034,SC2154
 pkgname=pkgbuild-language-server
 pkgver=0.0.6
 pkgrel=1

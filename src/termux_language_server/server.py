@@ -2,378 +2,77 @@ r"""Server
 ==========
 """
 
-import re
-from typing import Any
+import json
+import os
+from contextlib import suppress
 
-from lsp_tree_sitter.complete import get_completion_list_by_enum
-from lsp_tree_sitter.diagnose import get_diagnostics
-from lsp_tree_sitter.finders import PositionFinder
-from lsp_tree_sitter.format import get_text_edits
-from lsprotocol.types import (
-    TEXT_DOCUMENT_COMPLETION,
-    TEXT_DOCUMENT_DID_CHANGE,
-    TEXT_DOCUMENT_DID_OPEN,
-    TEXT_DOCUMENT_DOCUMENT_LINK,
-    # TEXT_DOCUMENT_FORMATTING,
-    TEXT_DOCUMENT_HOVER,
-    CompletionItem,
-    CompletionItemKind,
-    CompletionList,
-    CompletionParams,
-    DidChangeTextDocumentParams,
-    DocumentFormattingParams,
-    DocumentLink,
-    DocumentLinkParams,
-    Hover,
-    MarkupContent,
-    MarkupKind,
-    Position,
-    PublishDiagnosticsParams,
-    Range,
-    TextDocumentPositionParams,
-    TextEdit,
+from lsp_tree_sitter.completer import (
+    PackageCompleter,
+    PackageSearcher,
+    ValueCompleter,
 )
-from pygls.lsp.server import LanguageServer
+from lsp_tree_sitter.linter import SchemaLinter
+from lsp_tree_sitter.server import TreeSitterLanguageServer
+from tree_sitter import Language, Parser
+from tree_sitter_bash import language as get_language_ptr
 
-from .finders import (
-    DIAGNOSTICS_FINDER_CLASSES,
-    FORMAT_FINDER_CLASSES,
-    CSVFinder,
-    MinGWFinder,
-    PackageFinder,
-)
-from .packages import (
-    PACKAGE_VARIABLES,
-    search_package_document,
-    search_package_names,
-)
-from .utils import get_filetype, get_schema, parser
-
-RE_PKG_START = re.compile(r"[A-Za-z_0-9/\-\.>=<!~*]*$")
-RE_PKG_END = re.compile(r"^[A-Za-z_0-9/\-\.>=<!~*]*")
-RE_EMPTY = re.compile(r"^")
+from . import queries
 
 
-def _is_in_dep_string(tree, position, filetype):
-    r"""Check if cursor is inside a dependency variable's string.
+class TermuxLanguageServer(TreeSitterLanguageServer):
+    def __init__(self, *args, **kwargs) -> None:
+        parser = Parser()
+        language = Language(get_language_ptr())
+        parser.language = language
 
-    :param tree:
-    :param position:
-    :type position: Position
-    :param filetype:
-    :type filetype: str
-    :rtype: bool
-    """
-    point = (position.line, position.character)
-    node = tree.root_node.descendant_for_point_range(point, point)
-    return (
-        node is not None
-        and node.type == "string"
-        and node.parent is not None
-        and node.parent.children[0].text is not None
-        and node.parent.children[0].text.decode()
-        in PACKAGE_VARIABLES.get(filetype, set())
-    )
+        assets_path = os.path.join(os.path.dirname(__file__), "assets")
+        self.schemas = {}
+        json_path = os.path.join(assets_path, "json")
+        for file in os.listdir(json_path):
+            schema_name = file.rpartition(".")[0]
+            with open(os.path.join(json_path, file)) as f:
+                self.schemas[schema_name] = json.load(f)
 
+        code_file = os.path.join(assets_path, "jq", "value.jq")
+        value_completer = ValueCompleter.from_files(
+            code_file, self.schema_getter, "^"
+        )
+        schema_linter = SchemaLinter.from_queries(
+            language, queries, self.schema_getter
+        )
+        self.searchers = self.get_searchers()
+        package_complter = PackageCompleter(self.searcher_getter)
 
-def _package_completions(prefix, filetype, position):
-    r"""Build completion list for package names.
+        super().__init__(
+            parser,
+            (schema_linter,),
+            (value_completer, package_complter),
+            *args,
+            **kwargs,
+        )
+        with suppress(ImportError):
+            from .linter import NamcapLinter
 
-    :param prefix:
-    :type prefix: str
-    :param filetype:
-    :type filetype: str
-    :param position:
-    :type position: Position
-    :rtype: CompletionList
-    """
-    edit_range = Range(
-        start=Position(position.line, position.character - len(prefix)),
-        end=position,
-    )
-    return CompletionList(
-        False,
-        [
-            CompletionItem(
-                k,
-                kind=CompletionItemKind.Module,
-                documentation=MarkupContent(MarkupKind.Markdown, v)
-                if v
-                else None,
-                text_edit=TextEdit(range=edit_range, new_text=k),
-            )
-            for k, v in search_package_names(prefix, filetype).items()
-        ],
-    )
+            self.linters += (NamcapLinter(),)
 
+    def schema_getter(self, path: str):
+        name = PackageCompleter.get_filetype(path, self.schemas) or "_bash"
+        return self.schemas[name]
 
-class TermuxLanguageServer(LanguageServer):
-    r"""Termux language server."""
+    def searcher_getter(self, path: str) -> PackageSearcher | None:
+        name = PackageCompleter.get_filetype(path, self.searchers)
+        if name:
+            return self.searchers[name]
 
-    def __init__(self, *args: Any) -> None:
-        r"""Init.
+    @staticmethod
+    def get_searchers() -> dict[str, PackageSearcher]:
+        searchers = {}
+        with suppress(ImportError):
+            from .searcher.pacman import PacmanSearcher
 
-        :param args:
-        :type args: Any
-        :rtype: None
-        """
-        super().__init__(*args)
-        self.trees = {}
+            searchers["PKGBUILD"] = PacmanSearcher()
+        with suppress(ImportError):
+            from .searcher.portage import PortageSearcher
 
-        @self.feature(TEXT_DOCUMENT_DID_OPEN)
-        @self.feature(TEXT_DOCUMENT_DID_CHANGE)
-        def did_change(params: DidChangeTextDocumentParams) -> None:
-            r"""Did change.
-
-            :param params:
-            :type params: DidChangeTextDocumentParams
-            :rtype: None
-            """
-            filetype = get_filetype(params.text_document.uri)
-            if filetype == "":
-                return None
-            document = self.workspace.get_text_document(
-                params.text_document.uri
-            )
-            self.trees[document.uri] = parser.parse(document.source.encode())
-            diagnostics = get_diagnostics(
-                document.uri,
-                self.trees[document.uri],
-                DIAGNOSTICS_FINDER_CLASSES,
-                filetype,
-            )
-            if document.path is not None and filetype == "PKGBUILD":
-                from .tools.namcap import namcap
-
-                diagnostics += namcap(document.path, document.source)
-            self.text_document_publish_diagnostics(
-                PublishDiagnosticsParams(
-                    params.text_document.uri,
-                    diagnostics,
-                )
-            )
-
-        # https://github.com/termux/termux-language-server/issues/19#issuecomment-2413779969
-        # @self.feature(TEXT_DOCUMENT_FORMATTING)
-        def format(params: DocumentFormattingParams) -> list[TextEdit]:
-            r"""Format.
-
-            :param params:
-            :type params: DocumentFormattingParams
-            :rtype: list[TextEdit]
-            """
-            filetype = get_filetype(params.text_document.uri)
-            if filetype == "":
-                return []
-            document = self.workspace.get_text_document(
-                params.text_document.uri
-            )
-            return get_text_edits(
-                document.uri,
-                self.trees[document.uri],
-                FORMAT_FINDER_CLASSES,
-                filetype,
-            )
-
-        @self.feature(TEXT_DOCUMENT_DOCUMENT_LINK)
-        def document_link(params: DocumentLinkParams) -> list[DocumentLink]:
-            r"""Get document links.
-
-            :param params:
-            :type params: DocumentLinkParams
-            :rtype: list[DocumentLink]
-            """
-            filetype = get_filetype(params.text_document.uri)
-            if filetype == "":
-                return []
-            document = self.workspace.get_text_document(
-                params.text_document.uri
-            )
-            if filetype in {"build.sh", "subpackage.sh"}:
-                return CSVFinder(filetype).get_document_links(
-                    document.uri,
-                    self.trees[document.uri],
-                    "https://github.com/termux/termux-packages/tree/master/packages/{{name}}/build.sh",
-                )
-            elif filetype in {"PKGBUILD", "install"}:
-                if (
-                    len(
-                        MinGWFinder().find_all(
-                            document.uri, self.trees[document.uri]
-                        )
-                    )
-                    > 0
-                ):
-                    url = "https://packages.msys2.org/base/{{uni.text}}"
-                else:
-                    url = "https://archlinux.org/packages/{{uni.text}}"
-                return PackageFinder().get_document_links(
-                    document.uri,
-                    self.trees[document.uri],
-                    url,
-                )
-            raise NotImplementedError
-
-        @self.feature(TEXT_DOCUMENT_HOVER)
-        def hover(params: TextDocumentPositionParams) -> Hover | None:
-            r"""Hover.
-
-            :param params:
-            :type params: TextDocumentPositionParams
-            :rtype: Hover | None
-            """
-            filetype = get_filetype(params.text_document.uri)
-            if filetype == "":
-                return None
-            document = self.workspace.get_text_document(
-                params.text_document.uri
-            )
-            uni = PositionFinder(params.position).find(
-                document.uri, self.trees[document.uri]
-            )
-            if uni is None:
-                return None
-            parent = uni.node.parent
-            if parent is None:
-                return None
-            text = uni.text
-            _range = uni.range
-            # we only hover variable names and function names
-            if not (
-                uni.node.type == "variable_name"
-                or uni.node.type == "word"
-                and parent.type
-                in {
-                    "function_definition",
-                    "command_name",
-                }
-            ):
-                if (
-                    parent.type in {"array", "string"}
-                    and parent.parent is not None
-                    and parent.parent.children[0].text is not None
-                    and parent.parent.children[0].text.decode()
-                    in PACKAGE_VARIABLES.get(filetype, set())
-                ):
-                    result = search_package_document(
-                        document.word_at_position(
-                            params.position, RE_PKG_START, RE_PKG_END
-                        )
-                        if parent.type == "string"
-                        else text,
-                        filetype,
-                    )
-                    if result is None:
-                        return None
-                    return Hover(
-                        MarkupContent(MarkupKind.Markdown, result), _range
-                    )
-                return None
-            if description := (
-                get_schema(filetype)
-                .get("properties", {})
-                .get(text, {})
-                .get("description")
-            ):
-                return Hover(
-                    MarkupContent(MarkupKind.Markdown, description),
-                    _range,
-                )
-            for k, v in (
-                get_schema(filetype).get("patternProperties", {}).items()
-            ):
-                if re.match(k, text):
-                    return Hover(
-                        MarkupContent(MarkupKind.Markdown, v["description"]),
-                        _range,
-                    )
-
-        @self.feature(TEXT_DOCUMENT_COMPLETION)
-        def completions(params: CompletionParams) -> CompletionList:
-            r"""Completions.
-
-            :param params:
-            :type params: CompletionParams
-            :rtype: CompletionList
-            """
-            filetype = get_filetype(params.text_document.uri)
-            if filetype == "":
-                return CompletionList(False, [])
-            document = self.workspace.get_text_document(
-                params.text_document.uri
-            )
-            uni = PositionFinder(params.position, right_equal=True).find(
-                document.uri, self.trees[document.uri]
-            )
-            if uni is None or uni.node.type == '"':
-                if _is_in_dep_string(
-                    self.trees[document.uri],
-                    params.position,
-                    filetype,
-                ):
-                    return _package_completions(
-                        document.word_at_position(
-                            params.position, RE_PKG_START, RE_EMPTY
-                        ),
-                        filetype,
-                        params.position,
-                    )
-                if uni is None:
-                    return CompletionList(False, [])
-            parent = uni.node.parent
-            if parent is None:
-                return CompletionList(False, [])
-            text = uni.text
-            if (
-                parent.type in {"array", "string"}
-                and parent.parent is not None
-                and parent.parent.children[0].text is not None
-                and parent.parent.children[0].text.decode()
-                in PACKAGE_VARIABLES.get(filetype, set())
-            ):
-                return _package_completions(
-                    document.word_at_position(
-                        params.position, RE_PKG_START, RE_EMPTY
-                    )
-                    if parent.type == "string"
-                    else text,
-                    filetype,
-                    params.position,
-                )
-            schema = get_schema(filetype)
-            if (
-                parent.type == "array"
-                and parent.parent is not None
-                and parent.parent.children[0].text is not None
-            ):
-                property = schema["properties"].get(
-                    parent.parent.children[0].text.decode(), {}
-                )
-                return get_completion_list_by_enum(text, property)
-            return CompletionList(
-                False,
-                [
-                    CompletionItem(
-                        k,
-                        kind=CompletionItemKind.Function
-                        if v.get("const") == 0
-                        else CompletionItemKind.Field
-                        if v.get("type") == "array"
-                        else CompletionItemKind.Variable,
-                        documentation=MarkupContent(
-                            MarkupKind.Markdown, v["description"]
-                        ),
-                        insert_text=k,
-                    )
-                    for k, v in (
-                        schema.get("properties", {})
-                        | {
-                            k.lstrip("^").split("(")[0]: v
-                            for k, v in schema.get(
-                                "patternProperties", {}
-                            ).items()
-                        }
-                    ).items()
-                    if k.startswith(text)
-                ],
-            )
+            searchers["_ebuild"] = PortageSearcher()
+        return searchers
