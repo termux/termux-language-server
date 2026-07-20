@@ -1,6 +1,6 @@
 [project]
 name = "termux-language-server"
-version = "0.1.0"
+version = "0.1.1"
 description = "language server for PKGBUILD/build.sh/ebuild"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -9,9 +9,7 @@ authors = [{ name = "Wu, Zhenyu", email = "wuzhenyu@ustc.edu" }]
 keywords = ["json schema", "language server", "tree sitter"]
 dependencies = [
   "fqdn>=1.5.1",
-  "jinja2>=3.1.6",
   "lsp-tree-sitter>=0.2.6",
-  "platformdirs>=4.10.1",
   "rfc3987>=1.3.8",
   "tree-sitter-bash>=0.25.1",
 ]
@@ -25,11 +23,15 @@ dev = [
   "pytest-cov>=7.1.0",
 ]
 ebuild = [
-  "portage>=3.0.81.2",
+  "portage>=3",
+  "jinja2>=3",
+  "platformdirs>=4",
 ]
 pkgbuild = [
   # "git+https://gitlab.archlinux.org/pacman/namcap",
   "pyalpm>=0.10.0",
+  "jinja2>=3",
+  "platformdirs>=4",
 ]
 
 [build-system]
