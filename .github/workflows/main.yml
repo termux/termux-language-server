@@ -25,6 +25,7 @@ jobs:
           uv sync --extra=dev
       - name: Test
         run: |
+          source .venv/bin/activate
           pytest --cov
       - uses: codecov/codecov-action@v4
 
