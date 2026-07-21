@@ -23,6 +23,7 @@ def get_template(name: str = "_ebuild.md.jinja") -> Template:
 
 @dataclass
 class PortageSearcher(PackageSearcher):
+    label: str = "package._ebuild"
     texts: tuple[str, ...] = (
         "DEPEND",
         "RDEPEND",
@@ -34,21 +35,23 @@ class PortageSearcher(PackageSearcher):
     db: portdbapi = field(default_factory=lambda: db[root]["porttree"].dbapi)
     executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=1)
 
+    def has_package(self, name: str) -> bool:
+        return self.db.cp_list(name) != []
+
     def get_package_names(self, name: str) -> dict[str, str]:
         return {cp: "" for cp in self.db.cp_all() if cp.startswith(name)}
 
     def get_package_document(self, name: str) -> str:
         return self.executor.submit(self.render_document, name).result()
 
-    def render_document(self, cp: str) -> str:
-        versions = self.db.cp_list(cp)
-        if not versions:
-            return ""
+    def render_document(self, name: str) -> str:
+        versions = self.db.cp_list(name)
+        # latest version
         cpv = versions[-1]
         description, homepage, license_, slot, keywords = self.db.aux_get(
             cpv, ["DESCRIPTION", "HOMEPAGE", "LICENSE", "SLOT", "KEYWORDS"]
         )
-        version = cpv[len(cp) + 1 :]
+        version = cpv[len(name) + 1 :]
         pkg = SimpleNamespace(
             description=description,
             version=version,

@@ -6,12 +6,9 @@ import json
 import os
 from contextlib import suppress
 
-from lsp_tree_sitter.completer import (
-    PackageCompleter,
-    PackageSearcher,
-    ValueCompleter,
-)
-from lsp_tree_sitter.linter import SchemaLinter
+from lsp_tree_sitter.completer import PackageCompleter, ValueCompleter
+from lsp_tree_sitter.linter import PackageLinter, SchemaLinter
+from lsp_tree_sitter.node import PackageSearcher
 from lsp_tree_sitter.server import TreeSitterLanguageServer
 from tree_sitter import Language, Parser
 from tree_sitter_bash import language as get_language_ptr
@@ -33,19 +30,22 @@ class TermuxLanguageServer(TreeSitterLanguageServer):
             with open(os.path.join(json_path, file)) as f:
                 self.schemas[schema_name] = json.load(f)
 
+        schema_linter = SchemaLinter.from_queries(
+            language, queries, self.schema_getter
+        )
+        package_linter = PackageLinter.from_queries(
+            language, queries, self.searcher_getter
+        )
         code_file = os.path.join(assets_path, "jq", "value.jq")
         value_completer = ValueCompleter.from_files(
             code_file, self.schema_getter, "^"
-        )
-        schema_linter = SchemaLinter.from_queries(
-            language, queries, self.schema_getter
         )
         self.searchers = self.get_searchers()
         package_completer = PackageCompleter(self.searcher_getter)
 
         super().__init__(
             parser,
-            (schema_linter,),
+            (schema_linter, package_linter),
             (value_completer, package_completer),
             *args,
             **kwargs,
@@ -56,13 +56,12 @@ class TermuxLanguageServer(TreeSitterLanguageServer):
             self.linters += (NamcapLinter(),)
 
     def schema_getter(self, path: str):
-        name = PackageCompleter.get_filetype(path, self.schemas) or "_bash"
-        return self.schemas[name]
+        name = PackageSearcher.get_filetype(path, self.schemas)
+        return self.schemas.get(name, None)
 
     def searcher_getter(self, path: str) -> PackageSearcher | None:
-        name = PackageCompleter.get_filetype(path, self.searchers)
-        if name:
-            return self.searchers[name]
+        name = PackageSearcher.get_filetype(path, self.searchers)
+        return self.searchers.get(name, None)
 
     @staticmethod
     def get_searchers() -> dict[str, PackageSearcher]:

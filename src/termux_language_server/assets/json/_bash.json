@@ -1,5 +1,0 @@
-{
-  "$id": "https://github.com/termux/termux-language-server/blob/main/src/termux_language_server/assets/json/sh.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object"
-}

@@ -20,6 +20,7 @@ def get_template(name: str = "PKGBUILD.md.jinja") -> Template:
 
 @dataclass
 class PacmanSearcher(PackageSearcher):
+    label: str = "package.PKGBUILD"
     texts: tuple[str, ...] = (
         "depends",
         "makedepends",
@@ -32,6 +33,9 @@ class PacmanSearcher(PackageSearcher):
     db: DB = field(
         default_factory=lambda: Handle(".", "/var/lib/pacman").get_localdb()
     )
+
+    def has_package(self, name: str) -> bool:
+        return self.db.get_pkg(name) is not None
 
     def get_package_names(self, name: str) -> dict[str, str]:
         return {
