@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import json
 import os
 import sys
 
@@ -206,6 +207,6 @@ schemas["PKGBUILD"]["properties"]["license"]["items"] = {
     ]
 }
 if len(sys.argv) > 1:
-    print(schemas["install"])
+    print(json.dumps(schemas["install"], indent=2))
 else:
-    print(schemas["PKGBUILD"])
+    print(json.dumps(schemas["PKGBUILD"], indent=2))

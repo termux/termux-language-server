@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import json
 
 from lsp_tree_sitter.misc import get_soup
 
@@ -75,4 +76,4 @@ for blockquote in get_soup("makepkg.conf").find_all("blockquote"):
                 "items": {"type": "string"},
                 "uniqueItems": True,
             }
-print(schema)
+print(json.dumps(schema, indent=2))

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import json
 import sys
 
 from license_expression import get_license_index
@@ -162,6 +163,6 @@ schemas["build.sh"]["properties"]["TERMUX_PKG_LICENSE"]["pattern"] = (
     rf"{ATOM}(,{ATOM})*"
 )
 if len(sys.argv) > 1:
-    print(schemas["subpackage.sh"])
+    print(json.dumps(schemas["subpackage.sh"], indent=2))
 else:
-    print(schemas["build.sh"])
+    print(json.dumps(schemas["build.sh"], indent=2))

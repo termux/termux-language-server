@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import json
 import os
 from shlex import split
 from subprocess import check_output
@@ -47,4 +48,4 @@ path = (
 )
 atom = f"({'|'.join(os.listdir(path))})"
 schema["properties"]["LICENSE"]["pattern"] = rf"{atom}(( |\n){atom})*"
-print(schema)
+print(json.dumps(schema, indent=2))

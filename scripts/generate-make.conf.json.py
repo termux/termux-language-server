@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import json
+
 from lsp_tree_sitter.misc import get_soup
 
 SOURCE = "https://github.com/termux/termux-language-server"
@@ -35,4 +37,4 @@ for dl in get_soup("make.conf").find_all("dl")[:-2]:
             "description": description,
             "type": "string",
         }
-print(schema)
+print(json.dumps(schema, indent=2))

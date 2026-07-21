@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import json
+
 from lsp_tree_sitter.misc import get_soup
 
 SOURCE = "https://github.com/termux/termux-language-server"
@@ -30,4 +32,4 @@ for dt, dd in zip(dl.find_all("dt"), dl.find_all("dd"), strict=False):
         "description": description,
         "type": "string",
     }
-print(schema)
+print(json.dumps(schema, indent=2))
