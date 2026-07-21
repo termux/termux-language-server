@@ -41,12 +41,12 @@ class TermuxLanguageServer(TreeSitterLanguageServer):
             language, queries, self.schema_getter
         )
         self.searchers = self.get_searchers()
-        package_complter = PackageCompleter(self.searcher_getter)
+        package_completer = PackageCompleter(self.searcher_getter)
 
         super().__init__(
             parser,
             (schema_linter,),
-            (value_completer, package_complter),
+            (value_completer, package_completer),
             *args,
             **kwargs,
         )
