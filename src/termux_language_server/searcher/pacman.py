@@ -29,6 +29,7 @@ class PacmanSearcher(PackageSearcher):
         "provides",
         "replaces",
     )
+    url_template: str = "https://archlinux.org/packages/{}"
     template: Template = field(default_factory=get_template)
     db: DB = field(
         default_factory=lambda: Handle(".", "/var/lib/pacman").get_localdb()
@@ -37,6 +38,9 @@ class PacmanSearcher(PackageSearcher):
     def has_package(self, name: str) -> bool:
         return self.db.get_pkg(name) is not None
 
+    def get_package_url(self, name: str) -> str:
+        return self.url_template.format(name)
+
     def get_package_names(self, name: str) -> dict[str, str]:
         return {
             pkg.name: self.template.render(pkg=pkg)
@@ -44,7 +48,6 @@ class PacmanSearcher(PackageSearcher):
             if pkg.name.startswith(name)
         }
 
-    def get_package_document(self, name: str) -> str | None:
+    def get_package_document(self, name: str) -> str:
         pkg = self.db.get_pkg(name)
-        if pkg:
-            return self.template.render(pkg=pkg)
+        return self.template.render(pkg=pkg)

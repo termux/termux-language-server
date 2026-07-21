@@ -31,12 +31,16 @@ class PortageSearcher(PackageSearcher):
         "IDEPEND",
         "PDEPEND",
     )
+    url_template: str = "https://packages.gentoo.org/packages/{}"
     template: Template = field(default_factory=get_template)
     db: portdbapi = field(default_factory=lambda: db[root]["porttree"].dbapi)
     executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=1)
 
     def has_package(self, name: str) -> bool:
         return self.db.cp_list(name) != []
+
+    def get_package_url(self, name: str) -> str:
+        return self.url_template.format(name)
 
     def get_package_names(self, name: str) -> dict[str, str]:
         return {cp: "" for cp in self.db.cp_all() if cp.startswith(name)}
