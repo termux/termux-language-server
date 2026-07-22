@@ -8,7 +8,7 @@ from pathlib import Path
 from jinja2 import Template
 from lsp_tree_sitter.completer import PackageSearcher
 from platformdirs import user_config_path
-from pyalpm import DB, Handle
+from pyalpm import DB, Handle, Package
 
 
 def get_template(name: str = "PKGBUILD.md.jinja") -> Template:
@@ -35,8 +35,19 @@ class PacmanSearcher(PackageSearcher):
         default_factory=lambda: Handle(".", "/var/lib/pacman").get_localdb()
     )
 
+    def get_pkgs(self, name: str) -> list[Package]:
+        pkg = self.db.get_pkg(name)
+        if pkg:
+            return [pkg]
+        # virtual packages
+        pkgs = []
+        for pkg in self.db.search(name):
+            if name in pkg.provides:
+                pkgs += [pkg]
+        return pkgs
+
     def has_package(self, name: str) -> bool:
-        return self.db.get_pkg(name) is not None
+        return self.get_pkgs(name) != []
 
     def get_package_url(self, name: str) -> str:
         return self.url_template.format(name)
@@ -44,10 +55,12 @@ class PacmanSearcher(PackageSearcher):
     def get_package_names(self, name: str) -> dict[str, str]:
         return {
             pkg.name: self.template.render(pkg=pkg)
-            for pkg in DB.search(name)
+            for pkg in self.db.search(name)
             if pkg.name.startswith(name)
         }
 
     def get_package_document(self, name: str) -> str:
-        pkg = self.db.get_pkg(name)
-        return self.template.render(pkg=pkg)
+        docs = []
+        for pkg in self.get_pkgs(name):
+            docs += [self.template.render(pkg=pkg)]
+        return "\n".join(docs)
