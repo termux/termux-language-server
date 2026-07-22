@@ -13,6 +13,7 @@
 # https://github.com/softprops/action-gh-release/issues/236
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   test:
