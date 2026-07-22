@@ -2,6 +2,7 @@ r"""Namcap
 ==========
 """
 
+import os
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -29,6 +30,9 @@ class NamcapLinter(LinterBase):
         return []
 
     def diagnose(self, tree: "Tree", path: str) -> list[Diagnostic]:
+        basename = os.path.basename(path)
+        if basename != "PKGBUILD":
+            return []
         source = NodeText(tree.root_node)
         pkginfo = load_from_pkgbuild(path)
         items = {}

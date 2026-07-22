@@ -57,11 +57,11 @@ class TermuxLanguageServer(TreeSitterLanguageServer):
 
     def schema_getter(self, path: str):
         name = PackageSearcher.get_filetype(path, self.schemas)
-        return self.schemas.get(name, None)
+        return self.schemas.get(name)
 
     def searcher_getter(self, path: str) -> PackageSearcher | None:
         name = PackageSearcher.get_filetype(path, self.searchers)
-        return self.searchers.get(name, None)
+        return self.searchers.get(name)
 
     @staticmethod
     def get_searchers() -> dict[str, PackageSearcher]:
