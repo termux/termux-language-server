@@ -5,7 +5,8 @@ r"""Namcap
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from lsp_tree_sitter.linter import Linter, LinterBase
+from lsp_tree_sitter.linter import LinterBase
+from lsp_tree_sitter.node import NodeText
 from lsprotocol.types import (
     Diagnostic,
     DiagnosticSeverity,
@@ -28,7 +29,7 @@ class NamcapLinter(LinterBase):
         return []
 
     def diagnose(self, tree: "Tree", path: str) -> list[Diagnostic]:
-        source = Linter.text_callback(tree.root_node)
+        source = NodeText(tree.root_node)
         pkginfo = load_from_pkgbuild(path)
         items = {}
         for value in all_rules.values():
