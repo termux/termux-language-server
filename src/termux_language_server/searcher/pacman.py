@@ -9,6 +9,7 @@ from jinja2 import Template
 from lsp_tree_sitter.completer import PackageSearcher
 from platformdirs import user_config_path
 from pyalpm import DB, Handle, Package
+from tree_sitter import Node
 
 
 def get_template(name: str = "PKGBUILD.md.jinja") -> Template:
@@ -34,6 +35,10 @@ class PacmanSearcher(PackageSearcher):
     db: DB = field(
         default_factory=lambda: Handle(".", "/var/lib/pacman").get_localdb()
     )
+
+    def __call__(self, node: Node | None) -> bool:
+        node = node.parent if node and node.type == "string_content" else node
+        return super().__call__(node)
 
     def get_pkgs(self, name: str) -> list[Package]:
         pkg = self.db.get_pkg(name)
