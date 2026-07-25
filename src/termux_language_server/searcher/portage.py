@@ -42,6 +42,11 @@ class PortageSearcher(PackageSearcher):
     def get_package_url(self, name: str) -> str:
         return self.url_template.format(name)
 
+    def get_package_version(self, name: str) -> str:
+        versions = self.db.cp_list(name)
+        # latest version
+        return versions[-1]
+
     def get_package_names(self, name: str) -> dict[str, str]:
         return {cp: "" for cp in self.db.cp_all() if cp.startswith(name)}
 
@@ -49,9 +54,7 @@ class PortageSearcher(PackageSearcher):
         return self.executor.submit(self.render_document, name).result()
 
     def render_document(self, name: str) -> str:
-        versions = self.db.cp_list(name)
-        # latest version
-        cpv = versions[-1]
+        cpv = self.get_package_version(name)
         description, homepage, license_, slot, keywords = self.db.aux_get(
             cpv, ["DESCRIPTION", "HOMEPAGE", "LICENSE", "SLOT", "KEYWORDS"]
         )

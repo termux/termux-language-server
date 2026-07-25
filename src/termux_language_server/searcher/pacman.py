@@ -52,6 +52,13 @@ class PacmanSearcher(PackageSearcher):
     def get_package_url(self, name: str) -> str:
         return self.url_template.format(name)
 
+    def get_package_version(self, name: str) -> str:
+        pkg = self.get_pkgs(name)[0]
+        version = pkg.version
+        if pkg.name != name:
+            version = pkg.name + " " + version
+        return version
+
     def get_package_names(self, name: str) -> dict[str, str]:
         return {
             pkg.name: self.template.render(pkg=pkg)

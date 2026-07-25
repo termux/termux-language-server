@@ -11,7 +11,6 @@ from lsp_tree_sitter.node import NodeText
 from lsprotocol.types import (
     Diagnostic,
     DiagnosticSeverity,
-    DocumentLink,
     Position,
     Range,
 )
@@ -26,9 +25,6 @@ if TYPE_CHECKING:
 
 @dataclass
 class NamcapLinter(LinterBase):
-    def link(self, tree: "Tree", path: str) -> list[DocumentLink]:
-        return []
-
     def diagnose(self, tree: "Tree", path: str) -> list[Diagnostic]:
         basename = os.path.basename(path)
         if basename != "PKGBUILD":
