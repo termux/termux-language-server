@@ -1,9 +1,10 @@
-if $cursor[1] == 0 or $type == "variable_name" or ($type == "word" and $texts[0] == "function_definition") then
+$nodes[0].type as $type |
+if $cursor[1] == 0 or $type == "variable_name" or ($type == "word" and $nodes[1].text == "function_definition") then
   .properties + (.patternProperties | to_entries[] | {(.key | gsub("[$^]"; "") | gsub("[(][^)]*[)]"; "")): .value})
 else
   {}
 end | to_entries[] |
-if .key | (if $complete then startswith($text) else . == $text end) then
+if .key | ($nodes[0].text as $text | if $complete then startswith($text) else . == $text end) then
   {
     label: .key,
     insert_text: .key,
