@@ -22,12 +22,12 @@ def get_template(name: str = "PKGBUILD.md.jinja") -> Template:
 
 
 def get_trie() -> Trie | None:
-    path = os.path.join(user_cache_dir("paru"), "packages.aur")
+    path = user_cache_dir("paru", version="packages.aur")
     if not os.path.exists(path):
         return
     with open(path) as f:
-        lines = f.readlines()
-    return Trie(lines)
+        text = f.read()
+    return Trie(text.splitlines())
 
 
 @dataclass
@@ -70,9 +70,13 @@ class PacmanSearcher(PackageSearcher):
         return False
 
     def get_package_url(self, name: str) -> str:
-        if self.get_pkgs(name):
-            return f"https://archlinux.org/packages/{name}"
-        return f"https://aur.archlinux.org/packages/{name}"
+        r"""TODO: https://packages.msys2.org/base/{name} for mingw_arch"""
+        pkgs = self.get_pkgs(name)
+        if pkgs:
+            name = pkgs[0].name
+        if self.trie and name in self.trie.keys(name):
+            return f"https://aur.archlinux.org/packages/{name}"
+        return f"https://archlinux.org/packages/{name}"
 
     def get_package_version(self, name: str) -> str:
         if not self.get_pkgs(name):
