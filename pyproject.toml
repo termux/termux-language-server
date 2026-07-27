@@ -1,6 +1,6 @@
 [project]
 name = "termux-language-server"
-version = "0.1.8"
+version = "0.1.9"
 description = "language server for PKGBUILD/build.sh/ebuild"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,6 +31,7 @@ pkgbuild = [
   # "git+https://gitlab.archlinux.org/pacman/namcap",
   "pyalpm>=0.10.0",
   "jinja2>=3",
+  "marisa-trie>=1",
   "platformdirs>=4",
 ]
 
