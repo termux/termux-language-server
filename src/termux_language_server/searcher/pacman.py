@@ -48,7 +48,12 @@ class PacmanSearcher(PackageSearcher):
     trie: Trie | None = field(default_factory=get_trie)
 
     def __call__(self, node: Node | None) -> bool:
-        node = node.parent if node and node.type == "string_content" else node
+        if node is None:
+            return False
+        if node.type == "string_content":
+            node = node.parent
+        if node.type not in ("string", "word", "raw_string"):
+            return False
         return super().__call__(node)
 
     def get_pkgs(self, name: str) -> list[Package]:
