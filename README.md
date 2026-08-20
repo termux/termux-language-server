@@ -1,6 +1,5 @@
 # termux-language-server
 
-[![readthedocs](https://shields.io/readthedocs/termux-language-server)](https://termux-language-server.readthedocs.io)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/termux/termux-language-server/main.svg)](https://results.pre-commit.ci/latest/github/termux/termux-language-server/main)
 [![github/workflow](https://github.com/termux/termux-language-server/actions/workflows/main.yml/badge.svg)](https://github.com/termux/termux-language-server/actions)
 [![codecov](https://codecov.io/gh/termux/termux-language-server/branch/main/graph/badge.svg)](https://codecov.io/gh/termux/termux-language-server)
@@ -57,7 +56,6 @@ Language server for some specific bash scripts:
   - [`*.mdd`](https://github.com/zsh-users/zsh/blob/57248b88830ce56adc243a40c7773fb3825cab34/Etc/zsh-development-guide#L285-L288)
 
 A completion for [bash-language-server](https://github.com/bash-lsp/bash-language-server).
-Refer [lsp-tree-sitter](https://github.com/neomutt/lsp-tree-sitter).
 
 Extra features:
 
