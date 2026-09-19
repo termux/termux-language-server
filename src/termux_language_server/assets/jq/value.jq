@@ -18,6 +18,8 @@ elif $type == "word" and $nodes[1].type == "command_name" and .propertyNames != 
         empty
       end
   )
+else
+  empty
 end |
 if .key | ($nodes[0].text as $text | if $complete then startswith($text) else . == $text end) then
   {
