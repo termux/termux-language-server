@@ -56,6 +56,10 @@ class TermuxLanguageServer(TreeSitterLanguageServer):
             self.linters += (NamcapLinter(),)
 
     def schema_getter(self, path: str):
+        if os.path.basename(os.path.dirname(path)) == "make.conf":
+            return self.schemas.get("make.conf")
+        if os.path.basename(path) == ".devscripts":
+            return self.schemas.get("devscripts.conf")
         name = PackageSearcher.get_filetype(path, self.schemas)
         return self.schemas.get(name)
 

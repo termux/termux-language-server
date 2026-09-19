@@ -68,24 +68,30 @@ Extra features:
 
 ## Screenshots
 
-### Diagnostic
+### Termux
 
-![diagnostic](https://github.com/termux/termux-language-server/assets/32936898/598c371f-151d-442f-b782-e504a3d08872)
+![build.sh](https://github.com/termux/termux-language-server/assets/32936898/598c371f-151d-442f-b782-e504a3d08872)
 
-### Document Link
+### ArchLinux
 
-![document link](https://github.com/neomutt/lsp-tree-sitter/assets/32936898/d3777f3c-9b75-41f9-b6b3-1c4ec55c7283)
-
-### Hover
-
-![package](https://github.com/neomutt/lsp-tree-sitter/assets/32936898/3d9fa906-35ea-4063-a9eb-06282d3e8596)
-
-### Completion
-
-![completion](https://github.com/neomutt/lsp-tree-sitter/assets/32936898/c060690c-071b-41a0-bde5-dce338f4e779)
+![PKGBUILD](https://github.com/user-attachments/assets/a8f38a0a-c039-4653-90f1-2b26f9e9dd49)
 
 ![arch](https://github.com/termux/termux-language-server/assets/32936898/e10b40c6-515e-4d50-9526-d32ea26b9238)
 
 ![license](https://github.com/termux/termux-language-server/assets/32936898/13109df3-30ba-4371-ad0a-aa7f46c8e80a)
 
-![depends](https://github.com/termux/termux-language-server/assets/32936898/a70b41ae-cf4b-44cc-bb10-a54cb5488f30)
+![makepkg.conf](https://github.com/user-attachments/assets/28821bf5-630b-4566-a642-9d946b8fceb9)
+
+### Gentoo
+
+![ebuild](https://github.com/neomutt/lsp-tree-sitter/assets/32936898/c060690c-071b-41a0-bde5-dce338f4e779)
+
+![make.conf](https://github.com/user-attachments/assets/b6de01b7-1e62-440e-a061-53c64c84de3a)
+
+### Debian
+
+![devscripts](https://github.com/user-attachments/assets/2fd8cae3-0140-4463-9285-8f910cfee083)
+
+### Zsh
+
+![mdd](https://github.com/user-attachments/assets/2d4a8624-f11e-4a4e-94d1-4ae43edf0aa4)
