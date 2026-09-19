@@ -14,6 +14,12 @@ dependencies = [
   "tree-sitter-bash>=0.25.1",
 ]
 
+[project.urls]
+"Bug Report" = "https://github.com/termux/termux-language-server/issues"
+Download = "https://github.com/termux/termux-language-server/releases"
+Homepage = "https://lsp-tree-sitter.readthedocs.io/en/latest/examples/termux-language-server/README.html"
+Source = "https://github.com/termux/termux-language-server"
+
 [project.scripts]
 termux-language-server = "termux_language_server.__main__:main"
 

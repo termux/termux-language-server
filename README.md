@@ -62,7 +62,7 @@ Extra features:
 - complete package names
   - [x] `PKGBUILD`: by [pyalpm](https://github.com/ornitorrincos/pyalpm)
   - [x] `ebuild`: by [portage](https://wiki.gentoo.org/wiki/Portage)
-  - [ ] `build.sh`
+  - [ ] `build.sh`: by [apt](https://pypi.org/project/apt/)
 - linter
   - [x] `PKGBUILD`: by [namcap](https://wiki.archlinux.org/title/Namcap)
 
