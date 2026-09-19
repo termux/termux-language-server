@@ -1,33 +1,22 @@
 $nodes[0].type as $type |
+if $cursor[1] == 0 or $type == "variable_name" or ($type == "word" and $nodes[1].type == "function_definition") then
+  .properties + (
+      if .patternProperties == null
+      then
+        {}
+      else
+        (.patternProperties | to_entries[] | {(.key | gsub("[$^]"; "") | gsub("[(][^)]*[)]"; "")): .value})
+      end
+    ) | to_entries[]
 # https://github.com/termux/termux-packages/wiki/Auto-updating-packages#auto-update-steps-refrence
-if $type == "word" and $nodes[1].type == "command_name" then
+elif $type == "word" and $nodes[1].type == "command_name" and .propertyNames != null then
   (
-    if .propertyNames == null
-    then
-      {}
-    else
-      .propertyNames.not.anyOf[] |
-        if .const | test("^[a-z_]+$") then
-          {key: .const, value: {description: .description}}
-        else
-          empty
-        end
-    end
-  )
-else
-  (
-    if $cursor[1] == 0 or $type == "variable_name" or ($type == "word" and $nodes[1].type == "function_definition") then
-      .properties + (
-          if .patternProperties == null
-          then
-            {}
-          else
-            (.patternProperties | to_entries[] | {(.key | gsub("[$^]"; "") | gsub("[(][^)]*[)]"; "")): .value})
-          end
-        )
-    else
-      {}
-    end | to_entries[]
+    .propertyNames.not.anyOf[] |
+      if .const | test("^[a-z_]+$") then
+        {key: .const, value: {description: .description}}
+      else
+        empty
+      end
   )
 end |
 if .key | ($nodes[0].text as $text | if $complete then startswith($text) else . == $text end) then
