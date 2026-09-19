@@ -21,4 +21,5 @@
   name: (variable_name) @_name
   value: (string
     (string_content) @package._ebuild)
+  (#match? @package._ebuild "/")
   (#any-of? @_name "DEPEND" "RDEPEND" "BDEPEND" "IDEPEND" "PDEPEND"))

@@ -10,7 +10,6 @@ from types import SimpleNamespace
 from jinja2 import Template
 from lsp_tree_sitter.completer import PackageSearcher
 from platformdirs import user_config_path
-from portage import db, root
 from portage.dbapi.porttree import portdbapi
 
 
@@ -33,7 +32,7 @@ class PortageSearcher(PackageSearcher):
     )
     url_template: str = "https://packages.gentoo.org/packages/{}"
     template: Template = field(default_factory=get_template)
-    db: portdbapi = field(default_factory=lambda: db[root]["porttree"].dbapi)
+    db: portdbapi = portdbapi()
     executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=1)
 
     def has_package(self, name: str) -> bool:
@@ -43,9 +42,10 @@ class PortageSearcher(PackageSearcher):
         return self.url_template.format(name)
 
     def get_package_version(self, name: str) -> str:
-        versions = self.db.cp_list(name)
+        versions: list[str] = self.db.cp_list(name)
         # latest version
-        return versions[-1]
+        version: str = versions[-1]
+        return version.rpartition('-')[-1]
 
     def get_package_names(self, name: str) -> dict[str, str]:
         return {cp: "" for cp in self.db.cp_all() if cp.startswith(name)}

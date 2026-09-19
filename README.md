@@ -84,7 +84,7 @@ Extra features:
 
 ### Gentoo
 
-![ebuild](https://github.com/neomutt/lsp-tree-sitter/assets/32936898/c060690c-071b-41a0-bde5-dce338f4e779)
+![ebuild](https://github.com/user-attachments/assets/ca835503-9f75-4831-9a10-755172440bb8)
 
 ![make.conf](https://github.com/user-attachments/assets/b6de01b7-1e62-440e-a061-53c64c84de3a)
 
