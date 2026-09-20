@@ -50,6 +50,8 @@ Language server for some specific bash scripts:
   - `*.eclass`
   - [`make.conf`](https://dev.gentoo.org/~zmedico/portage/doc/man/make.conf.5.html)
   - [`color.map`](https://dev.gentoo.org/~zmedico/portage/doc/man/color.map.5.html)
+- [Alpine](https://alpinelinux.org)
+  - [`APKBUILD`](https://wiki.alpinelinux.org/wiki/APKBUILD_Reference)
 - Debian/Ubuntu
   - [`devscripts.conf` and `.devscripts`](https://manpages.ubuntu.com/manpages/bionic/man5/devscripts.conf.5.html)
 - zsh
@@ -63,6 +65,7 @@ Extra features:
   - [x] `PKGBUILD`: by [pyalpm](https://github.com/ornitorrincos/pyalpm)
   - [x] `ebuild`: by [portage](https://wiki.gentoo.org/wiki/Portage)
   - [ ] `build.sh`: by [apt](https://pypi.org/project/apt/)
+  - [ ] `APKBUILD`: by [apk](https://github.com/alpinelinux/apk-tools/tree/master/python)
 - linter
   - [x] `PKGBUILD`: by [namcap](https://wiki.archlinux.org/title/Namcap)
 
@@ -70,7 +73,7 @@ Extra features:
 
 ### Termux
 
-![build.sh](https://github.com/termux/termux-language-server/assets/32936898/598c371f-151d-442f-b782-e504a3d08872)
+![build.sh](https://github.com/user-attachments/assets/67cc6421-03e7-414f-be92-cf01ad863028)
 
 ### ArchLinux
 
@@ -87,6 +90,10 @@ Extra features:
 ![ebuild](https://github.com/user-attachments/assets/ca835503-9f75-4831-9a10-755172440bb8)
 
 ![make.conf](https://github.com/user-attachments/assets/b6de01b7-1e62-440e-a061-53c64c84de3a)
+
+### Alpine
+
+![APKBUILD](https://github.com/user-attachments/assets/8736c4fc-e7ea-4ec6-bb43-08b257874a74)
 
 ### Debian
 

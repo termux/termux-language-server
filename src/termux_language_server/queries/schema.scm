@@ -4,6 +4,10 @@
 
 (variable_assignment
   name: (variable_name) @--name
+  value: (number) @-name)
+
+(variable_assignment
+  name: (variable_name) @--name
   value: (raw_string) @-name.--shlex)
 
 (variable_assignment

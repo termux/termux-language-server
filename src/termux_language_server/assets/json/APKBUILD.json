@@ -1,0 +1,187 @@
+{
+  "$id": "https://github.com/termux/termux-language-server/blob/main/src/termux_language_server/assets/json/APKBUILD.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "Don't edit this file directly! It is generated automatically.",
+  "type": "object",
+  "properties": {
+    "pkgname": {
+      "description": "Specifies the name of the package. This is typically the name of the package upstream; however, note that all letters must be lowercased.\nLibraries for scripting languages should have a prefix before the library name describing the language. Such prefixes include *lua-*, *perl-*, *py-*, and *rb-*. Not all languages use prefixes. For a definitive list, consult the PREFIXES file in the root directory of the repository you are using for packaging.",
+      "type": "string"
+    },
+    "pkgver": {
+      "description": "Specifies the version of the software being packaged. The version of a package must consist of one or more numbers separated by the radix (decimal point). The final number may have a single letter following it, for upstreams that use such a versioning scheme (such as 1.5a, 1.5b, 1.5c).\nAfter the final number (and optional single letter), one or more suffixes may be appended, which must be an underscore (\\_) followed by one of *alpha*, *beta*, *pre*, *rc*, *cvs*, *svn*, *git*, *hg*, or *p*, optionally followed by another number. If a suffix is *alpha*, *beta*, *pre*, or *rc*, it is considered to be earlier than the version without this suffix; if a suffix is *cvs*, *svn,* git\\_, *hg*, or *p*, it is considered to be later than the version without this suffix. All of the following examples are valid versions, in order from lowest to highest:\n1.0, 1.1_alpha2, 1.1.3_pre, 1.1.3_pre_p2, 1.1.3, 1.1.3_hg, 1.2, 1.2a, 1.2b",
+      "type": "string"
+    },
+    "pkgrel": {
+      "description": "Specifies the package release number of this particular package version. This indicates when a package has changed without a corresponding change in version. Always increment **pkgrel** when you change the contents, dependencies, or metadata of a package. The first release of a package is always 0.",
+      "type": "string"
+    },
+    "pkgdesc": {
+      "description": "Specifies what the package contains. **pkgdesc** must be 128 characters or less, and should concisely describe what actions the software or items being package will allow the user to perform. For example, \"Fully-featured word processor with spell check and plugins\" would be a sufficient **pkgdesc** for AbiWord.",
+      "type": "string"
+    },
+    "url": {
+      "description": "Specifies the Web address of the package\\'s upstream. This allows users and future maintainers to find documentation, release information, and contact information for the package. If no Web address is available for the package, you must set **url** to an empty string (\\\"\\\").",
+      "type": "string",
+      "format": "uri"
+    },
+    "arch": {
+      "description": "Specifies the architectures for which the package may be built. It is highly recommended that you set this variable to \\\"*all*\\\" if the package is portable.\nYou may use \\\"*noarch*\\\" if the package does not contain any architecture-specific binary files - that is, any files that are compiled for the target only. Such packages may include pure Python packages, shell script packages, and JARs. If you are not sure what this means, using \\\"*all*\\\" is safe.\nArchitectures can be negated using the *!* character to exclude them from the list of supported architectures. E.g. *arch=\\\"all !ppc64le\\\"* means that the package is allowed to be built on all architectures but the ppc64le architecture.",
+      "type": "string"
+    },
+    "license": {
+      "description": "Specifies the license under which the package is distributed. The value provided must match a SPDX license identifier.",
+      "type": "string"
+    },
+    "source": {
+      "description": "Specifies the location of both local and remote source files used to build the package. Typically, the remote source file(s) or archive(s) is specified, followed by any local patches, configuration files, or other necessary files.",
+      "type": "string"
+    },
+    "checkdepends": {
+      "description": "Specifies test-time dependencies of the package. Common packages that are used for testing include check, dejagnu, and perl-test-command.",
+      "type": "string"
+    },
+    "depends": {
+      "description": "Specifies the run-time dependencies of the package. The abuild(1) utility will automatically scan the resultant package for shared library (.so) dependencies; do not specify them here.",
+      "type": "string"
+    },
+    "install": {
+      "description": "Specifies install scripts for the package, if any. See *Install* Scripts for more information about install scripts.",
+      "type": "string"
+    },
+    "install_if": {
+      "description": "Specifies a condition when apk(8) should automatically install the package (or subpackage). For instance, the OpenRC subpackages set\ninstall_if=\"openrc ${subpkgname%-openrc}=$pkgver-r$pkgrel\" ",
+      "type": "string"
+    },
+    "makedepends": {
+      "description": "Specifies build dependencies for the package.",
+      "type": "string"
+    },
+    "maintainer": {
+      "description": "The name and email of the package maintainer in RFC 2822 format. E.g.: *maintainer=\\\"Joe Q. Public \\<john.q.public@example.com\\>\\\"*",
+      "type": "string"
+    },
+    "pkggroups": {
+      "description": "Specifies a space-separated list of login groups to create during build-time. Note that you will need to create the login groups in a pre-install script as well; see *Install Scripts* for more information about install scripts.",
+      "type": "string"
+    },
+    "pkgusers": {
+      "description": "Specifies a space-separated list of user logins to create during build-time. Note that you will need to create the user logins in a pre-install install script as well; see *Install Scripts* for more information about install scripts.",
+      "type": "string"
+    },
+    "provides": {
+      "description": "Specifies that the package \\\"provides\\\" the same contents as another package. There are two formats that you may use for **provides**: a provider name, and a provider name with version.\nSpecifying a provider name with version such as *foobar=1.2* will cause the package to be an \\\"alias\\\" of *foobar* version *1.2*. It will be automatically installed if a user then runs \\`apk add foobar\\` or similar, and it will conflict with a package named *foobar*.\nSpecifying a provider name without a version such as *baz* will cause the package to provide a \\\"virtual\\\" called *baz*. Multiple packages with the same virtual provider can be installed on a system; however, if a user runs \\`apk add baz\\` they will be provided a list of packages that provide *baz* and must select one and install it.",
+      "type": "string"
+    },
+    "provider_priority": {
+      "description": "Specifies the numeric value for apk(8) to use for the package when considering which provider should be installed for the same **provides** virtual provider.",
+      "type": "string"
+    },
+    "replaces": {
+      "description": "Specifies packages that the package replaces. This is typically used for packages renamed by upstream.",
+      "type": "string"
+    },
+    "replaces_priority": {
+      "description": "Specifies the numeric value that is used by apk(8) when multiple packages with **replaces** include the same file. It is also used to decide which package should define the permissions of a directory even without **replaces** set.",
+      "type": "string"
+    },
+    "subpackages": {
+      "description": "Specifies subpackages or split packages built with this package. Typically, this will include *\\$pkgname-dev* for development files (such as */usr/include* and static library files) and *\\$pkgname-doc* for documentation (such as */usr/share/doc* and */usr/share/man*).\nBy default the split function is the end of the package name after the last hyphen. So for *\\$pkgname-foo* and *libfoo* the split function is *foo* and *libfoo* respectively. A custom split function name can be set by using *foo:funcname*. Similar to the **package** function, the split function must move files from *\\$pkgdir* (which is the default cwd) or *\\$srcdir* to *\\$subpkgdir* after creating *\\$subpkgdir*.\nBy default **arch** determines whether or not a subpackage is considered arch independent or not. This can be changed by using *foo::noarch* or *foo:funcname:all*.\nWhen multiple subpackages are specified their split functions are executed in the order in which they occur in **subpackages**.",
+      "type": "string"
+    },
+    "triggers": {
+      "description": "Specifies trigger scripts used by the specified (sub)packages. A trigger script is a shell script that is called whenever monitored files or directories are modified. You may specify the paths to monitor using the triggers variable as follows:\n$pkgname.trigger=/usr/share/man:/usr/local/share/man ",
+      "type": "string"
+    },
+    "options": {
+      "description": "The **options** variable allows you to set parameters for the package at build time. There are a number of valid options you may set, and you may set multiple options by writing a space between each one. Custom option names can be used when they contain exactly one *:*. Options can be set for a specific (sub)packages by using *subpkgname::option* (or *subpkgname:option* for custom options).\n**!archcheck**\nSpecifies that the package contains binaries that cannot run on the target architecture. This is primarily used for packages containing firmware, and should typically never be needed.",
+      "type": "string"
+    },
+    "builddir": {
+      "description": "Specifies the directory where the source code of the package will be built. The default value is *\\$srcdir/\\$pkgname-\\$pkgver* which is appropriate for most source distributions. If the source tarball does not create a *\\$pkgname-\\$pkgver* directory when it is unpacked, you must override **builddir**.",
+      "type": "string"
+    },
+    "pkgdir": {
+      "description": "Specifies the directory where the built files will be installed. Typically, you will call \\`make DESTDIR=\\\"\\$pkgdir\\\" install\\` or similar to install the files. The default value is *\\$startdir/pkg* and you should not modify this variable.",
+      "type": "string"
+    },
+    "srcdir": {
+      "description": "Specifies the directory where the files specified in **source** are downloaded and unpacked. The default value is *\\$startdir/src* and you should not need to modify this.",
+      "type": "string"
+    },
+    "startdir": {
+      "description": "Specifies the directory where the **APKBUILD** file resides. This should generally not be used.",
+      "type": "string"
+    },
+    "subpkgdir": {
+      "description": "Specifies the directory where the subpackage\\'s files should be placed. This variable is only set inside subpackage functions.",
+      "type": "string"
+    },
+    "depends_dev": {
+      "description": "Run-time dependencies of the *-dev* subpackage.",
+      "type": "string"
+    },
+    "depends_doc": {
+      "description": "Run-time dependencies of the *-doc* subpackage.",
+      "type": "string"
+    },
+    "depends_libs": {
+      "description": "Run-time dependencies of the *-libs* subpackage.",
+      "type": "string"
+    },
+    "depends_openrc": {
+      "description": "Run-time dependencies of the *-openrc* subpackage.",
+      "type": "string"
+    },
+    "depends_static": {
+      "description": "Run-time dependencies of the *-static* subpackage.",
+      "type": "string"
+    },
+    "depends_systemd": {
+      "description": "Run-time dependencies of the *-systemd* subpackage.",
+      "type": "string"
+    },
+    "depends_udev": {
+      "description": "Run-time dependencies of the *-udev* subpackage.",
+      "type": "string"
+    },
+    "giturl": {
+      "description": "URL of the Git repository to use with \\`abuild snapshot\\`. If the default branch of the repository is not desired, a different one may be specified by appending **-b** *branch* where *branch* is the branch to checkout.",
+      "type": "string"
+    },
+    "fetch": {
+      "description": "This function is called to download the remote files in **source**.",
+      "const": 0
+    },
+    "unpack": {
+      "description": "This function unpacks any archives in **source** to **srcdir**.",
+      "const": 0
+    },
+    "prepare": {
+      "description": "Prepares the source in **srcdir** to be built. The default **prepare** function ensures the build directories are set up correctly and applies any *\\*.patch* files specified in **source**. You must call **default_prepare** if you write a custom **prepare** function.\nA custom **prepare** function may call **update_config_sub** or **update_config_guess** to update **config.sub** and **config.guess** files respectively.",
+      "const": 0
+    },
+    "build": {
+      "description": "Compiles the source in **builddir**. You must implement this function yourself. If no compilation is required, you may omit it.",
+      "const": 0
+    },
+    "check": {
+      "description": "Runs the package\\'s test suite. This function must implemented unless **!check** was specified in **options**.",
+      "const": 0
+    },
+    "package": {
+      "description": "Installs the package into **pkgdir**. Note that **pkgdir** is not created for you; if this package installs no files (for example, a metapackage), you must use \\`mkdir -p \\\"\\$pkgdir\\\"\\` to skip the package phase.",
+      "const": 0
+    }
+  },
+  "required": [
+    "pkgname",
+    "pkgver",
+    "pkgrel",
+    "pkgdesc",
+    "url",
+    "arch",
+    "license",
+    "source"
+  ]
+}

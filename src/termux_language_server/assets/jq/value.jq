@@ -1,7 +1,7 @@
 $nodes[0].type as $type |
 if $cursor[1] == 0 or $type == "variable_name" or ($type == "word" and $nodes[1].type == "function_definition") then
   .properties + (
-      if .patternProperties == null
+      if .patternProperties == null or .patternProperties == {}
       then
         {}
       else
