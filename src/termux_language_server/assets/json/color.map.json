@@ -5,11 +5,11 @@
   "type": "object",
   "properties": {
     "NORMAL": {
-      "description": "```sh\nNORMAL = \"normal\"\n```\nDefines color used for some words occuring in other contexts than those below.",
+      "description": "```sh\nNORMAL = \"normal\"\n```\nDefines color used for some words occurring in other contexts than those below.",
       "type": "string"
     },
     "BAD": {
-      "description": "```sh\nBAD = \"red\"\n```\nDefines color used for some words occuring in bad context.",
+      "description": "```sh\nBAD = \"red\"\n```\nDefines color used for some words occurring in bad context.",
       "type": "string"
     },
     "BRACKET": {
@@ -17,7 +17,7 @@
       "type": "string"
     },
     "GOOD": {
-      "description": "```sh\nGOOD = \"green\"\n```\nDefines color used for some words occuring in good context.",
+      "description": "```sh\nGOOD = \"green\"\n```\nDefines color used for some words occurring in good context.",
       "type": "string"
     },
     "HILITE": {

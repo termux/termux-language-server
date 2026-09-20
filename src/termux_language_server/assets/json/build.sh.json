@@ -351,7 +351,7 @@
       "const": 0
     },
     "termux_pkg_auto_update": {
-      "description": "By default, decide which method (gitlab, github or repology) to use for update, but can be overrided to use custom method (See here).",
+      "description": "By default, decide which method (gitlab, github or repology) to use for update, but can be overridden to use custom method (See here).",
       "const": 0
     }
   },

@@ -45,7 +45,7 @@ class PortageSearcher(PackageSearcher):
         versions: list[str] = self.db.cp_list(name)
         # latest version
         version: str = versions[-1]
-        return version.rpartition('-')[-1]
+        return version.rpartition("-")[-1]
 
     def get_package_names(self, name: str) -> dict[str, str]:
         return {cp: "" for cp in self.db.cp_all() if cp.startswith(name)}
