@@ -69,13 +69,13 @@ repos:
           - mdformat-config
           - mdformat-web
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.23.2
+    rev: v0.23.3
     hooks:
       - id: markdownlint-cli2
         additional_dependencies:
           - markdown-it-texmath
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.7
+    rev: v0.16.8
     hooks:
       - id: ruff-check
       - id: ruff-format
