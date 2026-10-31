@@ -41,10 +41,10 @@ BDEPEND="${LUA_DEPS}
 # new dependency bounds and so on on bumps (obviously adjust for right branch/tag).
 DEPEND="${LUA_DEPS}
 	>=dev-lua/luv-1.45.0[${LUA_SINGLE_USEDEP}]
-	$(lua_gen_cond_dep '
+	$(lua_gen_cond_dep "
 		dev-lua/lpeg[${LUA_USEDEP}]
 		dev-lua/mpack[${LUA_USEDEP}]
-	')
+	")
 	$(lua_gen_cond_dep '
 		dev-lua/LuaBitOp[${LUA_USEDEP}]
 	' lua5-{1,2})

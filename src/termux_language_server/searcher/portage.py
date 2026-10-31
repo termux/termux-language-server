@@ -11,6 +11,8 @@ from jinja2 import Template
 from lsp_tree_sitter.completer import PackageSearcher
 from platformdirs import user_config_path
 from portage.dbapi.porttree import portdbapi
+from portage.dep import dep_getkey
+from portage.exception import InvalidAtom
 
 
 def get_template(name: str = "_ebuild.md.jinja") -> Template:
@@ -34,6 +36,17 @@ class PortageSearcher(PackageSearcher):
     template: Template = field(default_factory=get_template)
     db: portdbapi = portdbapi()
     executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=1)
+
+    @staticmethod
+    def get_package_name(name: str) -> str:
+        r"""Wrap dep_getkey(), which doesn't support whitespaces and incomplete
+        package name, such as dev-lua/LuaBitOp[${LUA_USEDEP}]
+        """
+        name = name.partition("[")[0].strip()
+        try:
+            return dep_getkey(name)
+        except InvalidAtom:
+            return name
 
     def has_package(self, name: str) -> bool:
         return self.db.cp_list(name) != []

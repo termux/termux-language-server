@@ -23,3 +23,20 @@
     (string_content) @package._ebuild)
   (#match? @package._ebuild "/")
   (#any-of? @_name "DEPEND" "RDEPEND" "BDEPEND" "IDEPEND" "PDEPEND"))
+
+; TODO: should we match command_name by lua_gen_cond_dep?
+; DEPEND="${LUA_DEPS}
+; 	$(lua_gen_cond_dep "
+; 		dev-lua/lpeg[${LUA_USEDEP}]
+; 		dev-lua/mpack[${LUA_USEDEP}]
+; 	")
+; "
+(variable_assignment
+  name: (variable_name) @_name
+  value: (string
+    (command_substitution
+      (command
+        argument: (string
+          (string_content) @package._ebuild))))
+  (#match? @package._ebuild "/")
+  (#any-of? @_name "DEPEND" "RDEPEND" "BDEPEND" "IDEPEND" "PDEPEND"))

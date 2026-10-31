@@ -47,6 +47,16 @@ class PacmanSearcher(PackageSearcher):
     )
     trie: Trie | None = field(default_factory=get_trie)
 
+    @staticmethod
+    def get_package_name(name: str) -> str:
+        r"""`package>=0.0.1` -> `package`.
+        Support the description of an optional dependency:
+        `pkgname: Let's ...` -> `pkgname`
+        """
+        for sep in "><=!:":
+            name = name.partition(sep)[0]
+        return name.strip()
+
     def __call__(self, node: Node | None) -> bool:
         node = node.parent if node and node.type == "string_content" else node
         return super().__call__(node)
