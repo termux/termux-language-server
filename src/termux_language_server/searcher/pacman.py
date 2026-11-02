@@ -29,7 +29,10 @@ def get_dbs() -> tuple[DB, ...]:
       installed, e.g. a build dependency of a foreign architecture.
     - A repository which was never synchronized is still unknown.
     """
-    handle = init_with_config("/etc/pacman.conf")
+    try:
+        handle = init_with_config("/etc/pacman.conf")
+    except FileNotFoundError:
+        return ()
     return (handle.get_localdb(), *handle.get_syncdbs())
 
 
