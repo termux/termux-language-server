@@ -50,9 +50,12 @@ class PacmanSearcher(PackageSearcher):
     @staticmethod
     def get_package_name(name: str) -> str:
         r"""`package>=0.0.1` -> `package`.
-        Support the description of an optional dependency:
-        `pkgname: Let's ...` -> `pkgname`
+        - Support the description of an optional dependency:
+          `pkgname: Let's ...` -> `pkgname`
+        - Handle raw string: `'package'`
         """
+        if name.startswith("'") and name.endswith("'"):
+            name = name.strip("'")
         for sep in "><=!:":
             name = name.partition(sep)[0]
         return name.strip()
