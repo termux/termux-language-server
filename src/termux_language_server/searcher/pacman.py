@@ -10,7 +10,8 @@ from jinja2 import Template
 from lsp_tree_sitter.completer import PackageSearcher
 from marisa_trie import Trie
 from platformdirs import user_cache_dir, user_config_path
-from pyalpm import DB, Handle, Package
+from pyalpm import DB, Package
+from pycman.config import init_with_config
 from tree_sitter import Node
 
 
@@ -19,6 +20,17 @@ def get_template(name: str = "PKGBUILD.md.jinja") -> Template:
     if not path.exists():
         path = Path(__file__).parent.parent / "assets" / "jinja" / name
     return Template(path.read_text())
+
+
+def get_dbs() -> tuple[DB, ...]:
+    r"""The local database and the databases of the repositories of
+    pacman.conf.
+    - Only reading the local database makes the result depend on what is
+      installed, e.g. a build dependency of a foreign architecture.
+    - A repository which was never synchronized is still unknown.
+    """
+    handle = init_with_config("/etc/pacman.conf")
+    return (handle.get_localdb(), *handle.get_syncdbs())
 
 
 def get_trie() -> Trie | None:
@@ -42,9 +54,7 @@ class PacmanSearcher(PackageSearcher):
         "replaces",
     )
     template: Template = field(default_factory=get_template)
-    db: DB = field(
-        default_factory=lambda: Handle(".", "/var/lib/pacman").get_localdb()
-    )
+    dbs: tuple[DB, ...] = get_dbs()
     trie: Trie | None = field(default_factory=get_trie)
 
     @staticmethod
@@ -65,14 +75,14 @@ class PacmanSearcher(PackageSearcher):
         return super().__call__(node)
 
     def get_pkgs(self, name: str) -> list[Package]:
-        pkg = self.db.get_pkg(name)
-        if pkg:
-            return [pkg]
+        for db in self.dbs:
+            pkg = db.get_pkg(name)
+            if pkg:
+                return [pkg]
         # virtual packages
         pkgs = []
-        for pkg in self.db.search(name):
-            if name in pkg.provides:
-                pkgs += [pkg]
+        for db in self.dbs:
+            pkgs += [pkg for pkg in db.search(name) if name in pkg.provides]
         return pkgs
 
     def has_package(self, name: str) -> bool:
@@ -101,11 +111,11 @@ class PacmanSearcher(PackageSearcher):
         return version
 
     def get_package_names(self, name: str) -> dict[str, str]:
-        names = {
-            pkg.name: self.template.render(pkg=pkg)
-            for pkg in self.db.search(name)
-            if pkg.name.startswith(name)
-        }
+        names = {}
+        for db in self.dbs:
+            for pkg in db.search(name):
+                if pkg.name.startswith(name) and pkg.name not in names:
+                    names[pkg.name] = self.template.render(pkg=pkg)
         if self.trie:
             for pkg in self.trie.keys(name):
                 if pkg not in names:
