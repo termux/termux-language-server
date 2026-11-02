@@ -14,7 +14,8 @@
   name: (variable_name) @_name
   value: (array
     (string
-      (string_content) @package.PKGBUILD))
+      (string_content) @package.PKGBUILD) @_string)
+  (#not-match? @_string "[$]")
   (#any-of? @_name "depends" "makedepends" "optdepends" "conflicts" "provides" "replaces"))
 
 (variable_assignment
