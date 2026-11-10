@@ -1,0 +1,14 @@
+pkgbase=example
+pkgname=(example example-doc)
+pkgver=1.0
+pkgrel=1
+arch=(any)
+license=(MIT)
+
+package_example() {
+  cd "$srcdir" || exit
+}
+
+package_example-doc() {
+  :
+}
