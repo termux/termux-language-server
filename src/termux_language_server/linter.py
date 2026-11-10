@@ -30,7 +30,17 @@ class NamcapLinter(LinterBase):
         if basename != "PKGBUILD":
             return []
         source = NodeText(tree.root_node)
+        end = len(source.splitlines()[0])
         pkginfo = load_from_pkgbuild(path)
+        # cd that fails in its restricted shell ends the parse
+        if pkginfo is None:
+            return [
+                Diagnostic(
+                    Range(Position(0, 0), Position(0, end)),
+                    "namcap couldn't read the PKGBUILD",
+                    DiagnosticSeverity.Information,
+                )
+            ]
         items = {}
         for value in all_rules.values():
             rule = value()
@@ -40,7 +50,6 @@ class NamcapLinter(LinterBase):
                 items[format_message(msg)] = DiagnosticSeverity.Error
             for msg in rule.warnings:
                 items[format_message(msg)] = DiagnosticSeverity.Warning
-        end = len(source.splitlines()[0])
         return [
             Diagnostic(Range(Position(0, 0), Position(0, end)), msg, severity)
             for msg, severity in items.items()
