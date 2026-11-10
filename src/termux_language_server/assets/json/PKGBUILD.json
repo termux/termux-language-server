@@ -61,7 +61,7 @@
       "type": "string"
     },
     "url": {
-      "description": "The URL to the VCS repository. This must include the VCS in the URL protocol for makepkg to recognize this as a VCS source. If the protocol does not include the VCS name, it can be added by prefixing the URL with vcs+. For example, using a Git repository over HTTPS would have a source URL in the form: git+https://\\....",
+      "description": "This field contains a URL that is associated with the software being packaged. This is typically the project’s web site.",
       "type": "string",
       "format": "uri"
     },
@@ -880,18 +880,6 @@
     },
     "pkgbase": {
       "description": "The name used to refer to the group of packages in the output of makepkg and in the naming of source-only tarballs. If not specified, the first element in the pkgname array is used. Valid characters for this variable are alphanumerics, and any of the following characters: \"@ . \\_ + -\". Additionally, the variable is not allowed to start with hyphens or dots.",
-      "type": "string"
-    },
-    "directory": {
-      "description": "(optional) Specifies an alternate directory name for makepkg to download the VCS source into.",
-      "type": "string"
-    },
-    "fragment": {
-      "description": "(optional) Allows specifying a revision number or branch for makepkg to checkout from the VCS. A fragment has the form type=value, for example to checkout a given revision the source line would be source=(url#revision=123). The available types depends on the VCS being used:\n**bzr**\nrevision (see bzr help revisionspec for details)",
-      "type": "string"
-    },
-    "query": {
-      "description": "(optional) Allows specifying whether a VCS checkout should be checked for PGP-signed revisions. The source line should have the format source=(url#fragment?signed) or source=(url?signed#fragment). Currently only supported by Git.",
       "type": "string"
     },
     "mingw_arch": {

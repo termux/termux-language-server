@@ -88,13 +88,14 @@ for index, close_index in zip(indices, close_indices, strict=False):
     else:
         names = [words[0].rstrip("()")]
         kind = words[1].lstrip("(").rstrip(")") if len(words) > 1 else "string"
+    filetype = "PKGBUILD"
     for name in names:
         description = get_content(tokens[index + 1 : close_index])
         if name.startswith("pre_") or name.startswith("post_"):
             filetype = "install"
             kind = "Function"
-        else:
-            filetype = "PKGBUILD"
+        elif filetype != "PKGBUILD":
+            break
         if kind == "Function":
             name = rf"^{name}($|_.*)"
             properties_name = "patternProperties"
