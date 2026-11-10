@@ -10,7 +10,7 @@ from jinja2 import Template
 from lsp_tree_sitter.completer import PackageSearcher
 from marisa_trie import Trie
 from platformdirs import user_cache_dir, user_config_path
-from pyalpm import DB, Package
+from pyalpm import DB, Package, find_satisfier
 from pycman.config import init_with_config
 from tree_sitter import Node
 
@@ -82,10 +82,12 @@ class PacmanSearcher(PackageSearcher):
             pkg = db.get_pkg(name)
             if pkg:
                 return [pkg]
-        # virtual packages
+        # virtual packages: cargo, java-runtime
         pkgs = []
         for db in self.dbs:
-            pkgs += [pkg for pkg in db.search(name) if name in pkg.provides]
+            pkg = find_satisfier(db.pkgcache, name)
+            if pkg:
+                pkgs += [pkg]
         return pkgs
 
     def has_package(self, name: str) -> bool:
