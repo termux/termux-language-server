@@ -2,6 +2,7 @@ r"""Portage
 ===========
 """
 
+import re
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -42,7 +43,8 @@ class PortageSearcher(PackageSearcher):
         r"""Wrap dep_getkey(), which doesn't support whitespaces and incomplete
         package name, such as dev-lua/LuaBitOp[${LUA_USEDEP}]
         """
-        name = name.partition("[")[0].strip()
+        m = re.search(r"\(([^)]*)\)", name)
+        name = m.group(1).strip() if m else name.partition("[")[0].strip()
         try:
             return dep_getkey(name)
         except InvalidAtom:
