@@ -37,7 +37,25 @@ for dl in get_soup("ebuild").find_all("dl")[20:-2]:
             "description": description,
         }
         if name.isupper():
-            schema["properties"][name]["type"] = "string"
+            if "an array of" in description:
+                schema["properties"][name]["type"] = "array"
+                schema["properties"][name]["items"] = {
+                    "type": "string",
+                    "uniqueItems": True,
+                }
+            elif "an array or" in description:
+                schema["properties"][name]["oneOf"] = [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "uniqueItems": True,
+                        },
+                    },
+                    {"type": "string"},
+                ]
+            else:
+                schema["properties"][name]["type"] = "string"
         else:
             schema["properties"][name]["const"] = 0
 eprefix = os.path.dirname(os.path.dirname(os.getenv("SHELL", "")))
