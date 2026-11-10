@@ -46,7 +46,10 @@ class PortageSearcher(PackageSearcher):
         try:
             return dep_getkey(name)
         except InvalidAtom:
-            return name
+            try:
+                return dep_getkey(name + "0")
+            except InvalidAtom:
+                return name
 
     def has_package(self, name: str) -> bool:
         return self.db.cp_list(name) != []

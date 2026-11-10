@@ -1,6 +1,6 @@
 [project]
 name = "termux-language-server"
-version = "0.1.15"
+version = "0.1.16"
 description = "language server for PKGBUILD/ebuild/APKBUILD/build.sh/..."
 readme = "README.md"
 requires-python = ">=3.10"
